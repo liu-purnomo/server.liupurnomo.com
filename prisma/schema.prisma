@@ -1,0 +1,686 @@
+// ==================== PRISMA CONFIGURATION ====================
+// Prisma Schema for Blog Platform
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+/// User role levels in the system
+enum UserRole {
+  ADMIN  // Full system access
+  AUTHOR // Can create and manage posts
+  USER   // Regular user with read/comment permissions
+}
+
+/// Post content types
+enum PostType {
+  BLOG     // Standard blog post
+  TUTORIAL // Step-by-step guide or tutorial
+}
+
+/// Post publication status
+enum PostStatus {
+  DRAFT     // Work in progress, not visible to public
+  PUBLISHED // Live and visible to public
+  SCHEDULED // Scheduled for future publication
+  ARCHIVED  // No longer active but preserved
+}
+
+/// Tutorial difficulty level
+enum DifficultyLevel {
+  BEGINNER     // For new learners
+  INTERMEDIATE // For users with basic knowledge
+  ADVANCED     // For experienced users
+}
+
+/// Comment reaction types
+enum ReactionType {
+  LIKE       // General positive reaction
+  HELPFUL    // Content was useful
+  LOVE       // Strong positive reaction
+  INSIGHTFUL // Content provided valuable insight
+  AMAZING    // Exceptional quality content
+}
+
+/// Schema.org markup types for comments
+enum SchemaType {
+  COMMENT  // Standard comment
+  ANSWER   // Answer to a question
+  QUESTION // Question requiring answer
+}
+
+/// HTTP redirect status codes
+enum RedirectStatus {
+  REDIRECT_301 // Permanent redirect
+  REDIRECT_302 // Temporary redirect
+  REDIRECT_307 // Temporary redirect (preserves method)
+}
+
+/// Activity log action types
+enum ActivityAction {
+  CREATE         // Resource creation
+  READ           // Resource read/view
+  UPDATE         // Resource update
+  DELETE         // Resource deletion
+  LOGIN          // User login
+  LOGOUT         // User logout
+  REGISTER       // User registration
+  RESET_PASSWORD // Password reset request
+  VERIFY_EMAIL   // Email verification
+}
+
+/// HTTP request methods
+enum HttpMethod {
+  GET    // Retrieve data
+  POST   // Create data
+  PUT    // Replace data
+  PATCH  // Update data partially
+  DELETE // Delete data
+}
+
+/// Log severity levels
+enum LogSeverity {
+  INFO     // Informational messages
+  WARNING  // Warning messages
+  ERROR    // Error conditions
+  CRITICAL // Critical failures
+}
+
+/// Notification types for user alerts
+enum NotificationType {
+  COMMENT_ON_POST      // New comment on user's post
+  REPLY_TO_COMMENT     // Reply to user's comment
+  MENTION_IN_COMMENT   // User mentioned in a comment
+  REACTION_ON_COMMENT  // Reaction added to user's comment
+  POST_PUBLISHED       // Followed author published new post
+  COMMENT_APPROVED     // User's comment was approved
+  COMMENT_FEATURED     // User's comment was featured
+  SYSTEM_ANNOUNCEMENT  // System-wide announcement
+  MODERATION_ACTION    // Moderation action on user's content
+}
+
+// ==================== AUTHENTICATION MODELS ====================
+
+/// OAuth and external account management for social authentication
+/// Links user accounts with external OAuth providers (Google, GitHub, etc.)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String // OAuth provider type (oauth, oidc, email, credentials)
+  provider          String // Provider name (google, github, twitter, etc.)
+  providerAccountId String // User's ID in the provider's system
+  refresh_token     String? @db.Text // OAuth refresh token for token renewal
+  access_token      String? @db.Text // OAuth access token for API calls
+  expires_at        Int? // Token expiration timestamp (Unix time)
+  token_type        String? // Token type (Bearer, etc.)
+  scope             String? // OAuth scopes granted
+  id_token          String? @db.Text // OpenID Connect ID token
+  session_state     String? // OAuth session state
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId]) // Prevent duplicate provider accounts
+  @@index([userId])
+}
+
+/// Verification tokens for email verification, password reset, and magic links
+/// One-time use tokens with expiration
+model VerificationToken {
+  identifier String // User identifier (email, phone, user ID)
+  token      String   @unique // Cryptographically secure random token
+  expires    DateTime // Token expiration timestamp
+
+  @@unique([identifier, token]) // Composite unique constraint
+  @@index([token])
+}
+
+// ==================== USER MANAGEMENT ====================
+
+/// Core user model for authentication and profile management
+/// Supports both local authentication and OAuth providers
+model User {
+  id              String    @id @default(cuid())
+  username        String    @unique // Unique username for display and @mentions
+  email           String    @unique // Primary email for authentication
+  passwordHash    String // Hashed password (bcrypt/argon2)
+  name            String? // User's display name
+  avatarUrl       String? // Profile picture URL
+  bio             String?   @db.Text // User biography/description
+  location        String? // User's location (city, country)
+  role            UserRole  @default(USER) // User permission level
+  isActive        Boolean   @default(true) // Account status (for soft ban)
+  emailVerifiedAt DateTime? // Email verification timestamp
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  accounts              Account[] // Linked OAuth accounts
+  posts                 Post[] // Created posts
+  comments              Comment[] // Posted comments
+  media                 Media[] // Uploaded media files
+  postViews             PostView[] // Post view history
+  commentReactions      CommentReaction[] // Given reactions
+  commentMentions       CommentMention[] // Mentions in comments
+  moderatedComments     Comment[]              @relation("ModeratedBy") // Comments moderated by this user
+  activityLogs          ActivityLog[] // User activity history
+  notifications         Notification[] // Received notifications
+  notificationPreference NotificationPreference? // Notification settings
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+}
+
+// ==================== NOTIFICATION SYSTEM ====================
+
+/// User notification preferences for controlling alert types
+/// Allows users to customize which notifications they receive
+model NotificationPreference {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // In-app notification preferences
+  commentOnPost     Boolean @default(true) // Notify when someone comments on user's post
+  replyToComment    Boolean @default(true) // Notify when someone replies to user's comment
+  mentionInComment  Boolean @default(true) // Notify when user is mentioned
+  reactionOnComment Boolean @default(true) // Notify when someone reacts to user's comment
+  postPublished     Boolean @default(false) // Notify when followed author publishes
+  commentApproved   Boolean @default(true) // Notify when user's comment is approved
+  commentFeatured   Boolean @default(true) // Notify when user's comment is featured
+  moderationAction  Boolean @default(true) // Notify about moderation actions
+
+  // Email notification preferences
+  emailCommentOnPost     Boolean @default(true) // Email when someone comments on post
+  emailReplyToComment    Boolean @default(true) // Email when someone replies to comment
+  emailMentionInComment  Boolean @default(true) // Email when mentioned
+  emailPostPublished     Boolean @default(false) // Email when followed author publishes
+  emailDigest            Boolean @default(false) // Daily/weekly email digest
+  emailDigestFrequency   String  @default("weekly") // "daily" or "weekly"
+
+  // System notifications (cannot be disabled)
+  systemAnnouncement Boolean @default(true) // Important system announcements
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// User notifications for in-app and email alerts
+/// Tracks all notification events with read/unread status
+model Notification {
+  id               String           @id @default(cuid())
+  userId           String
+  type             NotificationType
+  title            String // Short notification title
+  message          String           @db.Text // Notification message
+
+  // Related entity references (nullable based on notification type)
+  postId           String? // Related post ID
+  commentId        String? // Related comment ID
+  reactionId       String? // Related reaction ID
+  actorUserId      String? // User who triggered the notification
+
+  // Action URL for deep linking
+  actionUrl        String? // URL to navigate when notification is clicked
+
+  // Notification metadata
+  metadata         Json? // Additional contextual data
+
+  // Status tracking
+  isRead           Boolean  @default(false) // Whether user has read this notification
+  readAt           DateTime? // When notification was read
+  isEmailSent      Boolean  @default(false) // Whether email was sent
+  emailSentAt      DateTime? // When email was sent
+
+  // Grouping for batch notifications
+  groupKey         String? // Key for grouping similar notifications
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  expiresAt        DateTime? // Optional expiration for time-sensitive notifications
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead]) // Quick lookup for unread notifications
+  @@index([userId, createdAt(sort: Desc)]) // Recent notifications
+  @@index([type]) // Filter by notification type
+  @@index([groupKey]) // Group similar notifications
+  @@index([expiresAt]) // Cleanup expired notifications
+  @@index([actorUserId]) // Track who triggered notifications
+}
+
+// ==================== CONTENT ORGANIZATION ====================
+
+/// Post categories with hierarchical structure support
+/// Supports parent-child relationships for nested categories
+model Category {
+  id              String   @id @default(cuid())
+  name            String // Category display name
+  slug            String   @unique // URL-friendly identifier
+  description     String?  @db.Text // Category description
+  parentId        String? // Reference to parent category (nullable for root)
+  metaTitle       String? // SEO meta title
+  metaDescription String?  @db.Text // SEO meta description
+  iconUrl         String? // Category icon URL
+  orderPosition   Int      @default(0) // Display order position
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Category[] @relation("CategoryHierarchy")
+  posts    Post[]
+
+  @@index([slug])
+  @@index([parentId])
+  @@index([orderPosition])
+}
+
+/// Post tags for flexible content classification
+/// Many-to-many relationship with posts via PostTag junction table
+model Tag {
+  id              String   @id @default(cuid())
+  name            String // Tag display name
+  slug            String   @unique // URL-friendly identifier
+  description     String?  @db.Text // Tag description
+  metaTitle       String? // SEO meta title
+  metaDescription String?  @db.Text // SEO meta description
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  postTags PostTag[]
+
+  @@index([slug])
+  @@index([name])
+}
+
+// ==================== CONTENT MODELS ====================
+
+/// Core post model for blog posts and tutorials
+/// Supports rich content, SEO optimization, and soft deletion
+model Post {
+  id               String           @id @default(cuid())
+  authorId         String
+  categoryId       String
+  title            String // Post title
+  slug             String           @unique // URL-friendly identifier
+  excerpt          String?          @db.Text // Short summary for listings
+  content          Json // Rich content in JSON format (EditorJS, Lexical, etc.)
+  featuredImageUrl String? // Hero/thumbnail image URL
+  postType         PostType         @default(BLOG)
+  status           PostStatus       @default(DRAFT)
+
+  // SEO optimization fields
+  metaTitle       String? // Custom SEO title (defaults to title)
+  metaDescription String?  @db.Text // Meta description for search engines
+  metaKeywords    String? // Comma-separated keywords
+  ogImageUrl      String? // Open Graph image for social sharing
+  canonicalUrl    String? // Canonical URL to prevent duplicate content
+  schemaMarkup    Json? // Structured data (Schema.org JSON-LD)
+
+  // Content metrics
+  viewCount       Int              @default(0) // Total view count (denormalized)
+  readingTime     Int? // Estimated reading time in minutes
+  difficultyLevel DifficultyLevel? // Tutorial difficulty (null for blogs)
+
+  // Timestamps
+  publishedAt DateTime? // Publication timestamp
+  scheduledAt DateTime? // Scheduled publication time
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete timestamp
+
+  // Relations
+  author          User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category        Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  postTags        PostTag[]
+  comments        Comment[]
+  postViews       PostView[]
+  postSeriesItems PostSeriesItem[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([deletedAt])
+  @@index([postType])
+}
+
+/// Junction table for many-to-many relationship between posts and tags
+model PostTag {
+  id        String   @id @default(cuid())
+  postId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId]) // Prevent duplicate tag assignments
+  @@index([postId])
+  @@index([tagId])
+}
+
+// ==================== COMMENT SYSTEM ====================
+
+/// Advanced comment system with threading, moderation, and guest support
+/// Supports both authenticated users and guest commenters
+model Comment {
+  id       String  @id @default(cuid())
+  postId   String
+  userId   String? // Nullable for guest comments
+  parentId String? // Reference to parent comment for threading
+
+  // Guest commenter information (required if userId is null)
+  authorName  String? // Guest name
+  authorEmail String? // Guest email
+  authorUrl   String? // Guest website URL
+
+  // Content
+  content     Json   // Rich content in JSON format
+  contentText String @db.Text // Plain text for search indexing and SEO
+
+  // Content metrics
+  wordCount Int @default(0) // Word count for analytics
+
+  // Comment status flags
+  isFeatured    Boolean @default(false) // Highlighted by moderators
+  isApproved    Boolean @default(false) // Approved for public display
+  isPinned      Boolean @default(false) // Pinned to top of comment list
+  isAuthorReply Boolean @default(false) // Reply from post author
+
+  // Engagement metrics (denormalized for performance)
+  helpfulCount Int @default(0) // Count of HELPFUL reactions
+  likeCount    Int @default(0) // Count of LIKE reactions
+  replyCount   Int @default(0) // Count of direct replies
+
+  // Moderation
+  spamScore   Int       @default(0) // Anti-spam score (0-100)
+  isEdited    Boolean   @default(false) // Whether comment was edited
+  editedAt    DateTime? // Last edit timestamp
+  moderatedBy String? // Moderator user ID
+  moderatedAt DateTime? // Moderation timestamp
+
+  // Request tracking for spam prevention and analytics
+  ipAddress String? // Commenter IP address
+  userAgent String? // Browser/device information
+  referrer  String? // HTTP referrer
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete timestamp
+
+  // Relations
+  post             Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user             User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  parent           Comment?          @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies          Comment[]         @relation("CommentReplies")
+  moderator        User?             @relation("ModeratedBy", fields: [moderatedBy], references: [id], onDelete: SetNull)
+  commentReactions CommentReaction[]
+  commentMetadata  CommentMetadata?
+  commentMentions  CommentMention[]
+  commentLinks     CommentLink[]
+
+  @@index([postId])
+  @@index([userId])
+  @@index([parentId])
+  @@index([isApproved])
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@fulltext([contentText]) // Full-text search support
+}
+
+/// User reactions to comments (likes, helpful, etc.)
+/// Supports both authenticated and guest reactions
+model CommentReaction {
+  id           String       @id @default(cuid())
+  commentId    String
+  userId       String? // Nullable for guest reactions
+  reactionType ReactionType
+  ipAddress    String? // IP tracking for guest reactions
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([commentId, userId, reactionType]) // Prevent duplicate user reactions
+  @@unique([commentId, ipAddress, reactionType]) // Prevent duplicate guest reactions
+  @@index([commentId])
+  @@index([userId])
+}
+
+/// Extended metadata for comments with Schema.org support
+/// Used for Q&A functionality and structured data
+model CommentMetadata {
+  id        String     @id @default(cuid())
+  commentId String     @unique
+  schemaType            SchemaType // Schema.org type
+  upvoteCount           Int        @default(0) // Upvote count for Q&A
+  downvoteCount         Int        @default(0) // Downvote count for Q&A
+  bestAnswer            Boolean    @default(false) // Marked as best answer
+  authorReputationScore Int        @default(0) // Author reputation score
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  // Relations
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([schemaType])
+}
+
+/// User mentions in comments (@username)
+/// Tracks mentions for notifications
+model CommentMention {
+  id              String   @id @default(cuid())
+  commentId       String
+  mentionedUserId String
+  position        Int // Character position of mention in content
+  notified        Boolean  @default(false) // Notification sent status
+  createdAt       DateTime @default(now())
+
+  // Relations
+  comment       Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  mentionedUser User    @relation(fields: [mentionedUserId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+  @@index([mentionedUserId])
+  @@index([notified])
+}
+
+/// Links extracted from comment content
+/// For analytics and spam detection
+model CommentLink {
+  id           String   @id @default(cuid())
+  commentId    String
+  url          String // Full URL
+  anchorText   String // Link text
+  relAttribute String   @default("nofollow ugc") // HTML rel attribute for SEO
+  isInternal   Boolean  @default(false) // Whether link points to same domain
+  clickCount   Int      @default(0) // Click tracking
+  createdAt    DateTime @default(now())
+
+  // Relations
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+  @@index([url])
+}
+
+// ==================== CONTENT SERIES ====================
+
+/// Post series for grouping related content
+/// Useful for tutorials, courses, or multi-part articles
+model PostSeries {
+  id              String   @id @default(cuid())
+  title           String // Series title
+  slug            String   @unique // URL-friendly identifier
+  description     String?  @db.Text // Series description
+  thumbnailUrl    String? // Series thumbnail image
+  metaTitle       String? // SEO meta title
+  metaDescription String?  @db.Text // SEO meta description
+  orderPosition   Int      @default(0) // Display order
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  postSeriesItems PostSeriesItem[]
+
+  @@index([slug])
+  @@index([orderPosition])
+}
+
+/// Junction table for posts in series with ordering
+model PostSeriesItem {
+  id            String   @id @default(cuid())
+  seriesId      String
+  postId        String
+  orderPosition Int // Position within series
+  createdAt     DateTime @default(now())
+
+  // Relations
+  series PostSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  post   Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([seriesId, postId]) // Prevent duplicate posts in series
+  @@index([seriesId])
+  @@index([postId])
+  @@index([orderPosition])
+}
+
+// ==================== MEDIA MANAGEMENT ====================
+
+/// Media file management for uploads
+/// Stores metadata for images, videos, and other files
+model Media {
+  id        String   @id @default(cuid())
+  userId    String
+  fileName  String // Original filename
+  filePath  String // Server file path
+  fileUrl   String // Public URL
+  mimeType  String // MIME type (image/jpeg, video/mp4, etc.)
+  fileSize  Int // File size in bytes
+  altText   String? // Alternative text for accessibility
+  caption   String?  @db.Text // Media caption
+  width     Int? // Image/video width in pixels
+  height    Int? // Image/video height in pixels
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([mimeType])
+}
+
+// ==================== ANALYTICS ====================
+
+/// Post view tracking for analytics
+/// Records individual page views with user and session data
+model PostView {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String? // Nullable for anonymous views
+  ipAddress String // IP address for unique view counting
+  userAgent String? // Browser/device information
+  referrer  String? // HTTP referrer for traffic source
+  viewedAt  DateTime @default(now())
+
+  // Relations
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([postId])
+  @@index([userId])
+  @@index([viewedAt])
+  @@index([ipAddress])
+}
+
+// ==================== SEO & REDIRECTS ====================
+
+/// URL redirects for SEO and permalink management
+/// Handles old URLs when content is moved or renamed
+model Redirect {
+  id         String         @id @default(cuid())
+  oldUrl     String         @unique // Source URL (deprecated)
+  newUrl     String // Destination URL
+  statusCode RedirectStatus // HTTP redirect status
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([oldUrl])
+}
+
+// ==================== AUDIT & LOGGING ====================
+
+/// Comprehensive activity logging for auditing and analytics
+/// Tracks all significant user actions and system events
+model ActivityLog {
+  id String @id @default(cuid())
+
+  // Actor information
+  userId String? // User who performed the action (null for system actions)
+
+  // Action details
+  action   ActivityAction // Type of action performed
+  entity   String // Entity type (User, Post, Comment, etc.)
+  entityId String? // ID of affected entity
+
+  // Human-readable description
+  description String // e.g., "Created new post: 'Getting Started with Prisma'"
+
+  // Change tracking (primarily for UPDATE actions)
+  oldData Json? // State before change
+  newData Json? // State after change
+
+  // Request context
+  ipAddress String?     @db.Inet // Client IP address
+  userAgent String? // Browser/device information
+  method    HttpMethod? // HTTP method used
+  endpoint  String? // API endpoint called
+
+  // Status and error tracking
+  success      Boolean     @default(true) // Whether action succeeded
+  errorMessage String?     @db.Text // Error details if failed
+  severity     LogSeverity @default(INFO) // Log importance level
+
+  // Performance metrics
+  duration Int? // Execution time in milliseconds
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Optimized indexes for common queries
+  @@index([userId, createdAt(sort: Desc)]) // User activity timeline
+  @@index([entity, entityId]) // Entity-specific logs
+  @@index([action, createdAt(sort: Desc)]) // Action type timeline
+  @@index([createdAt(sort: Desc)]) // Recent activity
+  @@index([success]) // Failed actions for monitoring
+  @@index([userId, action]) // User action types
+  @@index([entity, action]) // Entity action types
+  @@index([severity]) // Severity-based filtering
+}

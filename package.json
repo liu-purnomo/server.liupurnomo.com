@@ -1,6 +1,6 @@
 {
   "name": "server.liupurnomo.com",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A modern, scalable blog platform backend with advanced content management, interactive commenting system, and comprehensive SEO optimization built with TypeScript, Prisma, and PostgreSQL",
   "main": "dist/index.js",
   "type": "module",
@@ -41,5 +41,14 @@
   "bugs": {
     "url": "https://github.com/liu-purnomo/server.liupurnomo.com/issues"
   },
-  "homepage": "https://github.com/liu-purnomo/server.liupurnomo.com#readme"
+  "homepage": "https://github.com/liu-purnomo/server.liupurnomo.com#readme",
+  "prisma": {
+    "configPath": "src/config/prisma.config.ts"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0"
+  }
 }

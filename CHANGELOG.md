@@ -7,11 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-01-23
+
 ### Added
-- GitHub issue templates for bug reports, feature requests, and questions
-- Pull request template with comprehensive checklist
-- Security policy (SECURITY.md) with vulnerability reporting guidelines
-- Issue template configuration with links to documentation and support
+- Complete Prisma database schema with 19 models and 11 enums
+- Comprehensive notification system with user preferences
+  - In-app notifications with multiple event types
+  - Email notification preferences
+  - Notification grouping and expiration support
+- ERD diagram in DBML format for dbdiagram.io visualization
+- Database models:
+  - Authentication: Account, VerificationToken, User
+  - Notifications: NotificationPreference, Notification
+  - Content: Category, Tag, Post, PostTag
+  - Comments: Comment, CommentReaction, CommentMetadata, CommentMention, CommentLink
+  - Series: PostSeries, PostSeriesItem
+  - Media: Media, PostView
+  - System: Redirect, ActivityLog
+- Prisma client dependency (@prisma/client v6.18.0)
+
+### Changed
+- Moved Prisma configuration to src/config/prisma.config.ts for better organization
+- Updated User model: renamed fullName to name for simplicity
+- Added AMAZING reaction type to ReactionType enum
+- Enhanced .gitignore to protect sensitive files (.env, node_modules)
+
+### Features
+- OAuth authentication support with Account model
+- Advanced comment system with threading, moderation, and guest support
+- Notification system with 9 event types
+- SEO optimization fields across content models
+- Soft delete support for posts and comments
+- Comprehensive audit logging with ActivityLog
+- Full-text search support on comment content
+- Hierarchical category structure
+- Post series for multi-part content
 
 ## [0.1.0] - 2025-01-23
 

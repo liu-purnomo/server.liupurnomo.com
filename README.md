@@ -6,7 +6,7 @@
 
 **A modern, scalable blog platform backend with advanced content management and SEO optimization**
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748)](https://www.prisma.io/)
