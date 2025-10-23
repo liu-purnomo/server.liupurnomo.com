@@ -1,0 +1,45 @@
+{
+  "name": "server.liupurnomo.com",
+  "version": "0.1.0",
+  "description": "A modern, scalable blog platform backend with advanced content management, interactive commenting system, and comprehensive SEO optimization built with TypeScript, Prisma, and PostgreSQL",
+  "main": "dist/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "blog",
+    "cms",
+    "api",
+    "rest-api",
+    "typescript",
+    "prisma",
+    "postgresql",
+    "nodejs",
+    "express",
+    "content-management",
+    "seo",
+    "comments-system",
+    "media-management"
+  ],
+  "author": {
+    "name": "Liu Purnomo",
+    "email": "liu@drone.co.id",
+    "url": "https://liupurnomo.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liu-purnomo/server.liupurnomo.com.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liu-purnomo/server.liupurnomo.com/issues"
+  },
+  "homepage": "https://github.com/liu-purnomo/server.liupurnomo.com#readme"
+}
