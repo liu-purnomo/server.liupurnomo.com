@@ -446,7 +446,7 @@ model Comment {
   @@index([isFeatured])
   @@index([createdAt])
   @@index([deletedAt])
-  @@fulltext([contentText]) // Full-text search support
+  @@index([contentText]) // Index for text search (use PostgreSQL tsvector for full-text)
 }
 
 /// User reactions to comments (likes, helpful, etc.)

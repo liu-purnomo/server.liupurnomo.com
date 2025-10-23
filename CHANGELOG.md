@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-10-23
+
+### Added
+- Core server infrastructure with Express.js and TypeScript
+- Authentication utilities (JWT, bcrypt password hashing)
+- Email service integration with Nodemailer
+- Middleware system:
+  - Activity logger for tracking user actions
+  - Rate limiter for API protection
+  - Global error handler with detailed error responses
+- Utility functions for async error handling and custom errors
+- OpenAPI documentation configuration with Scalar UI
+- Prisma database migrations and client setup
+- Development environment configuration (tsconfig.json, .vscode settings)
+
+### Changed
+- Updated .gitignore to exclude build artifacts and logs
+
+### Fixed
+- JWT token type safety issues with expiresIn parameter
+- JWT import statement to use proper namespace import
+
 ## [0.2.0] - 2025-01-23
 
 ### Added

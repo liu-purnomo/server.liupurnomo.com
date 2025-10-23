@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["commenters", "downvote", "fulltext", "upvote"]
+  "cSpell.words": [
+    "commenters",
+    "downvote",
+    "EAUTH",
+    "ECONNECTION",
+    "fulltext",
+    "upvote"
+  ]
 }
