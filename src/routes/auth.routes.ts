@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authController, googleAuthController } from '../controllers/index.js';
+import { authController, googleAuthController, githubAuthController } from '../controllers/index.js';
 import { authenticate, optionalAuth, validate } from '../middlewares/index.js';
 import {
   checkEmailSchema,
@@ -81,6 +81,16 @@ router.get('/google', googleAuthController.initiateGoogleOAuth);
 
 // Google OAuth callback
 router.get('/google/callback', ...googleAuthController.googleOAuthCallback);
+
+/**
+ * GitHub OAuth Routes
+ */
+
+// Initiate GitHub OAuth
+router.get('/github', githubAuthController.initiateGitHubOAuth);
+
+// GitHub OAuth callback
+router.get('/github/callback', ...githubAuthController.githubOAuthCallback);
 
 /**
  * Protected Routes (Authentication required)

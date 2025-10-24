@@ -545,4 +545,57 @@ export const authPaths = {
       },
     },
   },
+  '/api/auth/github': {
+    get: {
+      tags: ['Authentication', 'OAuth'],
+      summary: 'Initiate GitHub OAuth',
+      description: 'Redirects user to GitHub OAuth consent screen',
+      security: [],
+      responses: {
+        302: {
+          description: 'Redirect to GitHub OAuth',
+        },
+      },
+    },
+  },
+  '/api/auth/github/callback': {
+    get: {
+      tags: ['Authentication', 'OAuth'],
+      summary: 'GitHub OAuth callback',
+      description:
+        'Handles GitHub OAuth callback. Auto-registers new users with verified email and sends temporary password. Auto-verifies existing unverified users.',
+      security: [],
+      parameters: [
+        {
+          in: 'query',
+          name: 'code',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Authorization code from GitHub',
+        },
+        {
+          in: 'query',
+          name: 'state',
+          schema: { type: 'string' },
+          description: 'State parameter for CSRF protection',
+        },
+      ],
+      responses: {
+        302: {
+          description: 'Redirect to frontend with auth tokens',
+          headers: {
+            Location: {
+              schema: {
+                type: 'string',
+                example:
+                  'http://localhost:3000/auth/callback?accessToken=xxx&refreshToken=xxx&isNewUser=true',
+              },
+              description:
+                'Frontend URL with accessToken, refreshToken, and isNewUser query parameters',
+            },
+          },
+        },
+      },
+    },
+  },
 };

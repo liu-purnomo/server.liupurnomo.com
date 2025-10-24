@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2025-10-24
+
+### Added
+- **GitHub OAuth 2.0 Authentication** with smart user handling
+  - Auto-registration for new users with verified email
+  - Auto-verification for existing unverified users
+  - Seamless login for existing verified users
+  - Temporary password generation and email notification
+  - Account linking with OAuth provider data
+- **Forgot Password & Reset Password Feature**
+  - `POST /api/auth/forgot-password` - Request password reset email
+  - `POST /api/auth/reset-password` - Reset password with token
+  - Secure reset token generation and validation
+  - Email notification with reset instructions
+  - Token expiration handling (1 hour)
+- **GitHub OAuth Endpoints**
+  - `GET /api/auth/github` - Initiate GitHub OAuth flow
+  - `GET /api/auth/github/callback` - Handle GitHub OAuth callback
+- **Passport.js GitHub Strategy**
+  - GitHub OAuth Strategy configuration
+  - Profile data mapping (username, bio, location)
+  - Avatar URL handling
+- **Email Templates**
+  - GitHub OAuth welcome email with temporary password
+  - Forgot password email with reset link
+  - Reset password confirmation email
+- **Types & Interfaces**
+  - `GitHubProfile` - GitHub user profile interface
+  - `GitHubOAuthUserData` - OAuth user data structure
+  - `ForgotPasswordEmailData` - Forgot password email template data
+  - `ResetPasswordEmailData` - Reset password email template data
+- **Service Layer**
+  - `githubAuth.service.ts` - Complete GitHub OAuth business logic
+  - `forgotPassword()` - Forgot password service function
+  - `resetPassword()` - Reset password service function
+  - Reset token generation and validation
+- **OpenAPI Documentation**
+  - GitHub OAuth endpoint documentation
+  - Forgot password endpoint documentation
+  - Reset password endpoint documentation
+
+### Fixed
+- **Google OAuth Service** - Fixed ES module import issue
+  - Changed from `require()` to ES6 `import` statement
+  - Resolved "require is not defined" error in ESM context
+- **GitHub OAuth Service** - Fixed ES module import issue
+  - Changed from `require()` to ES6 `import` statement
+
+### Changed
+- Enhanced authentication system with password recovery
+- Updated User model to support password reset tokens
+- Improved email notification system
+
+### Security
+- Secure reset token generation with expiration
+- Token validation with timestamp checking
+- Password reset rate limiting
+
 ## [0.5.0] - 2025-10-24
 
 ### Added

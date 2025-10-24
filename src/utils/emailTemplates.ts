@@ -329,3 +329,52 @@ export function googleOAuthPasswordTemplate(
 
   return baseTemplate(content);
 }
+
+/**
+ * GitHub OAuth Temporary Password Template
+ * Sent when user registers via GitHub OAuth
+ */
+export function githubOAuthPasswordTemplate(
+  name: string,
+  email: string,
+  tempPassword: string
+): string {
+  const content = `
+    <div class="content">
+      <h2>Welcome! Your Account is Ready</h2>
+      <p>Hi ${name},</p>
+      <p>You've successfully signed in with GitHub. Your account has been created and your email is verified.</p>
+
+      <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin: 0 0 10px 0; color: #667eea;">Your Account Details</h3>
+        <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+        <p style="margin: 5px 0;"><strong>Email Status:</strong> Verified ✓</p>
+      </div>
+
+      <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+        <h3 style="margin: 0 0 10px 0; color: #856404;">Temporary Password</h3>
+        <p style="margin: 5px 0;">A temporary password has been generated for your account:</p>
+        <div class="code-box">
+          <div class="code" style="font-size: 24px;">${tempPassword}</div>
+        </div>
+      </div>
+
+      <div class="warning">
+        <strong>Security Notice:</strong> Please change this temporary password immediately after your first login.
+        <ul style="margin: 10px 0 0 0;">
+          <li>Log in with your GitHub account or use this temporary password</li>
+          <li>Navigate to your profile settings</li>
+          <li>Change your password to something secure and memorable</li>
+        </ul>
+      </div>
+
+      <p style="text-align: center;">
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/change-password" class="button">
+          Change Password Now
+        </a>
+      </p>
+    </div>
+  `;
+
+  return baseTemplate(content);
+}

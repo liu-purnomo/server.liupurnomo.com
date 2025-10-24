@@ -5,3 +5,4 @@
 
 export * as authService from './auth.service.js';
 export * as googleAuthService from './googleAuth.service.js';
+export * as githubAuthService from './githubAuth.service.js';

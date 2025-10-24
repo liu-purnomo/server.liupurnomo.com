@@ -633,3 +633,4 @@ export async function getCurrentUser(userId: string): Promise<UserResponse> {
 
   return toUserResponse(user);
 }
+

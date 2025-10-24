@@ -240,3 +240,43 @@ export interface GoogleOAuthUserData {
   accessToken: string;
   refreshToken?: string;
 }
+
+// ==================== GITHUB OAUTH TYPES ====================
+
+/**
+ * GitHub OAuth Profile from GitHub
+ */
+export interface GitHubProfile {
+  id: number;
+  login: string;
+  email: string | null;
+  name: string | null;
+  avatar_url?: string;
+  bio?: string;
+  location?: string;
+  html_url?: string;
+}
+
+/**
+ * GitHub OAuth User Data for Processing
+ */
+export interface GitHubOAuthUserData {
+  githubId: string;
+  email: string;
+  name: string;
+  username: string;
+  avatarUrl?: string;
+  bio?: string;
+  location?: string;
+  accessToken: string;
+  refreshToken?: string;
+}
+
+/**
+ * GitHub OAuth Temporary Password Email Template Data
+ */
+export interface GitHubOAuthPasswordEmailData {
+  email: string;
+  name: string;
+  tempPassword: string;
+}

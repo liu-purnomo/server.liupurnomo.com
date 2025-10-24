@@ -1,6 +1,6 @@
 {
   "name": "server.liupurnomo.com",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Liu Purnomo's personal blog - a modern, scalable backend with advanced content management, interactive commenting system, and comprehensive SEO optimization built with TypeScript, Prisma, and PostgreSQL",
   "main": "dist/app.js",
   "type": "module",
@@ -43,7 +43,6 @@
   },
   "homepage": "https://github.com/liu-purnomo/server.liupurnomo.com#readme",
   "devDependencies": {
-    "prisma": "^6.18.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
@@ -52,8 +51,10 @@
     "@types/node": "^24.7.2",
     "@types/nodemailer": "^7.0.2",
     "@types/passport": "^1.0.17",
+    "@types/passport-github2": "^1.2.9",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/sharp": "^0.31.1",
+    "prisma": "^6.18.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
@@ -70,6 +71,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.9",
     "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.16.3",
     "sharp": "^0.34.4",
