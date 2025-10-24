@@ -1,6 +1,6 @@
 {
   "name": "server.liupurnomo.com",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A modern, scalable blog platform backend with advanced content management, interactive commenting system, and comprehensive SEO optimization built with TypeScript, Prisma, and PostgreSQL",
   "main": "dist/app.js",
   "type": "module",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "build": "tsc && tsc-alias",
+    "build": "tsc",
     "start": "node dist/app.js"
   },
   "keywords": [

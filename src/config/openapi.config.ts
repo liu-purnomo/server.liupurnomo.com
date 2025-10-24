@@ -1,8 +1,16 @@
+import { schemas } from './schemas/index.js';
+import { paths } from '../utils/docs/index.js';
+
+/**
+ * OpenAPI Configuration
+ * Main configuration for API documentation
+ */
+
 export const openapiConfig = {
   openapi: '3.1.0',
   info: {
     title: 'Liu Purnomo Blog API',
-    version: '0.3.0',
+    version: '0.4.0',
     description: `
 A modern, scalable blog platform backend with advanced content management,
 interactive commenting system, and comprehensive SEO optimization built with
@@ -10,11 +18,11 @@ TypeScript, Prisma, and PostgreSQL.
 
 ## Features
 
-- 🔐 **Authentication**: OAuth, JWT, Email verification
+- 🔐 **Authentication**: Modern auth flow with 4-digit email verification
 - 📝 **Content Management**: Posts, Categories, Tags, Series
 - 💬 **Comment System**: Threading, Moderation, Reactions
 - 🔔 **Notifications**: In-app & Email alerts
-- 📊 **Analytics**: Post views, User activity logging
+- 📊 **Analytics**: Post views, User activity logging, Bookmarks
 - 🎨 **Media**: File uploads with Sharp optimization
 - 🔍 **SEO**: Meta tags, Schema.org, Redirects
 
@@ -26,6 +34,19 @@ Use the \`Authorization\` header with Bearer token:
 \`\`\`
 Authorization: Bearer <your_jwt_token>
 \`\`\`
+
+## Authentication Flow
+
+1. **Check Email**: POST /api/auth/check-email
+   - If exists → Login
+   - If new → Sends 4-digit code to email
+
+2. **Register** (new users): POST /api/auth/register
+   - Provide: email, username, name, password, verificationToken (4-digit)
+
+3. **Login** (existing users): POST /api/auth/login
+   - Provide: email, password
+   - Returns: accessToken, refreshToken
     `.trim(),
     contact: {
       name: 'Liu Purnomo',
@@ -168,7 +189,7 @@ Authorization: Bearer <your_jwt_token>
           },
           username: {
             type: 'string',
-            example: 'johndoe',
+            example: 'john_doe',
           },
           email: {
             type: 'string',
@@ -258,6 +279,8 @@ Authorization: Bearer <your_jwt_token>
           },
         },
       },
+      // Merge additional schemas from schemas/index.ts
+      ...schemas,
     },
     responses: {
       Unauthorized: {
@@ -329,5 +352,6 @@ Authorization: Bearer <your_jwt_token>
       BearerAuth: [],
     },
   ],
-  paths: {},
+  // Merge all paths from utils/docs/index.ts
+  paths,
 };

@@ -6,3 +6,5 @@
 export * from './errorHandler.js';
 export * from './rateLimiter.js';
 export * from './activityLogger.js';
+export * from './auth.js';
+export * from './validate.js';

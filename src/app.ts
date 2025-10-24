@@ -65,8 +65,9 @@ app.get('/health', (_req: Request, res: Response) => {
   });
 });
 
-// API Routes will be added here
-// app.use('/api', routes);
+// API Routes
+import routes from './routes/index.js';
+app.use('/api', routes);
 
 // 404 Handler - Must be after all routes
 app.use(notFoundHandler);

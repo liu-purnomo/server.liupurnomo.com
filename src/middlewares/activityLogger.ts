@@ -3,24 +3,17 @@ import { prisma } from '../lib/prisma.js';
 import { ActivityAction, HttpMethod, LogSeverity } from '@prisma/client';
 
 /**
- * Extended Request with user info and start time
- */
-export interface RequestWithUser extends Request {
-  user?: {
-    id: string;
-    username?: string;
-    email?: string;
-    role?: string;
-  };
-  startTime?: number;
-}
-
-/**
  * Activity Logger Middleware
  * Logs HTTP requests and user actions to database
  */
+
+// Extend Request to track start time
+interface RequestWithStartTime extends Request {
+  startTime?: number;
+}
+
 export const activityLogger = (
-  req: RequestWithUser,
+  req: RequestWithStartTime,
   res: Response,
   next: NextFunction
 ) => {
@@ -39,7 +32,7 @@ export const activityLogger = (
     const success = res.statusCode < 400;
 
     // Extract user ID if authenticated
-    const userId = req.user?.id || null;
+    const userId = (req.user as any)?.id || (req.user as any)?.userId || null;
 
     // Get IP address (considering proxy)
     const ipAddress =
@@ -212,10 +205,10 @@ function extractEntityId(path: string): string | null {
 /**
  * Generate human-readable description
  */
-function generateDescription(req: RequestWithUser, success: boolean): string {
+function generateDescription(req: Request, success: boolean): string {
   const method = req.method.toUpperCase();
   const path = req.path;
-  const user = req.user?.username || 'Guest';
+  const user = (req.user as any)?.username || 'Guest';
 
   if (!success) {
     return `${user} attempted ${method} ${path} (failed)`;
@@ -279,7 +272,7 @@ export const skipActivityLog = (
  * Only logs if skipActivityLog wasn't called
  */
 export const conditionalActivityLogger = (
-  req: RequestWithUser,
+  req: RequestWithStartTime,
   res: Response,
   next: NextFunction
 ) => {

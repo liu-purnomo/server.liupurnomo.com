@@ -7,6 +7,102 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-10-24
+
+### Added
+- **Complete Authentication System** with modern email-first flow
+  - Email verification with 4-digit verification codes (15-minute expiry)
+  - User registration with token verification
+  - Login with email and password
+  - Forgot password and password reset with secure tokens
+  - Email verification and resend verification endpoints
+  - Change password for authenticated users
+  - Refresh token support for session management
+  - Get current user profile endpoint
+- **Authentication Endpoints** (11 total)
+  - `POST /api/auth/check-email` - Check email existence and send verification code
+  - `POST /api/auth/register` - Complete registration with verification token
+  - `POST /api/auth/login` - Authenticate user
+  - `POST /api/auth/forgot-password` - Request password reset
+  - `POST /api/auth/reset-password` - Reset password with token
+  - `POST /api/auth/verify-email` - Verify email address
+  - `POST /api/auth/resend-verification` - Resend verification code
+  - `POST /api/auth/refresh-token` - Refresh access token
+  - `GET /api/auth/me` - Get current user (protected)
+  - `POST /api/auth/change-password` - Change password (protected)
+  - `POST /api/auth/logout` - Logout user (protected)
+- **Bookmark System** for user content management
+  - Bookmark model with note, tags, favorite, and read status
+  - Relations to User and Post models
+  - Indexes for optimal query performance
+- **Authentication Middleware**
+  - JWT authentication middleware with Bearer token support
+  - Optional authentication for public endpoints
+  - Role-based access control middleware
+  - Email verification requirement middleware
+- **Request Validation System**
+  - Zod v4 validation schemas for all auth endpoints
+  - Strong password validation (min 8 chars, mixed case, numbers, special chars)
+  - Username validation (alphanumeric + underscore, 3-30 chars)
+  - Validation middleware with detailed error messages
+- **Email Templates** with professional HTML design
+  - Registration verification email with 4-digit code
+  - Email verification template
+  - Password reset email with secure token
+  - Welcome email after successful registration
+  - Password changed confirmation email
+  - Responsive design with gradient headers and styled components
+- **Security Features**
+  - Cryptographically secure 4-digit code generation using crypto.randomBytes
+  - Bcrypt password hashing
+  - JWT token encryption/decryption utilities
+  - Token expiration handling
+  - Activity logging for all authentication actions
+- **Type Safety**
+  - Complete TypeScript interfaces for all auth operations
+  - Request/response type definitions
+  - Token payload interfaces
+  - Email template data types
+- **OpenAPI Documentation** properly organized
+  - Separated schemas into `src/config/schemas/auth.schema.ts`
+  - Separated endpoint paths into `src/utils/docs/auth.docs.ts`
+  - Complete API documentation for all 11 auth endpoints
+  - Request/response examples and error responses
+
+### Changed
+- **Simplified JWT utilities** for better maintainability
+  - Reduced from 286 lines to 40 lines of code
+  - Removed complex error handling wrappers
+  - Simplified to three core functions: `encrypt()`, `decrypt()`, `extractTokenFromHeader()`
+  - More straightforward and easier to understand
+- **Removed tsc-alias dependency** from build process
+  - Build script simplified from `tsc && tsc-alias` to just `tsc`
+  - Faster build times and more reliable compilation
+  - All imports use relative paths (no path aliases needed)
+- **Updated activity logger** for compatibility
+  - Support for both `id` and `userId` formats in request user object
+  - More flexible type handling
+- **Updated .gitignore**
+  - Added patterns for better development workflow
+  - Excluded unnecessary build artifacts
+
+### Fixed
+- JWT import issues with namespace imports
+- Zod v4 compatibility (changed `required_error` to `message` parameter)
+- Activity logger type conflicts between different user interfaces
+- Unused function parameters in email templates
+- TypeScript compilation errors across authentication modules
+- Build script reliability without tsc-alias
+
+### Security
+- Implemented secure token generation using Node.js crypto module
+- Password hashing with bcrypt (10 rounds)
+- JWT token encryption for access and refresh tokens
+- 4-digit verification codes with 15-minute expiration
+- Protection against email enumeration in forgot password flow
+- Account deactivation checks during authentication
+- Activity logging for security audit trail
+
 ## [0.3.0] - 2025-10-23
 
 ### Added

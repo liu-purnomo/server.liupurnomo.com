@@ -6,7 +6,7 @@
 
 **A modern, scalable blog platform backend with advanced content management and SEO optimization**
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748)](https://www.prisma.io/)
@@ -45,11 +45,20 @@ A production-ready blog platform backend built with TypeScript, Prisma, and Post
 - Reading time calculation
 - Difficulty level classification
 
-### User System
+### Authentication & User System
+- **Modern email-first authentication flow**
+  - Check email existence before login/register
+  - 4-digit verification codes via email (15-minute expiry)
+  - Secure JWT token-based authentication
+- **Complete auth endpoints**
+  - User registration with email verification
+  - Login with password
+  - Forgot password and reset with token
+  - Change password for authenticated users
+  - Refresh token support
 - Role-based access control (Admin, Author, User)
-- User authentication and authorization
-- Email verification
 - Profile management with avatar support
+- Activity logging for security audit
 
 ### Interactive Comments
 - Nested comment threads
@@ -77,12 +86,13 @@ A production-ready blog platform backend built with TypeScript, Prisma, and Post
 - Full-text search capability
 - Smart URL redirects (301, 302, 307)
 
-### Analytics
+### Analytics & Bookmarks
 - Post view tracking
 - Visitor analytics
 - Referrer tracking
 - User engagement metrics
 - Comment statistics
+- **User bookmarks** with notes, tags, and read status
 
 ---
 

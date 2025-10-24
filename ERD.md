@@ -502,6 +502,27 @@ Table PostView {
   }
 }
 
+Table Bookmark {
+  id varchar [primary key]
+  userId varchar [not null]
+  postId varchar [not null]
+  note text [note: 'Personal note about bookmark']
+  tags varchar[] [note: 'Custom tags for organizing']
+  isFavorite boolean [default: false]
+  isRead boolean [default: false]
+  readAt timestamp
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp [default: `now()`]
+
+  indexes {
+    (userId, postId) [unique]
+    (userId, createdAt)
+    (userId, isFavorite)
+    (userId, isRead)
+    postId
+  }
+}
+
 // ==================== SEO & REDIRECTS ====================
 
 Table Redirect {
@@ -591,6 +612,8 @@ Ref: Media.userId > User.id [delete: cascade]
 // Analytics
 Ref: PostView.postId > Post.id [delete: cascade]
 Ref: PostView.userId > User.id [delete: set null]
+Ref: Bookmark.userId > User.id [delete: cascade]
+Ref: Bookmark.postId > Post.id [delete: cascade]
 
 // Audit
 Ref: ActivityLog.userId > User.id [delete: cascade]
