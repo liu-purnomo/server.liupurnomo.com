@@ -4,9 +4,9 @@
 
 <img src="./public/logo.webp" alt="Liu Purnomo" width="200"/>
 
-**A modern, scalable blog platform backend with advanced content management and SEO optimization**
+**A modern, scalable personal blog backend with advanced content management and SEO optimization**
 
-[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
+[![Version](https://img.shields.io/badge/version-0.5.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748)](https://www.prisma.io/)
@@ -21,7 +21,7 @@
 
 ## Overview
 
-A production-ready blog platform backend built with TypeScript, Prisma, and PostgreSQL. Features comprehensive content management, interactive commenting system, media handling, and advanced SEO capabilities.
+Liu Purnomo's personal blog - a production-ready backend built with TypeScript, Prisma, and PostgreSQL. Features comprehensive content management, interactive commenting system, media handling, and advanced SEO capabilities.
 
 ### Tech Stack
 
@@ -50,9 +50,15 @@ A production-ready blog platform backend built with TypeScript, Prisma, and Post
   - Check email existence before login/register
   - 4-digit verification codes via email (15-minute expiry)
   - Secure JWT token-based authentication
+- **Google OAuth 2.0 Integration**
+  - One-click sign-in with Google
+  - Auto-registration with verified email
+  - Auto-verification for existing users
+  - Temporary password generation
 - **Complete auth endpoints**
   - User registration with email verification
   - Login with password
+  - Google OAuth login/register
   - Forgot password and reset with token
   - Change password for authenticated users
   - Refresh token support

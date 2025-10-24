@@ -9,29 +9,6 @@ import { UnauthorizedError } from '../utils/errors.js';
  */
 
 /**
- * Extended user interface for Request
- * Compatible with both auth and activity logger
- */
-export interface AuthUser {
-  id: string; // For activity logger compatibility (same as userId)
-  userId: string; // Primary user ID from token
-  email: string;
-  username: string;
-  role: string;
-}
-
-/**
- * Extend Express Request to include user
- */
-declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthUser;
-    }
-  }
-}
-
-/**
  * Authenticate Middleware
  * Verifies JWT token and attaches user to request
  */

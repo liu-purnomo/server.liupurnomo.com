@@ -10,21 +10,22 @@ export const openapiConfig = {
   openapi: '3.1.0',
   info: {
     title: 'Liu Purnomo Blog API',
-    version: '0.4.0',
+    version: '0.5.0',
     description: `
-A modern, scalable blog platform backend with advanced content management,
+Liu Purnomo's personal blog - a modern, scalable backend with advanced content management,
 interactive commenting system, and comprehensive SEO optimization built with
 TypeScript, Prisma, and PostgreSQL.
 
 ## Features
 
-- 🔐 **Authentication**: Modern auth flow with 4-digit email verification
+- 🔐 **Authentication**: Modern auth flow with 4-digit email verification & Google OAuth
 - 📝 **Content Management**: Posts, Categories, Tags, Series
 - 💬 **Comment System**: Threading, Moderation, Reactions
 - 🔔 **Notifications**: In-app & Email alerts
 - 📊 **Analytics**: Post views, User activity logging, Bookmarks
 - 🎨 **Media**: File uploads with Sharp optimization
 - 🔍 **SEO**: Meta tags, Schema.org, Redirects
+- 🌐 **OAuth**: Google OAuth 2.0 integration
 
 ## Getting Started
 

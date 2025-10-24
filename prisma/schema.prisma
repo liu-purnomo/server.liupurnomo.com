@@ -1,5 +1,5 @@
 // ==================== PRISMA CONFIGURATION ====================
-// Prisma Schema for Blog Platform
+// Prisma Schema for Liu Purnomo Blog
 // Documentation: https://pris.ly/d/prisma-schema
 
 generator client {

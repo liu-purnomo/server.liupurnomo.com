@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authController } from '../controllers/index.js';
+import { authController, googleAuthController } from '../controllers/index.js';
 import { authenticate, optionalAuth, validate } from '../middlewares/index.js';
 import {
   checkEmailSchema,
@@ -71,6 +71,16 @@ router.post(
   validate(refreshTokenSchema),
   authController.refreshToken
 );
+
+/**
+ * Google OAuth Routes
+ */
+
+// Initiate Google OAuth
+router.get('/google', googleAuthController.initiateGoogleOAuth);
+
+// Google OAuth callback
+router.get('/google/callback', ...googleAuthController.googleOAuthCallback);
 
 /**
  * Protected Routes (Authentication required)

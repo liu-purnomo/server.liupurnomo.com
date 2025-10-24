@@ -114,7 +114,7 @@ export async function checkEmail(email: string): Promise<CheckEmailResponse> {
   // Send verification email
   const emailResult = await sendEmail({
     to: email,
-    subject: 'Verify Your Email - Blog Platform',
+    subject: 'Verify Your Email - Liu Purnomo',
     html: registrationVerificationTemplate(
       verificationToken,
       TOKEN_EXPIRATION_MINUTES
@@ -218,7 +218,7 @@ export async function register(data: {
   // Send welcome email (don't await, send in background)
   sendEmail({
     to: email,
-    subject: 'Welcome to Blog Platform! 🎉',
+    subject: 'Welcome to Liu Purnomo! 🎉',
     html: welcomeEmailTemplate(name, username),
   }).catch((error) => {
     console.error('Failed to send welcome email:', error);
@@ -305,7 +305,7 @@ export async function forgotPassword(email: string): Promise<{ message: string }
   // Send reset email
   const emailResult = await sendEmail({
     to: email,
-    subject: 'Reset Your Password - Blog Platform',
+    subject: 'Reset Your Password - Liu Purnomo',
     html: passwordResetTemplate(
       user.name || user.username,
       resetToken,
@@ -391,7 +391,7 @@ export async function resetPassword(data: {
   // Send confirmation email (don't await)
   sendEmail({
     to: email,
-    subject: 'Password Changed - Blog Platform',
+    subject: 'Password Changed - Liu Purnomo',
     html: passwordChangedTemplate(user.name || user.username),
   }).catch((error) => {
     console.error('Failed to send password changed email:', error);
@@ -515,7 +515,7 @@ export async function resendVerification(email: string): Promise<{ message: stri
   // Send verification email
   const emailResult = await sendEmail({
     to: email,
-    subject: 'Verify Your Email - Blog Platform',
+    subject: 'Verify Your Email - Liu Purnomo',
     html: emailVerificationTemplate(
       user.name || user.username,
       verificationToken,
@@ -569,7 +569,7 @@ export async function changePassword(
   // Send confirmation email (don't await)
   sendEmail({
     to: user.email,
-    subject: 'Password Changed - Blog Platform',
+    subject: 'Password Changed - Liu Purnomo',
     html: passwordChangedTemplate(user.name || user.username),
   }).catch((error) => {
     console.error('Failed to send password changed email:', error);

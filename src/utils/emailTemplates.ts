@@ -14,7 +14,7 @@ function baseTemplate(content: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog Platform</title>
+  <title>Liu Purnomo</title>
   <style>
     body {
       margin: 0;
@@ -105,13 +105,13 @@ function baseTemplate(content: string): string {
 <body>
   <div class="container">
     <div class="header">
-      <h1>📝 Blog Platform</h1>
+      <h1>📝 Liu Purnomo</h1>
     </div>
     ${content}
     <div class="footer">
-      <p>This is an automated email from Blog Platform.</p>
+      <p>This is an automated email from Liu Purnomo.</p>
       <p>If you didn't request this, please ignore this email.</p>
-      <p>&copy; ${new Date().getFullYear()} Blog Platform. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} Liu Purnomo. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -130,7 +130,7 @@ export function registrationVerificationTemplate(
   const content = `
     <div class="content">
       <h2>Welcome! Verify Your Email</h2>
-      <p>Thank you for starting your registration with Blog Platform.</p>
+      <p>Thank you for starting your registration with Liu Purnomo.</p>
       <p>To complete your registration, please use the verification code below:</p>
 
       <div class="code-box">
@@ -143,7 +143,7 @@ export function registrationVerificationTemplate(
       <p>Enter this code on the registration page to continue setting up your account.</p>
 
       <div class="warning">
-        <strong>Security Notice:</strong> Never share this code with anyone. Blog Platform staff will never ask for this code.
+        <strong>Security Notice:</strong> Never share this code with anyone. Liu Purnomo staff will never ask for this code.
       </div>
     </div>
   `;
@@ -164,7 +164,7 @@ export function emailVerificationTemplate(
     <div class="content">
       <h2>Verify Your Email Address</h2>
       <p>Hi ${name},</p>
-      <p>Please verify your email address to activate your account and start using Blog Platform.</p>
+      <p>Please verify your email address to activate your account and start using Liu Purnomo.</p>
 
       <div class="code-box">
         <div class="code">${token}</div>
@@ -227,7 +227,7 @@ export function welcomeEmailTemplate(
 ): string {
   const content = `
     <div class="content">
-      <h2>Welcome to Blog Platform! 🎉</h2>
+      <h2>Welcome to Liu Purnomo! 🎉</h2>
       <p>Hi ${name},</p>
       <p>Congratulations! Your account has been successfully created.</p>
 
@@ -275,6 +275,55 @@ export function passwordChangedTemplate(name: string): string {
       <div class="warning">
         <strong>Important:</strong> If you didn't make this change, please contact our support team immediately and secure your account.
       </div>
+    </div>
+  `;
+
+  return baseTemplate(content);
+}
+
+/**
+ * Google OAuth Temporary Password Template
+ * Sent when user registers via Google OAuth
+ */
+export function googleOAuthPasswordTemplate(
+  name: string,
+  email: string,
+  tempPassword: string
+): string {
+  const content = `
+    <div class="content">
+      <h2>Welcome! Your Account is Ready</h2>
+      <p>Hi ${name},</p>
+      <p>You've successfully signed in with Google. Your account has been created and your email is verified.</p>
+
+      <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin: 0 0 10px 0; color: #667eea;">Your Account Details</h3>
+        <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+        <p style="margin: 5px 0;"><strong>Email Status:</strong> Verified ✓</p>
+      </div>
+
+      <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+        <h3 style="margin: 0 0 10px 0; color: #856404;">Temporary Password</h3>
+        <p style="margin: 5px 0;">A temporary password has been generated for your account:</p>
+        <div class="code-box">
+          <div class="code" style="font-size: 24px;">${tempPassword}</div>
+        </div>
+      </div>
+
+      <div class="warning">
+        <strong>Security Notice:</strong> Please change this temporary password immediately after your first login.
+        <ul style="margin: 10px 0 0 0;">
+          <li>Log in with your Google account or use this temporary password</li>
+          <li>Navigate to your profile settings</li>
+          <li>Change your password to something secure and memorable</li>
+        </ul>
+      </div>
+
+      <p style="text-align: center;">
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/change-password" class="button">
+          Change Password Now
+        </a>
+      </p>
     </div>
   `;
 

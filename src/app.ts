@@ -4,7 +4,12 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import { createServer } from 'http';
 import { openapiConfig } from './config/openapi.config.js';
-import { errorHandler, notFoundHandler, apiLimiter } from './middlewares/index.js';
+import passport from './config/passport.config.js';
+import {
+  apiLimiter,
+  errorHandler,
+  notFoundHandler,
+} from './middlewares/index.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -17,6 +22,9 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Initialize Passport
+app.use(passport.initialize());
 
 // Global rate limiter for all API routes
 app.use('/api', apiLimiter);
@@ -31,6 +39,7 @@ app.use(
     theme: 'purple',
     content: openapiConfig,
     favicon: '/favicon.ico',
+    pageTitle: 'Liu Purnomo API Documentation',
   })
 );
 

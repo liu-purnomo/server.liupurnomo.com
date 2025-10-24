@@ -203,3 +203,40 @@ export interface WelcomeEmailData {
   name: string;
   username: string;
 }
+
+/**
+ * Google OAuth Temporary Password Email Template Data
+ */
+export interface GoogleOAuthPasswordEmailData {
+  email: string;
+  name: string;
+  tempPassword: string;
+}
+
+// ==================== GOOGLE OAUTH TYPES ====================
+
+/**
+ * Google OAuth Profile from Google
+ */
+export interface GoogleProfile {
+  id: string;
+  email: string;
+  verified_email: boolean;
+  name: string;
+  given_name: string;
+  family_name?: string;
+  picture?: string;
+  locale?: string;
+}
+
+/**
+ * Google OAuth User Data for Processing
+ */
+export interface GoogleOAuthUserData {
+  googleId: string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+  accessToken: string;
+  refreshToken?: string;
+}

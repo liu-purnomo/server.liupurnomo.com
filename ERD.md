@@ -1,5 +1,5 @@
-// ==================== BLOG PLATFORM ERD ====================
-// Database Schema for Blog Platform with Advanced Features
+// ==================== LIU PURNOMO BLOG ERD ====================
+// Database Schema for Liu Purnomo Blog with Advanced Features
 // Generated from Prisma Schema
 // Docs: https://dbml.dbdiagram.io/docs
 

@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-10-24
+
+### Added
+- **Google OAuth 2.0 Authentication** with smart user handling
+  - Auto-registration for new users with verified email
+  - Auto-verification for existing unverified users
+  - Seamless login for existing verified users
+  - Temporary password generation and email notification
+  - Account linking with OAuth provider data
+- **OAuth Endpoints**
+  - `GET /api/auth/google` - Initiate Google OAuth flow
+  - `GET /api/auth/google/callback` - Handle Google OAuth callback
+- **Passport.js Integration**
+  - Google OAuth Strategy configuration
+  - Session serialization/deserialization
+  - Secure token handling
+- **Email Template**
+  - Google OAuth welcome email with temporary password
+  - Instructions for password change
+- **Types & Interfaces**
+  - `GoogleProfile` - Google user profile interface
+  - `GoogleOAuthUserData` - OAuth user data structure
+  - `GoogleOAuthPasswordEmailData` - Email template data
+  - Express type extensions for OAuth user data
+- **Service Layer**
+  - `googleAuth.service.ts` - Complete OAuth business logic
+  - Random password generator with security requirements
+  - Username generator from email
+  - Smart user registration/login flow
+- **OpenAPI Documentation**
+  - Complete OAuth endpoint documentation
+  - OAuth tag for better organization
+  - Redirect flow documentation
+
+### Changed
+- Updated authentication features to include OAuth support
+- Enhanced User model handling for OAuth accounts
+- Improved type safety with Express type extensions
+
+### Security
+- Secure random password generation (16 chars, mixed case, numbers, special chars)
+- Email-verified accounts by default for OAuth users
+- Temporary password sent to user email
+- OAuth token storage in Account model
+
 ## [0.4.0] - 2025-10-24
 
 ### Added

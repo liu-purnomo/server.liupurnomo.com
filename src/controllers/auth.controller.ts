@@ -55,7 +55,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(201).json({
     
-    message: 'Registration successful. Welcome to Blog Platform!',
+    message: 'Registration successful. Welcome to Liu Purnomo!',
     data: result,
   });
 });
