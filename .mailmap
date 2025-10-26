@@ -1,0 +1,11 @@
+# Git Mailmap
+# Maps all contributors to canonical identity
+# This prevents unwanted co-authors from appearing in GitHub contributors
+
+# Map all commits to Liu Purnomo
+Liu Purnomo <hi@liupurnomo.com>
+
+# Block Claude from appearing as contributor
+# Map any Claude commits to Liu Purnomo
+Liu Purnomo <hi@liupurnomo.com> Claude <noreply@anthropic.com>
+Liu Purnomo <hi@liupurnomo.com> claude <noreply@anthropic.com>
