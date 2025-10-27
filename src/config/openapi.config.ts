@@ -10,7 +10,7 @@ export const openapiConfig = {
   openapi: '3.1.0',
   info: {
     title: 'Liu Purnomo Blog API',
-    version: '0.6.0',
+    version: '0.7.0',
     description: `
 Liu Purnomo's personal blog - a modern, scalable backend with advanced content management,
 interactive commenting system, and comprehensive SEO optimization built with
@@ -121,66 +121,6 @@ Authorization: Bearer <your_jwt_token>
       },
     },
     schemas: {
-      Error: {
-        type: 'object',
-        properties: {
-          success: {
-            type: 'boolean',
-            example: false,
-          },
-          message: {
-            type: 'string',
-            example: 'Error message',
-          },
-          errors: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                field: { type: 'string' },
-                message: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-      SuccessResponse: {
-        type: 'object',
-        properties: {
-          success: {
-            type: 'boolean',
-            example: true,
-          },
-          message: {
-            type: 'string',
-            example: 'Operation successful',
-          },
-          data: {
-            type: 'object',
-          },
-        },
-      },
-      PaginationMeta: {
-        type: 'object',
-        properties: {
-          total: {
-            type: 'integer',
-            example: 100,
-          },
-          page: {
-            type: 'integer',
-            example: 1,
-          },
-          limit: {
-            type: 'integer',
-            example: 10,
-          },
-          totalPages: {
-            type: 'integer',
-            example: 10,
-          },
-        },
-      },
       User: {
         type: 'object',
         properties: {

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { authService } from '../services/index.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { logActivity } from '../utils/activityLogger.js';
+import { asyncHandler, logActivity, sendSuccess, sendCreated } from '../utils/index.js';
 
 /**
  * Authentication Controllers
@@ -17,11 +16,7 @@ export const checkEmail = asyncHandler(async (req: Request, res: Response) => {
 
   const result = await authService.checkEmail(email);
 
-  res.status(200).json({
-    
-    message: result.message,
-    data: result,
-  });
+  return sendSuccess(res, 200, result.message, result);
 });
 
 /**
@@ -46,18 +41,14 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     entity: 'User',
     entityId: result.user.id,
     description: `User registered: ${username}`,
-    
-    
+
+
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
-    
+
   });
 
-  res.status(201).json({
-    
-    message: 'Registration successful. Welcome to Liu Purnomo!',
-    data: result,
-  });
+  return sendCreated(res, 'Registration successful. Welcome to Liu Purnomo!', result);
 });
 
 /**
@@ -76,18 +67,14 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     entity: 'User',
     entityId: result.user.id,
     description: `User logged in: ${result.user.username}`,
-    
-    
+
+
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
-    
+
   });
 
-  res.status(200).json({
-    
-    message: 'Login successful. Welcome back!',
-    data: result,
-  });
+  return sendSuccess(res, 200, 'Login successful. Welcome back!', result);
 });
 
 /**
@@ -100,10 +87,7 @@ export const forgotPassword = asyncHandler(
 
     const result = await authService.forgotPassword(email);
 
-    res.status(200).json({
-      
-      message: result.message,
-    });
+    return sendSuccess(res, 200, result.message);
   }
 );
 
@@ -121,10 +105,7 @@ export const resetPassword = asyncHandler(
       newPassword,
     });
 
-    res.status(200).json({
-      
-      message: result.message,
-    });
+    return sendSuccess(res, 200, result.message);
   }
 );
 
@@ -144,19 +125,15 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
     entity: 'User',
     entityId: result.user.id,
     description: `Email verified: ${email}`,
-    
-    
+
+
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
-    
+
   });
 
-  res.status(200).json({
-    
-    message: result.message,
-    data: {
-      user: result.user,
-    },
+  return sendSuccess(res, 200, result.message, {
+    user: result.user,
   });
 });
 
@@ -170,10 +147,7 @@ export const resendVerification = asyncHandler(
 
     const result = await authService.resendVerification(email);
 
-    res.status(200).json({
-      
-      message: result.message,
-    });
+    return sendSuccess(res, 200, result.message);
   }
 );
 
@@ -198,17 +172,14 @@ export const changePassword = asyncHandler(
       entity: 'User',
       entityId: userId,
       description: 'User changed password',
-      
-      
+
+
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
-      
+
     });
 
-    res.status(200).json({
-      
-      message: result.message,
-    });
+    return sendSuccess(res, 200, result.message);
   }
 );
 
@@ -222,11 +193,7 @@ export const refreshToken = asyncHandler(
 
     const result = await authService.refreshAccessToken(refreshToken);
 
-    res.status(200).json({
-      
-      message: 'Token refreshed successfully',
-      data: result,
-    });
+    return sendSuccess(res, 200, 'Token refreshed successfully', result);
   }
 );
 
@@ -240,12 +207,8 @@ export const getCurrentUser = asyncHandler(
 
     const user = await authService.getCurrentUser(userId);
 
-    res.status(200).json({
-      
-      message: 'User retrieved successfully',
-      data: {
-        user,
-      },
+    return sendSuccess(res, 200, 'User retrieved successfully', {
+      user,
     });
   }
 );
@@ -265,16 +228,13 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
       entity: 'User',
       entityId: userId,
       description: 'User logged out',
-      
-      
+
+
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
-      
+
     });
   }
 
-  res.status(200).json({
-    
-    message: 'Logout successful. Please remove tokens from client.',
-  });
+  return sendSuccess(res, 200, 'Logout successful. Please remove tokens from client.');
 });

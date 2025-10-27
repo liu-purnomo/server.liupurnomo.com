@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2025-10-27
+
+### Added
+- **Standardized API Response Structure** across all endpoints
+  - Unified response format with `success`, `message`, `data`, `pagination`, `timestamp`, and `path` fields
+  - Consistent error response format with detailed error objects
+  - TypeScript types for all response structures (`ApiResponse`, `SuccessResponse`, `ErrorResponse`)
+  - Pagination metadata with helper flags (`hasNextPage`, `hasPreviousPage`)
+- **Response Utility Functions** (`src/utils/apiResponse.ts`)
+  - `sendSuccess()` - Success response (200)
+  - `sendCreated()` - Created response (201)
+  - `sendPaginatedSuccess()` - Paginated list response
+  - `sendError()` - Generic error response
+  - `sendBadRequest()` - Bad request error (400)
+  - `sendUnauthorized()` - Unauthorized error (401)
+  - `sendForbidden()` - Forbidden error (403)
+  - `sendNotFound()` - Not found error (404)
+  - `sendConflict()` - Conflict error (409)
+  - `sendValidationError()` - Validation error (422)
+  - `sendInternalError()` - Internal server error (500)
+  - `calculatePagination()` - Pagination metadata calculator
+- **TypeScript Type Definitions** (`src/types/response.types.ts`)
+  - `ApiResponse<T>` - Generic API response interface
+  - `SuccessResponse<T>` - Typed success response
+  - `ErrorResponse` - Error response type
+  - `PaginationMeta` - Pagination metadata interface
+  - `ApiError` - Error detail object
+  - `PaginationOptions` - Query pagination options
+  - `PaginatedResult<T>` - Paginated data result type
+- **OpenAPI Schemas** (`src/config/schemas/common.schema.ts`)
+  - `SuccessResponse` - Standard success response schema
+  - `ErrorResponse` - Standard error response schema
+  - `ApiError` - Error detail schema
+  - `PaginationMeta` - Pagination metadata schema
+  - `ValidationErrorResponse` - 422 validation error schema
+  - `UnauthorizedResponse` - 401 unauthorized schema
+  - `ForbiddenResponse` - 403 forbidden schema
+  - `NotFoundResponse` - 404 not found schema
+  - `InternalErrorResponse` - 500 internal error schema
+
+### Changed
+- **All Authentication Controller Endpoints** refactored to use standardized response helpers
+  - `POST /api/auth/check-email` - Now returns standardized response
+  - `POST /api/auth/register` - Uses `sendCreated()` for 201 response
+  - `POST /api/auth/login` - Standardized success response
+  - `POST /api/auth/forgot-password` - Standardized response
+  - `POST /api/auth/reset-password` - Standardized response
+  - `POST /api/auth/verify-email` - Standardized response
+  - `POST /api/auth/resend-verification` - Standardized response
+  - `POST /api/auth/change-password` - Standardized response
+  - `POST /api/auth/refresh-token` - Standardized response
+  - `GET /api/auth/me` - Standardized response
+  - `POST /api/auth/logout` - Standardized response
+- **OpenAPI Configuration** (`src/config/openapi.config.ts`)
+  - Removed duplicate schema definitions (Error, SuccessResponse, PaginationMeta)
+  - Now imports common schemas from `common.schema.ts`
+
+### Documentation
+- **Development Instruction** (`helpers/DEVELOPMENT-INSTRUCTION.md`)
+  - Added comprehensive API Response Standard section
+  - Response structure examples (success and error)
+  - Complete list of response helper functions with usage examples
+  - Pagination helper documentation
+  - Best practices for using standardized responses
+
 ## [0.6.0] - 2025-10-24
 
 ### Added

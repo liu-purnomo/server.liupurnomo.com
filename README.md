@@ -6,7 +6,7 @@
 
 **A modern, scalable personal blog backend with advanced content management and SEO optimization**
 
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748)](https://www.prisma.io/)
@@ -132,10 +132,36 @@ cp .env.example .env
 
 Edit the `.env` file with your configuration:
 ```env
-DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
-PORT=3000
+# Server Configuration
 NODE_ENV="development"
+BASE_URL="http://localhost:4000"
+FRONTEND_URL="http://localhost:3000"
+PORT=4000
+
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
+
+# JWT Configuration
 JWT_SECRET="your-secret-key"
+JWT_EXPIRATION="30d"
+
+# Bcrypt Configuration
+BCRYPT_SALT_ROUNDS="10"
+
+# Email Configuration (Gmail SMTP)
+SMTP_EMAIL="your-email@gmail.com"
+SMTP_PASS="your-app-password"
+SMTP_FROM="Your Name <your-email@gmail.com>"
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GOOGLE_CALLBACK_URL="http://localhost:4000/api/auth/google/callback"
+
+# GitHub OAuth Configuration
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+GITHUB_CALLBACK_URL="http://localhost:4000/api/auth/github/callback"
 ```
 
 4. Set up the database
