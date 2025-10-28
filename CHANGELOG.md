@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2025-10-29
+
+### Added
+- **Activity Log Management System (Admin Only)**
+  - Complete RUD (Read, Update, Delete) operations for activity logs
+  - GET `/api/activity-logs` - Retrieve paginated activity logs with advanced filtering
+  - GET `/api/activity-logs/:id` - Get detailed activity log by ID
+  - GET `/api/activity-logs/stats` - Get statistical data about activity logs
+  - PATCH `/api/activity-logs/:id` - Update activity log metadata (severity, description, error message)
+  - DELETE `/api/activity-logs/:id` - Delete single activity log
+  - POST `/api/activity-logs/bulk-delete` - Bulk delete logs based on filters for cleanup operations
+  - Advanced filtering: userId, action, entity, entityId, success status, severity, HTTP method, date range, search
+  - Sort options: createdAt, action, entity, severity, duration, userId
+  - Statistics grouping: by action, severity, entity with average duration calculation
+  - Comprehensive OpenAPI documentation with detailed request/response schemas
+  - All endpoints protected with admin-only role middleware
+
+### Security
+- **Role-Based Access Control Enhancement**
+  - Activity log endpoints restricted to ADMIN role only
+  - Enhanced authorization checks for sensitive log operations
+  - Activity logging for all administrative actions (update, delete operations)
+
 ## [0.11.0] - 2025-10-29
 
 ### Added

@@ -3,6 +3,7 @@
  * Central export for all validation schemas
  */
 
+export * from './activity-log.validator.js';
 export * from './auth.validator.js';
 export * from './category.validator.js';
 export * from './tag.validator.js';

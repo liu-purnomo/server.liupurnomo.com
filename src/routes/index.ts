@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import activityLogRoutes from './activity-log.routes.js';
 import authRoutes from './auth.routes.js';
-import userRoutes from './user.routes.js';
 import categoryRoutes from './category.routes.js';
 import tagRoutes from './tag.routes.js';
+import userRoutes from './user.routes.js';
 
 /**
  * API Routes Index
@@ -12,9 +13,10 @@ import tagRoutes from './tag.routes.js';
 const router = Router();
 
 // Mount route modules
+router.use('/activity-logs', activityLogRoutes);
 router.use('/auth', authRoutes);
-router.use('/users', userRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/tags', tagRoutes);
+router.use('/users', userRoutes);
 
 export default router;
