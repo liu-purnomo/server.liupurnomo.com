@@ -7,6 +7,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2025-10-28
+
+### Added
+- **Category CRUD Feature**
+  - Complete Category management with hierarchical structure support
+  - Category icon upload functionality with automatic file handling and validation
+  - Parent-child relationship support for nested category organization
+  - Custom ordering with `orderPosition` field for manual sorting
+  - SEO-optimized with meta title and description fields
+  - Slug-based category identification for clean URLs
+  - OpenAPI documentation for all Category endpoints
+  - RBAC enforcement: ADMIN and AUTHOR can Create, Update, Delete; all users can Read
+- **Category API Endpoints** (`src/routes/category.routes.ts`)
+  - `GET /api/categories` - Get paginated list of categories
+  - `GET /api/categories/tree` - Get hierarchical category tree structure
+  - `GET /api/categories/:id` - Get category by ID
+  - `GET /api/categories/slug/:slug` - Get category by slug
+  - `POST /api/categories` - Create new category (ADMIN/AUTHOR only)
+  - `PATCH /api/categories/:id` - Update category (ADMIN/AUTHOR only)
+  - `DELETE /api/categories/:id` - Delete category (ADMIN/AUTHOR only)
+  - `DELETE /api/categories/:id/icon` - Delete category icon (ADMIN/AUTHOR only)
+- **Category Service** (`src/services/category.service.ts`)
+  - `getAllCategories()` - Paginated category list with search and filtering
+  - `getCategoryTree()` - Build and return hierarchical category structure
+  - `getCategoryById()` - Get single category with post count
+  - `getCategoryBySlug()` - Get category by slug identifier
+  - `createCategory()` - Create category with validation and icon upload
+  - `updateCategory()` - Update category with icon replacement support
+  - `deleteCategory()` - Delete category with cascade handling
+  - `deleteCategoryIcon()` - Remove category icon file
+- **Category Validators** (`src/validators/category.validator.ts`)
+  - Zod schemas for all category operations
+  - Name validation: 1-100 characters
+  - Slug validation: lowercase, alphanumeric with hyphens
+  - Description validation: up to 500 characters
+  - Order position validation: positive integers
+  - Meta fields validation for SEO optimization
+- **Category File Upload** (`src/middlewares/upload.ts`)
+  - Multer configuration for category icon uploads
+  - File type validation: PNG, JPG, JPEG, WebP, SVG, GIF
+  - File size limit: 2MB maximum
+  - Automatic storage in `uploads/categories/` directory
+  - Proper error handling with custom error messages
+- **Tag CRUD Feature**
+  - Complete Tag management system for content organization
+  - Simpler structure compared to Category (no icon, no parent, no ordering)
+  - SEO-optimized with meta title and description fields
+  - Slug-based tag identification for clean URLs
+  - OpenAPI documentation for all Tag endpoints
+  - RBAC enforcement: ADMIN and AUTHOR can Create, Update, Delete; all users can Read
+- **Tag API Endpoints** (`src/routes/tag.routes.ts`)
+  - `GET /api/tags` - Get paginated list of tags
+  - `GET /api/tags/:id` - Get tag by ID
+  - `GET /api/tags/slug/:slug` - Get tag by slug
+  - `POST /api/tags` - Create new tag (ADMIN/AUTHOR only)
+  - `PATCH /api/tags/:id` - Update tag (ADMIN/AUTHOR only)
+  - `DELETE /api/tags/:id` - Delete tag (ADMIN/AUTHOR only)
+- **Tag Service** (`src/services/tag.service.ts`)
+  - `getAllTags()` - Paginated tag list with search functionality
+  - `getTagById()` - Get single tag with post count
+  - `getTagBySlug()` - Get tag by slug identifier
+  - `createTag()` - Create tag with duplicate slug validation
+  - `updateTag()` - Update tag with validation
+  - `deleteTag()` - Delete tag with assigned posts validation
+- **Tag Validators** (`src/validators/tag.validator.ts`)
+  - Zod schemas for all tag operations
+  - Name validation: 1-50 characters
+  - Slug validation: lowercase, alphanumeric with hyphens
+  - Description validation: up to 500 characters
+  - Meta fields validation for SEO optimization
+
+### Changed
+- **Upload Middleware** (`src/middlewares/upload.ts`)
+  - Added `uploadCategoryIcon` multer configuration for category icon uploads
+  - Enhanced file validation for image uploads
+  - Exported `handleMulterError` for consistent error handling
+
+### Fixed
+- **Category Validator Parameters**
+  - Fixed params validation in `getCategoryByIdValidator` to work correctly with validate() middleware
+  - Fixed params validation in `getCategoryBySlugValidator`
+  - Removed redundant params wrapper that caused validation errors during delete operations
+
+### Security
+- File upload validation prevents malicious file types
+- File size limits prevent DoS attacks via large uploads
+- RBAC enforcement ensures only authorized users can manage categories and tags
+- Proper validation prevents SQL injection and XSS attacks through slug and name fields
+
 ## [0.8.0] - 2025-10-28
 
 ### Added

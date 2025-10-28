@@ -58,6 +58,17 @@ export const uploadAvatar = multer({
 }).single('avatar');
 
 /**
+ * Multer upload instance for category icon
+ */
+export const uploadCategoryIcon = multer({
+  storage,
+  fileFilter: imageFileFilter,
+  limits: {
+    fileSize: MAX_FILE_SIZE,
+  },
+}).single('icon');
+
+/**
  * Multer upload instance for multiple images
  */
 export const uploadImages = multer({
