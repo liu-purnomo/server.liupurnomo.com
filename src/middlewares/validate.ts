@@ -24,7 +24,23 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
     try {
       // Validate specific part of request against schema
       const dataToValidate = req[source];
-      await schema.parseAsync(dataToValidate);
+      const parsedData = await schema.parseAsync(dataToValidate);
+
+      // Replace request data with parsed/coerced values
+      // Clear existing properties and assign new ones
+      if (parsedData && typeof parsedData === 'object') {
+        const target = req[source] as Record<string, any>;
+
+        // First, delete all existing properties
+        for (const key in target) {
+          if (Object.prototype.hasOwnProperty.call(target, key)) {
+            delete target[key];
+          }
+        }
+
+        // Then assign the parsed values
+        Object.assign(target, parsedData);
+      }
 
       next();
     } catch (error) {

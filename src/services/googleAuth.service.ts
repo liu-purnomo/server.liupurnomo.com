@@ -1,7 +1,7 @@
-import crypto from 'crypto';
 import { hashPassword } from '../lib/bcrypt.js';
 import { sendEmail } from '../lib/email.js';
 import { encrypt } from '../lib/jwt.js';
+import { generateRandomPassword } from '../lib/passwordGenerator.js';
 import { prisma } from '../lib/prisma.js';
 import { AuthResponse, GoogleOAuthUserData } from '../types/index.js';
 import { googleOAuthPasswordTemplate } from '../utils/emailTemplates.js';
@@ -10,39 +10,6 @@ import { googleOAuthPasswordTemplate } from '../utils/emailTemplates.js';
  * Google OAuth Service
  * Business logic for Google OAuth authentication
  */
-
-/**
- * Generate Random Secure Password
- * Creates a strong random password for Google OAuth users
- */
-function generateRandomPassword(): string {
-  const length = 16;
-  const charset =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-  let password = '';
-  const randomBytes = crypto.randomBytes(length);
-
-  for (let i = 0; i < length; i++) {
-    const byte = randomBytes[i];
-    if (byte !== undefined) {
-      password += charset[byte % charset.length];
-    }
-  }
-
-  // Ensure password has at least one of each required character type
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\|,.<>\/?]/.test(password);
-
-  // If password doesn't meet requirements, generate new one (recursive)
-  if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecial) {
-    return generateRandomPassword();
-  }
-
-  return password;
-}
 
 /**
  * Generate Username from Email

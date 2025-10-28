@@ -1,6 +1,6 @@
 {
   "name": "server.liupurnomo.com",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Liu Purnomo's personal blog - a modern, scalable backend with advanced content management, interactive commenting system, and comprehensive SEO optimization built with TypeScript, Prisma, and PostgreSQL",
   "main": "dist/app.js",
   "type": "module",

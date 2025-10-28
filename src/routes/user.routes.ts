@@ -13,6 +13,7 @@ import {
   getUsersQuerySchema,
   userIdParamSchema,
   usernameParamSchema,
+  updatePasswordSchema,
 } from '../validators/index.js';
 
 /**
@@ -63,6 +64,17 @@ router.patch(
   authenticate,
   validate(updateProfileSchema),
   userController.updateCurrentUserProfile
+);
+
+/**
+ * Update Current User Password
+ * PATCH /api/users/me/password
+ */
+router.patch(
+  '/me/password',
+  authenticate,
+  validate(updatePasswordSchema),
+  userController.updateCurrentUserPassword
 );
 
 /**

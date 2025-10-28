@@ -172,7 +172,11 @@ export async function getAllCategories(
   sortBy: 'name' | 'orderPosition' | 'createdAt' = 'orderPosition',
   sortOrder: 'asc' | 'desc' = 'asc'
 ): Promise<PaginatedResult<CategoryListItemResponse>> {
-  const skip = (page - 1) * limit;
+  // Ensure page and limit are numbers (defensive programming)
+  const pageNum = typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
+  const limitNum = typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
+
+  const skip = (pageNum - 1) * limitNum;
 
   // Build where clause
   const where: Prisma.CategoryWhereInput = {};
@@ -196,7 +200,7 @@ export async function getAllCategories(
   const categories = await prisma.category.findMany({
     where,
     skip,
-    take: limit,
+    take: limitNum,
     orderBy: { [sortBy]: sortOrder },
     include: {
       _count: {
@@ -209,17 +213,17 @@ export async function getAllCategories(
   });
 
   // Calculate pagination
-  const totalPages = Math.ceil(totalItems / limit);
+  const totalPages = Math.ceil(totalItems / limitNum);
 
   return {
     data: categories.map(toCategoryListItem),
     pagination: {
-      currentPage: page,
-      perPage: limit,
+      currentPage: pageNum,
+      perPage: limitNum,
       totalItems,
       totalPages,
-      hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1,
+      hasNextPage: pageNum < totalPages,
+      hasPreviousPage: pageNum > 1,
     },
   };
 }

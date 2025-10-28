@@ -68,9 +68,7 @@ const tokenSchema = z
  * POST /api/auth/check-email
  */
 export const checkEmailSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-  }),
+  email: emailSchema,
 });
 
 /**
@@ -78,13 +76,11 @@ export const checkEmailSchema = z.object({
  * POST /api/auth/register
  */
 export const registerSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    username: usernameSchema,
-    name: nameSchema,
-    password: passwordSchema,
-    verificationToken: tokenSchema,
-  }),
+  email: emailSchema,
+  username: usernameSchema,
+  name: nameSchema,
+  password: passwordSchema,
+  verificationToken: tokenSchema,
 });
 
 /**
@@ -92,10 +88,8 @@ export const registerSchema = z.object({
  * POST /api/auth/login
  */
 export const loginSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    password: z.string({ message: 'Password is required' }),
-  }),
+  email: emailSchema,
+  password: z.string({ message: 'Password is required' }),
 });
 
 /**
@@ -103,9 +97,7 @@ export const loginSchema = z.object({
  * POST /api/auth/forgot-password
  */
 export const forgotPasswordSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-  }),
+  email: emailSchema,
 });
 
 /**
@@ -113,11 +105,9 @@ export const forgotPasswordSchema = z.object({
  * POST /api/auth/reset-password
  */
 export const resetPasswordSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    token: tokenSchema,
-    newPassword: passwordSchema,
-  }),
+  email: emailSchema,
+  token: tokenSchema,
+  newPassword: passwordSchema,
 });
 
 /**
@@ -125,10 +115,8 @@ export const resetPasswordSchema = z.object({
  * POST /api/auth/verify-email
  */
 export const verifyEmailSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-    token: tokenSchema,
-  }),
+  email: emailSchema,
+  token: tokenSchema,
 });
 
 /**
@@ -136,9 +124,7 @@ export const verifyEmailSchema = z.object({
  * POST /api/auth/resend-verification
  */
 export const resendVerificationSchema = z.object({
-  body: z.object({
-    email: emailSchema,
-  }),
+  email: emailSchema,
 });
 
 /**
@@ -146,10 +132,8 @@ export const resendVerificationSchema = z.object({
  * POST /api/auth/change-password
  */
 export const changePasswordSchema = z.object({
-  body: z.object({
-    currentPassword: z.string({ message: 'Current password is required' }),
-    newPassword: passwordSchema,
-  }),
+  currentPassword: z.string({ message: 'Current password is required' }),
+  newPassword: passwordSchema,
 });
 
 /**
@@ -157,9 +141,7 @@ export const changePasswordSchema = z.object({
  * POST /api/auth/refresh-token
  */
 export const refreshTokenSchema = z.object({
-  body: z.object({
-    refreshToken: z.string({ message: 'Refresh token is required' }),
-  }),
+  refreshToken: z.string({ message: 'Refresh token is required' }),
 });
 
 // ==================== TYPE EXPORTS ====================

@@ -14,6 +14,7 @@ import {
   ConflictError,
   ForbiddenError,
   NotFoundError,
+  UnauthorizedError,
 } from '../utils/errors.js';
 import { calculatePagination } from '../utils/index.js';
 import {
@@ -22,6 +23,7 @@ import {
   extractFilenameFromUrl,
   generateImageUrls,
 } from '../utils/imageProcessor.js';
+import { comparePassword, hashPassword } from '../lib/bcrypt.js';
 import path from 'path';
 
 /**
@@ -223,6 +225,56 @@ export async function deleteCurrentUserAccount(userId: string): Promise<void> {
   });
 }
 
+/**
+ * Update Current User Password
+ * Allow user to change their password after verifying current password
+ */
+export async function updateCurrentUserPassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  // Get user with password hash
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      passwordHash: true,
+      email: true,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  // Check if user has a password (might be OAuth-only user)
+  if (!user.passwordHash) {
+    throw new UnauthorizedError(
+      'Cannot update password for OAuth-only accounts. Please set a password first.'
+    );
+  }
+
+  // Verify current password
+  const isPasswordValid = await comparePassword(
+    currentPassword,
+    user.passwordHash
+  );
+
+  if (!isPasswordValid) {
+    throw new UnauthorizedError('Current password is incorrect');
+  }
+
+  // Hash new password
+  const newPasswordHash = await hashPassword(newPassword);
+
+  // Update password in database
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: newPasswordHash },
+  });
+}
+
 // ==================== ADMIN OPERATIONS ====================
 
 /**
@@ -233,6 +285,10 @@ export async function getAllUsers(
   query: GetUsersQuery
 ): Promise<PaginatedResult<UserListItemResponse>> {
   const { page = 1, limit = 10, role, isActive, search } = query;
+
+  // Ensure page and limit are numbers (defensive programming)
+  const pageNum = typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
+  const limitNum = typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
 
   // Build where clause
   const where: any = {};
@@ -257,13 +313,13 @@ export async function getAllUsers(
   const totalItems = await prisma.user.count({ where });
 
   // Calculate pagination
-  const pagination = calculatePagination(totalItems, page, limit);
+  const pagination = calculatePagination(totalItems, pageNum, limitNum);
 
   // Get users
   const users = await prisma.user.findMany({
     where,
-    skip: (page - 1) * limit,
-    take: limit,
+    skip: (pageNum - 1) * limitNum,
+    take: limitNum,
     orderBy: { createdAt: 'desc' },
   });
 

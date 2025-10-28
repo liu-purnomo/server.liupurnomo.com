@@ -77,50 +77,42 @@ const parentIdSchema = z
  * Validates request for creating a new category (with FormData)
  * File upload handled separately by multer middleware
  */
-export const createCategoryValidator = z.object({
-  body: z
-    .object({
-      name: categoryNameSchema,
-      slug: categorySlugSchema,
-      description: categoryDescriptionSchema.optional(),
-      parentId: parentIdSchema.optional(),
-      metaTitle: metaTitleSchema.optional(),
-      metaDescription: metaDescriptionSchema.optional(),
-      orderPosition: z.coerce.number().int().min(0).optional(),
-    })
-    .passthrough(), // Allow additional fields from FormData
-});
+export const createCategoryValidator = z
+  .object({
+    name: categoryNameSchema,
+    slug: categorySlugSchema,
+    description: categoryDescriptionSchema.optional(),
+    parentId: parentIdSchema.optional(),
+    metaTitle: metaTitleSchema.optional(),
+    metaDescription: metaDescriptionSchema.optional(),
+    orderPosition: z.coerce.number().int().min(0).optional(),
+  })
+  .passthrough(); // Allow additional fields from FormData
 
 /**
  * Update Category Validator
  * Validates request for updating an existing category (with FormData)
  * File upload handled separately by multer middleware
  */
-export const updateCategoryValidator = z.object({
-  params: z.object({
-    id: z.string().cuid('Invalid category ID format'),
-  }),
-  body: z
-    .object({
-      name: categoryNameSchema.optional(),
-      slug: categorySlugSchema.optional(),
-      description: categoryDescriptionSchema.optional(),
-      parentId: parentIdSchema.optional(),
-      metaTitle: metaTitleSchema.optional(),
-      metaDescription: metaDescriptionSchema.optional(),
-      orderPosition: z.coerce.number().int().min(0).optional(),
-    })
-    .passthrough(), // Allow additional fields from FormData
-});
+export const updateCategoryValidator = z
+  .object({
+    name: categoryNameSchema.optional(),
+    slug: categorySlugSchema.optional(),
+    description: categoryDescriptionSchema.optional(),
+    parentId: parentIdSchema.optional(),
+    metaTitle: metaTitleSchema.optional(),
+    metaDescription: metaDescriptionSchema.optional(),
+    orderPosition: z.coerce.number().int().min(0).optional(),
+  })
+  .passthrough(); // Allow additional fields from FormData
 
 /**
  * Delete Category Validator
  * Validates request for deleting a category
+ * NOTE: Not used in routes - getCategoryByIdValidator is used instead
  */
 export const deleteCategoryValidator = z.object({
-  params: z.object({
-    id: z.cuid('Invalid category ID format'),
-  }),
+  id: z.cuid('Invalid category ID format'),
 });
 
 /**
@@ -145,18 +137,16 @@ export const getCategoryBySlugValidator = z.object({
  * Get Categories Query Validator
  * Validates query parameters for listing categories
  */
-export const getCategoriesQueryValidator = z.object({
-  query: z
-    .object({
-      page: z.coerce.number().int().min(1).optional(),
-      limit: z.coerce.number().int().min(1).max(100).optional(),
-      search: z.string().trim().optional(),
-      parentId: z.string().optional(),
-      sortBy: z.enum(['name', 'orderPosition', 'createdAt']).optional(),
-      sortOrder: z.enum(['asc', 'desc']).optional(),
-    })
-    .optional(),
-});
+export const getCategoriesQueryValidator = z
+  .object({
+    page: z.coerce.number().int().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional(),
+    search: z.string().trim().optional(),
+    parentId: z.string().optional(),
+    sortBy: z.enum(['name', 'orderPosition', 'createdAt']).optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
+  })
+  .optional();
 
 /**
  * Upload Category Icon Validator (for params only)
@@ -169,12 +159,6 @@ export const uploadCategoryIconValidator = z.object({
 
 // ==================== TYPE EXPORTS ====================
 
-export type CreateCategoryInput = z.infer<
-  typeof createCategoryValidator
->['body'];
-export type UpdateCategoryInput = z.infer<
-  typeof updateCategoryValidator
->['body'];
-export type GetCategoriesQuery = z.infer<
-  typeof getCategoriesQueryValidator
->['query'];
+export type CreateCategoryInput = z.infer<typeof createCategoryValidator>;
+export type UpdateCategoryInput = z.infer<typeof updateCategoryValidator>;
+export type GetCategoriesQuery = z.infer<typeof getCategoriesQueryValidator>;

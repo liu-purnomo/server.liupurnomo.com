@@ -68,13 +68,11 @@ const metaDescriptionSchema = z
  * Validates request for creating a new tag
  */
 export const createTagValidator = z.object({
-  body: z.object({
-    name: tagNameSchema,
-    slug: tagSlugSchema,
-    description: tagDescriptionSchema,
-    metaTitle: metaTitleSchema,
-    metaDescription: metaDescriptionSchema,
-  }),
+  name: tagNameSchema,
+  slug: tagSlugSchema,
+  description: tagDescriptionSchema,
+  metaTitle: metaTitleSchema,
+  metaDescription: metaDescriptionSchema,
 });
 
 /**
@@ -82,26 +80,20 @@ export const createTagValidator = z.object({
  * Validates request for updating an existing tag
  */
 export const updateTagValidator = z.object({
-  params: z.object({
-    id: z.string().cuid('Invalid tag ID format'),
-  }),
-  body: z.object({
-    name: tagNameSchema.optional(),
-    slug: tagSlugSchema.optional(),
-    description: tagDescriptionSchema,
-    metaTitle: metaTitleSchema,
-    metaDescription: metaDescriptionSchema,
-  }),
+  name: tagNameSchema.optional(),
+  slug: tagSlugSchema.optional(),
+  description: tagDescriptionSchema,
+  metaTitle: metaTitleSchema,
+  metaDescription: metaDescriptionSchema,
 });
 
 /**
  * Delete Tag Validator
  * Validates request for deleting a tag
+ * NOTE: Not used in routes - getTagByIdValidator is used instead
  */
 export const deleteTagValidator = z.object({
-  params: z.object({
-    id: z.cuid('Invalid tag ID format'),
-  }),
+  id: z.cuid('Invalid tag ID format'),
 });
 
 /**
@@ -126,20 +118,18 @@ export const getTagBySlugValidator = z.object({
  * Get Tags Query Validator
  * Validates query parameters for listing tags
  */
-export const getTagsQueryValidator = z.object({
-  query: z
-    .object({
-      page: z.coerce.number().int().min(1).optional(),
-      limit: z.coerce.number().int().min(1).max(100).optional(),
-      search: z.string().trim().optional(),
-      sortBy: z.enum(['name', 'createdAt']).optional(),
-      sortOrder: z.enum(['asc', 'desc']).optional(),
-    })
-    .optional(),
-});
+export const getTagsQueryValidator = z
+  .object({
+    page: z.coerce.number().int().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional(),
+    search: z.string().trim().optional(),
+    sortBy: z.enum(['name', 'createdAt']).optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
+  })
+  .optional();
 
 // ==================== TYPE EXPORTS ====================
 
-export type CreateTagInput = z.infer<typeof createTagValidator>['body'];
-export type UpdateTagInput = z.infer<typeof updateTagValidator>['body'];
-export type GetTagsQuery = z.infer<typeof getTagsQueryValidator>['query'];
+export type CreateTagInput = z.infer<typeof createTagValidator>;
+export type UpdateTagInput = z.infer<typeof updateTagValidator>;
+export type GetTagsQuery = z.infer<typeof getTagsQueryValidator>;

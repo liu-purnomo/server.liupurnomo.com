@@ -66,7 +66,11 @@ export async function getAllTags(query: GetTagsQuery = {}) {
     sortOrder = 'asc',
   } = query;
 
-  const skip = (page - 1) * limit;
+  // Ensure page and limit are numbers (defensive programming)
+  const pageNum = typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
+  const limitNum = typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
+
+  const skip = (pageNum - 1) * limitNum;
 
   // Build where clause for search
   const where: Prisma.TagWhereInput = search
@@ -84,7 +88,7 @@ export async function getAllTags(query: GetTagsQuery = {}) {
   const tags = await prisma.tag.findMany({
     where,
     skip,
-    take: limit,
+    take: limitNum,
     orderBy: { [sortBy]: sortOrder },
     include: {
       _count: {
@@ -95,17 +99,17 @@ export async function getAllTags(query: GetTagsQuery = {}) {
     },
   });
 
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(total / limitNum);
 
   return {
     tags,
     pagination: {
-      currentPage: page,
+      currentPage: pageNum,
       totalPages,
       totalItems: total,
-      itemsPerPage: limit,
-      hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1,
+      itemsPerPage: limitNum,
+      hasNextPage: pageNum < totalPages,
+      hasPreviousPage: pageNum > 1,
     },
   };
 }

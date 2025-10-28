@@ -127,6 +127,38 @@ export const deleteCurrentUserAccount = asyncHandler(
   }
 );
 
+/**
+ * Update Current User Password
+ * PATCH /api/users/me/password
+ * Requires authentication
+ */
+export const updateCurrentUserPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const username = req.user!.username;
+    const { currentPassword, newPassword } = req.body;
+
+    await userService.updateCurrentUserPassword(
+      userId,
+      currentPassword,
+      newPassword
+    );
+
+    // Log activity
+    await logActivity({
+      userId,
+      action: 'UPDATE',
+      entity: 'User',
+      entityId: userId,
+      description: `User ${username} updated their password`,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+
+    return sendSuccess(res, 200, 'Password updated successfully');
+  }
+);
+
 // ==================== ADMIN ENDPOINTS ====================
 
 /**

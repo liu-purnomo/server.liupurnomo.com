@@ -184,3 +184,33 @@ export const userIdParamSchema = z.object({
 export const usernameParamSchema = z.object({
   username: usernameSchema,
 });
+
+/**
+ * Update Password Validator
+ * For users updating their own password
+ */
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string({ message: 'Current password is required' })
+      .min(1, 'Current password must not be empty'),
+    newPassword: z
+      .string({ message: 'New password is required' })
+      .min(8, 'New password must be at least 8 characters long')
+      .max(100, 'New password must be at most 100 characters long')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'New password must contain at least one uppercase letter, one lowercase letter, and one number'
+      ),
+    confirmPassword: z
+      .string({ message: 'Confirm password is required' })
+      .min(1, 'Confirm password must not be empty'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'New password and confirm password do not match',
+    path: ['confirmPassword'],
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: 'New password must be different from current password',
+    path: ['newPassword'],
+  });

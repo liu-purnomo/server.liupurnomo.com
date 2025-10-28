@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2025-10-29
+
+### Added
+- **Password Update Feature**
+  - Added password change functionality for authenticated users
+  - Password strength validation with uppercase, lowercase, and number requirements
+  - Verification of current password before allowing changes
+  - Prevention of reusing the same password
+  - Proper error handling for OAuth-only accounts
+- **Shared Password Generator Utility** (`src/lib/passwordGenerator.ts`)
+  - Centralized password generation function with configurable length
+  - Ensures generated passwords meet security requirements
+  - Eliminates duplicate password generation code across OAuth services
+
+### Changed
+- **Backend Refactoring - Validator Schemas**
+  - Removed unnecessary wrapper objects from 15 validator schemas
+  - Fixed auth validators: checkEmail, register, login, forgotPassword, resetPassword, verifyEmail, resendVerification, refreshToken, changePassword
+  - Fixed tag validators: createTag, updateTag, deleteTag, getTags
+  - Fixed category validators: createCategory, updateCategory, getCategories
+  - Direct schema inference for cleaner type exports
+- **Validation Middleware Enhancement** (`src/middlewares/validate.ts`)
+  - Improved property replacement logic for proper type coercion
+  - Better handling of query parameter string-to-number conversion
+  - Ensures Prisma receives correct data types
+- **Service Layer Improvements**
+  - Added defensive type coercion for pagination parameters in tag and category services
+  - Ensures proper number types for `skip` and `take` parameters
+  - Prevents Prisma validation errors from string query parameters
+- **OAuth Services Refactoring**
+  - Removed duplicate password generation code from GitHub Auth service
+  - Removed duplicate password generation code from Google Auth service
+  - Both services now use shared `generateRandomPassword()` utility
+
+### Fixed
+- **Prisma Validation Errors**
+  - Resolved "Expected Int, provided String" errors for pagination parameters
+  - Fixed query parameter type coercion across all list endpoints
+  - Proper handling of `take` and `skip` parameters in database queries
+- **Type Safety**
+  - Fixed type exports to match direct schema inference
+  - Removed incorrect bracket notation from type definitions
+  - Improved TypeScript type checking across validators
+
+### Documentation
+- **Enhanced Development Guidelines** (`helpers/DEVELOPMENT-INSTRUCTION.md`)
+  - Added prominent Prisma schema checking section with visual alerts
+  - Emphasized mandatory schema verification before coding
+  - Added comprehensive OpenAPI documentation workflow
+  - Included standardized response types requirement (ApiResponse)
+  - Enhanced common mistakes table with real-world examples
+  - Added detailed validator pattern rules and best practices
+  - Updated core principles to prioritize schema-first development
+  - Added defensive programming patterns for pagination
+
 ## [0.9.0] - 2025-10-28
 
 ### Added

@@ -1,7 +1,7 @@
-import crypto from 'crypto';
 import { hashPassword } from '../lib/bcrypt.js';
 import { sendEmail } from '../lib/email.js';
 import { encrypt } from '../lib/jwt.js';
+import { generateRandomPassword } from '../lib/passwordGenerator.js';
 import { prisma } from '../lib/prisma.js';
 import { AuthResponse, GitHubOAuthUserData } from '../types/index.js';
 import { githubOAuthPasswordTemplate } from '../utils/emailTemplates.js';
@@ -10,39 +10,6 @@ import { githubOAuthPasswordTemplate } from '../utils/emailTemplates.js';
  * GitHub OAuth Service
  * Business logic for GitHub OAuth authentication
  */
-
-/**
- * Generate Random Secure Password
- * Creates a strong random password for GitHub OAuth users
- */
-function generateRandomPassword(): string {
-  const length = 16;
-  const charset =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-  let password = '';
-  const randomBytes = crypto.randomBytes(length);
-
-  for (let i = 0; i < length; i++) {
-    const byte = randomBytes[i];
-    if (byte !== undefined) {
-      password += charset[byte % charset.length];
-    }
-  }
-
-  // Ensure password has at least one of each required character type
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\|,.<>\/?]/.test(password);
-
-  // If password doesn't meet requirements, generate new one (recursive)
-  if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecial) {
-    return generateRandomPassword();
-  }
-
-  return password;
-}
 
 /**
  * Generate Username from GitHub Username or Email
