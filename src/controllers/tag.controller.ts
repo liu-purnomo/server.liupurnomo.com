@@ -47,13 +47,13 @@ export async function getAllTags(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result = await tagService.getAllTags(req.query);
+    const { tags, pagination } = await tagService.getAllTags(req.query);
 
     res.status(200).json({
       success: true,
       message: 'Tags retrieved successfully',
-      data: result,
-      pagination: result.pagination,
+      data: { tags },
+      pagination,
     });
   } catch (error) {
     next(error);

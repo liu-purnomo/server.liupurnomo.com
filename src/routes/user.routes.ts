@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { userController } from '../controllers/index.js';
+import * as notificationPreferenceController from '../controllers/notificationPreference.controller.js';
 import {
   authenticate,
   requireRole,
@@ -15,6 +16,7 @@ import {
   usernameParamSchema,
   updatePasswordSchema,
 } from '../validators/index.js';
+import { updateNotificationPreferenceSchema } from '../validators/notificationPreference.validator.js';
 
 /**
  * User Routes
@@ -107,6 +109,40 @@ router.post(
  * DELETE /api/users/me/avatar
  */
 router.delete('/me/avatar', authenticate, userController.deleteAvatar);
+
+// ==================== NOTIFICATION PREFERENCES ====================
+// Authenticated users can manage their notification preferences
+
+/**
+ * Get Current User's Notification Preferences
+ * GET /api/users/me/notification-preferences
+ */
+router.get(
+  '/me/notification-preferences',
+  authenticate,
+  notificationPreferenceController.getUserNotificationPreferences
+);
+
+/**
+ * Update Current User's Notification Preferences
+ * PATCH /api/users/me/notification-preferences
+ */
+router.patch(
+  '/me/notification-preferences',
+  authenticate,
+  validate(updateNotificationPreferenceSchema, 'body'),
+  notificationPreferenceController.updateUserNotificationPreferences
+);
+
+/**
+ * Reset Notification Preferences to Default
+ * POST /api/users/me/notification-preferences/reset
+ */
+router.post(
+  '/me/notification-preferences/reset',
+  authenticate,
+  notificationPreferenceController.resetUserNotificationPreferences
+);
 
 // ==================== ADMIN ROUTES ====================
 // Requires admin role

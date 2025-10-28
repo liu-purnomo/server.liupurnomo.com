@@ -175,6 +175,168 @@ export const userPaths = {
     },
   },
 
+  '/api/users/me/password': {
+    patch: {
+      tags: ['Users - Profile'],
+      summary: 'Update current user password',
+      description: 'Update password for the authenticated user. Requires current password verification.',
+      security: [{ BearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['currentPassword', 'newPassword'],
+              properties: {
+                currentPassword: {
+                  type: 'string',
+                  format: 'password',
+                  example: 'CurrentP@ssw0rd!',
+                  description: 'Current password for verification',
+                },
+                newPassword: {
+                  type: 'string',
+                  format: 'password',
+                  example: 'NewP@ssw0rd!',
+                  description: 'New password (min 8 chars, must include uppercase, lowercase, and number)',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Password updated successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: { type: 'string', example: 'Password updated successfully' },
+                },
+              },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        422: { $ref: '#/components/responses/ValidationError' },
+      },
+    },
+  },
+
+  '/api/users/me/avatar': {
+    post: {
+      tags: ['Users - Profile'],
+      summary: 'Upload/Update user avatar',
+      description: 'Upload or update avatar image for the authenticated user. Replaces existing avatar if present.',
+      security: [{ BearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['avatar'],
+              properties: {
+                avatar: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'Avatar image file (max 5MB, JPEG/PNG/WebP/HEIC)',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Avatar uploaded successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: { type: 'string', example: 'Avatar uploaded successfully' },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      user: { $ref: '#/components/schemas/UserProfileResponse' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        422: {
+          description: 'Validation error or file upload error',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: false },
+                  message: {
+                    type: 'string',
+                    example: 'File too large. Maximum size is 5MB',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    delete: {
+      tags: ['Users - Profile'],
+      summary: 'Delete user avatar',
+      description: 'Remove avatar image for the authenticated user',
+      security: [{ BearerAuth: [] }],
+      responses: {
+        200: {
+          description: 'Avatar deleted successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: { type: 'string', example: 'Avatar deleted successfully' },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      user: { $ref: '#/components/schemas/UserProfileResponse' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No avatar to delete',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: false },
+                  message: { type: 'string', example: 'No avatar found to delete' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+
   // ==================== ADMIN ENDPOINTS ====================
 
   '/api/users': {

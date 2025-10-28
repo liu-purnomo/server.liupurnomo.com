@@ -8,7 +8,7 @@ export const categoryPaths = {
 
   '/api/categories/tree': {
     get: {
-      tags: ['Categories - Public'],
+      tags: ['Categories'],
       summary: 'Get category tree',
       description: 'Get hierarchical category structure. No authentication required.',
       security: [],
@@ -42,7 +42,7 @@ export const categoryPaths = {
 
   '/api/categories/slug/{slug}': {
     get: {
-      tags: ['Categories - Public'],
+      tags: ['Categories'],
       summary: 'Get category by slug',
       description: 'Get category information by slug. No authentication required.',
       security: [],
@@ -84,7 +84,7 @@ export const categoryPaths = {
 
   '/api/categories/{id}': {
     get: {
-      tags: ['Categories - Public'],
+      tags: ['Categories'],
       summary: 'Get category by ID',
       description: 'Get category information by ID. No authentication required.',
       security: [],
@@ -126,7 +126,7 @@ export const categoryPaths = {
     // ==================== ADMIN/AUTHOR ENDPOINTS ====================
 
     patch: {
-      tags: ['Categories - Admin/Author'],
+      tags: ['Categories'],
       summary: 'Update category (Admin/Author only)',
       description: 'Update category information. Requires ADMIN or AUTHOR role. Supports multipart/form-data for icon upload.',
       security: [{ BearerAuth: [] }],
@@ -178,7 +178,7 @@ export const categoryPaths = {
     },
 
     delete: {
-      tags: ['Categories - Admin/Author'],
+      tags: ['Categories'],
       summary: 'Delete category (Admin/Author only)',
       description: 'Delete a category. Requires ADMIN or AUTHOR role. Cannot delete if category has children or posts.',
       security: [{ BearerAuth: [] }],
@@ -222,7 +222,7 @@ export const categoryPaths = {
 
   '/api/categories': {
     get: {
-      tags: ['Categories - Public'],
+      tags: ['Categories'],
       summary: 'Get all categories (Paginated)',
       description: 'Get paginated list of categories with filtering options. No authentication required.',
       security: [],
@@ -293,7 +293,7 @@ export const categoryPaths = {
     },
 
     post: {
-      tags: ['Categories - Admin/Author'],
+      tags: ['Categories'],
       summary: 'Create category (Admin/Author only)',
       description: 'Create a new category. Requires ADMIN or AUTHOR role. Supports multipart/form-data for icon upload.',
       security: [{ BearerAuth: [] }],
@@ -336,7 +336,7 @@ export const categoryPaths = {
 
   '/api/categories/{id}/icon': {
     delete: {
-      tags: ['Categories - Admin/Author'],
+      tags: ['Categories'],
       summary: 'Delete category icon (Admin/Author only)',
       description: 'Delete the icon for a category. Requires ADMIN or AUTHOR role.',
       security: [{ BearerAuth: [] }],

@@ -6,9 +6,13 @@
 import { authPaths } from './auth.docs.js';
 import { userPaths } from './user.docs.js';
 import { categoryPaths } from './category.docs.js';
+import { tagPaths } from './tag.docs.js';
+import { notificationPreferencePaths } from './notificationPreference.docs.js';
 
 export const paths = {
   ...authPaths,
   ...userPaths,
   ...categoryPaths,
+  ...tagPaths,
+  ...notificationPreferencePaths,
 };

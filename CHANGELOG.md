@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2025-10-29
+
+### Added
+- **Notification Preference Management**
+  - Complete CRUD operations for user notification preferences
+  - GET `/api/users/me/notification-preferences` - Retrieve user notification preferences with auto-create on first access
+  - PATCH `/api/users/me/notification-preferences` - Update specific notification preferences
+  - POST `/api/users/me/notification-preferences/reset` - Reset preferences to default values
+  - 17 configurable notification types across in-app, email, and system categories
+  - Email digest frequency options (daily/weekly)
+  - Comprehensive OpenAPI documentation with request/response schemas
+  - Automatic preference creation with sensible defaults for new users
+
+### Changed
+- **API Documentation Improvements**
+  - Enhanced tag API documentation with detailed descriptions
+  - Improved category API documentation with comprehensive examples
+  - Updated common schema definitions for better clarity
+  - Added structured examples for pagination responses
+  - Standardized error response formats across all endpoints
+
 ## [0.10.0] - 2025-10-29
 
 ### Added

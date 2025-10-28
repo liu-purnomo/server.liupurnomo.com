@@ -81,7 +81,7 @@ export const commonSchemas = {
         example: 1,
         description: 'Current page number',
       },
-      perPage: {
+      itemsPerPage: {
         type: 'integer',
         example: 10,
         description: 'Number of items per page',
@@ -107,7 +107,7 @@ export const commonSchemas = {
         description: 'Whether there is a previous page',
       },
     },
-    required: ['currentPage', 'perPage', 'totalItems', 'totalPages'],
+    required: ['currentPage', 'itemsPerPage', 'totalItems', 'totalPages'],
   },
 
   /**
