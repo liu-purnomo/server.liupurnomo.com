@@ -9,3 +9,4 @@ export * from './activityLogger.js';
 export * from './token.js';
 export * from './emailTemplates.js';
 export * from './apiResponse.js';
+export * from './imageProcessor.js';

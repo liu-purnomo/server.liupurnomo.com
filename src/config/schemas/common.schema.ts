@@ -5,6 +5,42 @@
 
 export const commonSchemas = {
   /**
+   * Generic Error Schema
+   */
+  Error: {
+    type: 'object',
+    properties: {
+      success: {
+        type: 'boolean',
+        example: false,
+      },
+      message: {
+        type: 'string',
+        example: 'An error occurred',
+      },
+      errors: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            field: { type: 'string' },
+            message: { type: 'string' },
+            code: { type: 'string' },
+          },
+        },
+      },
+      timestamp: {
+        type: 'string',
+        format: 'date-time',
+      },
+      path: {
+        type: 'string',
+      },
+    },
+    required: ['success', 'message'],
+  },
+
+  /**
    * Standard API Error object
    */
   ApiError: {

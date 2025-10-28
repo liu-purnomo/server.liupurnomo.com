@@ -8,3 +8,4 @@ export * from './rateLimiter.js';
 export * from './activityLogger.js';
 export * from './auth.js';
 export * from './validate.js';
+export * from './upload.js';

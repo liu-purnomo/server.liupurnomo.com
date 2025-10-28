@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2025-10-28
+
+### Added
+- **User Profile Username Update Feature**
+  - Users can now update their username through the profile update endpoint
+  - Username validation with reserved words protection
+  - Reserved usernames list: admin, superadmin, administrator, root, system, support, help, info, api, www, mail, ftp, localhost, moderator, mod
+  - Automatic duplicate username detection with conflict error response
+  - Username format validation: 3-30 characters, alphanumeric and underscores only
+- **Enhanced User Validators** (`src/validators/user.validator.ts`)
+  - Added `RESERVED_USERNAMES` constant for protected username list
+  - Updated `usernameSchema` with Zod refinement for reserved username checking
+  - Added username field to `updateProfileSchema` for user profile updates
+- **Enhanced User Service** (`src/services/user.service.ts`)
+  - Updated `updateCurrentUserProfile()` to handle username changes
+  - Added username conflict detection before update
+  - Throws `ConflictError` (409) when username is already taken
+- **Updated API Documentation**
+  - Updated `UpdateProfileRequest` schema with username field and description
+  - Added 409 Conflict response to PATCH /api/users/me endpoint documentation
+  - Documented reserved username restrictions in OpenAPI spec
+
+### Changed
+- **User Types** (`src/types/user.types.ts`)
+  - Added `username?: string` field to `UpdateProfileRequest` interface
+- **OpenAPI Schemas** (`src/config/schemas/user.schema.ts`)
+  - Updated `UpdateProfileRequest` schema to include username field with pattern validation and description
+
+### Security
+- Protected system-critical usernames from being claimed by regular users
+- Reserved username list prevents potential security issues and confusion
+
 ## [0.7.0] - 2025-10-27
 
 ### Added

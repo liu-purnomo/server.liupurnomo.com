@@ -5,8 +5,10 @@
 
 import { commonSchemas } from './common.schema.js';
 import { authSchemas } from './auth.schema.js';
+import { userSchemas } from './user.schema.js';
 
 export const schemas = {
   ...commonSchemas,
   ...authSchemas,
+  ...userSchemas,
 };

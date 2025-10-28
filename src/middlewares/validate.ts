@@ -9,24 +9,22 @@ import { ValidationError } from '../utils/errors.js';
 
 /**
  * Validate Request Middleware
- * Validates request body, query, and params against Zod schema
+ * Validates request body, query, or params against Zod schema
  *
  * @param schema - Zod schema object
+ * @param source - Which part to validate: 'body' (default), 'query', or 'params'
  * @returns Express middleware function
  */
-export function validate(schema: ZodSchema) {
+export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' = 'body') {
   return async (
     req: Request,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      // Validate request against schema
-      await schema.parseAsync({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
+      // Validate specific part of request against schema
+      const dataToValidate = req[source];
+      await schema.parseAsync(dataToValidate);
 
       next();
     } catch (error) {

@@ -186,27 +186,35 @@ export function emailVerificationTemplate(
 
 /**
  * Password Reset Email Template
- * Sent when user requests password reset
+ * Sent when user requests password reset with link
  */
 export function passwordResetTemplate(
   name: string,
+  email: string,
   token: string,
   expiresIn: number = 15
 ): string {
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/reset-password?email=${encodeURIComponent(email)}&token=${token}`;
+
   const content = `
     <div class="content">
       <h2>Reset Your Password</h2>
       <p>Hi ${name},</p>
-      <p>We received a request to reset your password. Use the code below to reset it:</p>
+      <p>We received a request to reset your password. Click the button below to create a new password:</p>
 
-      <div class="code-box">
-        <div class="code">${token}</div>
-        <p style="margin: 10px 0 0 0; color: #6c757d; font-size: 14px;">
-          This code expires in ${expiresIn} minutes
-        </p>
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="${resetUrl}" class="button">
+          Reset Password
+        </a>
+      </p>
+
+      <p style="font-size: 14px; color: #6c757d;">
+        This link will expire in ${expiresIn} minutes. If the button doesn't work, copy and paste this link into your browser:
+      </p>
+
+      <div style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin: 20px 0; word-break: break-all; font-size: 12px; color: #667eea;">
+        ${resetUrl}
       </div>
-
-      <p>Enter this code on the password reset page to create a new password.</p>
 
       <div class="warning">
         <strong>Important:</strong> If you didn't request a password reset, please ignore this email and ensure your account is secure.

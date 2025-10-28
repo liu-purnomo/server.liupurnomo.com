@@ -10,7 +10,7 @@ export const openapiConfig = {
   openapi: '3.1.0',
   info: {
     title: 'Liu Purnomo Blog API',
-    version: '0.7.0',
+    version: '0.8.0',
     description: `
 Liu Purnomo's personal blog - a modern, scalable backend with advanced content management,
 interactive commenting system, and comprehensive SEO optimization built with
@@ -75,8 +75,16 @@ Authorization: Bearer <your_jwt_token>
       description: 'User authentication and authorization endpoints',
     },
     {
-      name: 'Users',
-      description: 'User management and profile operations',
+      name: 'Users - Public',
+      description: 'Public user profile endpoints (no authentication required)',
+    },
+    {
+      name: 'Users - Profile',
+      description: 'User profile management (requires authentication)',
+    },
+    {
+      name: 'Users - Admin',
+      description: 'User management for admins (requires admin role)',
     },
     {
       name: 'Posts',
@@ -262,6 +270,20 @@ Authorization: Bearer <your_jwt_token>
             example: {
               success: false,
               message: 'Resource not found',
+            },
+          },
+        },
+      },
+      Conflict: {
+        description: 'Conflict - Resource already exists',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Error',
+            },
+            example: {
+              success: false,
+              message: 'Email is already in use',
             },
           },
         },

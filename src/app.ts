@@ -32,6 +32,9 @@ app.use('/api', apiLimiter);
 // Serve static files
 app.use(express.static('public'));
 
+// Serve uploaded files (avatars, images, etc.)
+app.use('/uploads', express.static('storages'));
+
 // API Documentation with Scalar
 app.use(
   '/docs',

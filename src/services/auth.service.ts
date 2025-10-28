@@ -308,6 +308,7 @@ export async function forgotPassword(email: string): Promise<{ message: string }
     subject: 'Reset Your Password - Liu Purnomo',
     html: passwordResetTemplate(
       user.name || user.username,
+      email,
       resetToken,
       TOKEN_EXPIRATION_MINUTES
     ),
