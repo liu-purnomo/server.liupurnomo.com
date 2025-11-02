@@ -6,7 +6,7 @@
 
 **A modern, scalable personal blog backend with advanced content management and SEO optimization**
 
-[![Version](https://img.shields.io/badge/version-0.12.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
+[![Version](https://img.shields.io/badge/version-0.13.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748)](https://www.prisma.io/)
@@ -77,6 +77,26 @@ Liu Purnomo's personal blog - a production-ready backend built with TypeScript, 
 - Spam detection
 - Featured and pinned comments
 - Link tracking
+
+### Medium-Style Inline Interactions
+- **Inline Comments** - Comment on specific text selections
+  - Text selection tracking (startOffset, endOffset, blockId, paragraphId)
+  - Threaded inline discussions with nested replies
+  - Guest user support with IP tracking
+  - Reactions, mentions, and moderation
+- **Paragraph Reactions** - Quick reactions on paragraphs (Medium-style clap)
+  - Direct reactions without comments
+  - Guest and authenticated user support
+- **Highlight System** - Text highlighting with notes
+  - Customizable highlight colors
+  - Public/private visibility controls
+  - Highlight notes with threaded discussions
+  - Social media sharing tracking (Twitter, Facebook, LinkedIn)
+  - Highlight collections for organizing saved highlights
+  - Analytics (click count, share count, view count)
+- Complete anti-spam and moderation system
+- Mobile-friendly with client-side positioning
+- Works with any editor (EditorJS, Lexical, etc.)
 
 ### Media Management
 - Multi-format file upload

@@ -9,7 +9,7 @@ export const notificationPreferenceSchemas = {
   UpdateNotificationPreferenceRequest: {
     type: 'object',
     properties: {
-      // In-app notification preferences
+      // In-app notification preferences - Comments
       commentOnPost: {
         type: 'boolean',
         example: true,
@@ -30,11 +30,6 @@ export const notificationPreferenceSchemas = {
         example: true,
         description: 'Notify when someone reacts to user\'s comment',
       },
-      postPublished: {
-        type: 'boolean',
-        example: false,
-        description: 'Notify when followed author publishes a post',
-      },
       commentApproved: {
         type: 'boolean',
         example: true,
@@ -45,13 +40,74 @@ export const notificationPreferenceSchemas = {
         example: true,
         description: 'Notify when user\'s comment is featured',
       },
+
+      // In-app notification preferences - Inline Comments
+      inlineCommentOnPost: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone adds an inline comment on user\'s post',
+      },
+      replyToInlineComment: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone replies to user\'s inline comment',
+      },
+      mentionInInlineComment: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when user is mentioned in an inline comment',
+      },
+      reactionOnInlineComment: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone reacts to user\'s inline comment',
+      },
+
+      // In-app notification preferences - Highlights
+      highlightOnPost: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone highlights text in user\'s post',
+      },
+      noteOnHighlight: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone adds a note to their highlight',
+      },
+      replyToHighlightNote: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone replies to user\'s highlight note',
+      },
+      mentionInHighlight: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when user is mentioned in a highlight note',
+      },
+      reactionOnHighlight: {
+        type: 'boolean',
+        example: true,
+        description: 'Notify when someone reacts to user\'s highlight',
+      },
+      shareHighlight: {
+        type: 'boolean',
+        example: false,
+        description: 'Notify when someone shares user\'s highlight',
+      },
+
+      // In-app notification preferences - General
+      postPublished: {
+        type: 'boolean',
+        example: false,
+        description: 'Notify when followed author publishes a post',
+      },
       moderationAction: {
         type: 'boolean',
         example: true,
         description: 'Notify about moderation actions on user\'s content',
       },
 
-      // Email notification preferences
+      // Email notification preferences - Comments
       emailCommentOnPost: {
         type: 'boolean',
         example: true,
@@ -65,8 +121,27 @@ export const notificationPreferenceSchemas = {
       emailMentionInComment: {
         type: 'boolean',
         example: true,
-        description: 'Send email when user is mentioned',
+        description: 'Send email when user is mentioned in a comment',
       },
+
+      // Email notification preferences - Inline Comments & Highlights
+      emailInlineCommentOnPost: {
+        type: 'boolean',
+        example: false,
+        description: 'Send email when someone adds an inline comment on user\'s post',
+      },
+      emailHighlightOnPost: {
+        type: 'boolean',
+        example: false,
+        description: 'Send email when someone highlights text in user\'s post',
+      },
+      emailNoteOnHighlight: {
+        type: 'boolean',
+        example: false,
+        description: 'Send email when someone adds a note to their highlight',
+      },
+
+      // Email notification preferences - General
       emailPostPublished: {
         type: 'boolean',
         example: false,
@@ -107,7 +182,7 @@ export const notificationPreferenceSchemas = {
         example: 'clxyz123abc456def',
       },
 
-      // In-app notification preferences
+      // In-app notification preferences - Comments
       commentOnPost: {
         type: 'boolean',
         example: true,
@@ -124,10 +199,6 @@ export const notificationPreferenceSchemas = {
         type: 'boolean',
         example: true,
       },
-      postPublished: {
-        type: 'boolean',
-        example: false,
-      },
       commentApproved: {
         type: 'boolean',
         example: true,
@@ -136,12 +207,62 @@ export const notificationPreferenceSchemas = {
         type: 'boolean',
         example: true,
       },
+
+      // In-app notification preferences - Inline Comments
+      inlineCommentOnPost: {
+        type: 'boolean',
+        example: true,
+      },
+      replyToInlineComment: {
+        type: 'boolean',
+        example: true,
+      },
+      mentionInInlineComment: {
+        type: 'boolean',
+        example: true,
+      },
+      reactionOnInlineComment: {
+        type: 'boolean',
+        example: true,
+      },
+
+      // In-app notification preferences - Highlights
+      highlightOnPost: {
+        type: 'boolean',
+        example: true,
+      },
+      noteOnHighlight: {
+        type: 'boolean',
+        example: true,
+      },
+      replyToHighlightNote: {
+        type: 'boolean',
+        example: true,
+      },
+      mentionInHighlight: {
+        type: 'boolean',
+        example: true,
+      },
+      reactionOnHighlight: {
+        type: 'boolean',
+        example: true,
+      },
+      shareHighlight: {
+        type: 'boolean',
+        example: false,
+      },
+
+      // In-app notification preferences - General
+      postPublished: {
+        type: 'boolean',
+        example: false,
+      },
       moderationAction: {
         type: 'boolean',
         example: true,
       },
 
-      // Email notification preferences
+      // Email notification preferences - Comments
       emailCommentOnPost: {
         type: 'boolean',
         example: true,
@@ -154,6 +275,22 @@ export const notificationPreferenceSchemas = {
         type: 'boolean',
         example: true,
       },
+
+      // Email notification preferences - Inline Comments & Highlights
+      emailInlineCommentOnPost: {
+        type: 'boolean',
+        example: false,
+      },
+      emailHighlightOnPost: {
+        type: 'boolean',
+        example: false,
+      },
+      emailNoteOnHighlight: {
+        type: 'boolean',
+        example: false,
+      },
+
+      // Email notification preferences - General
       emailPostPublished: {
         type: 'boolean',
         example: false,

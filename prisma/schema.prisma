@@ -15,45 +15,45 @@ datasource db {
 
 /// User role levels in the system
 enum UserRole {
-  ADMIN  // Full system access
+  ADMIN // Full system access
   AUTHOR // Can create and manage posts
-  USER   // Regular user with read/comment permissions
+  USER // Regular user with read/comment permissions
 }
 
 /// Post content types
 enum PostType {
-  BLOG     // Standard blog post
+  BLOG // Standard blog post
   TUTORIAL // Step-by-step guide or tutorial
 }
 
 /// Post publication status
 enum PostStatus {
-  DRAFT     // Work in progress, not visible to public
+  DRAFT // Work in progress, not visible to public
   PUBLISHED // Live and visible to public
   SCHEDULED // Scheduled for future publication
-  ARCHIVED  // No longer active but preserved
+  ARCHIVED // No longer active but preserved
 }
 
 /// Tutorial difficulty level
 enum DifficultyLevel {
-  BEGINNER     // For new learners
+  BEGINNER // For new learners
   INTERMEDIATE // For users with basic knowledge
-  ADVANCED     // For experienced users
+  ADVANCED // For experienced users
 }
 
 /// Comment reaction types
 enum ReactionType {
-  LIKE       // General positive reaction
-  HELPFUL    // Content was useful
-  LOVE       // Strong positive reaction
+  LIKE // General positive reaction
+  HELPFUL // Content was useful
+  LOVE // Strong positive reaction
   INSIGHTFUL // Content provided valuable insight
-  AMAZING    // Exceptional quality content
+  AMAZING // Exceptional quality content
 }
 
 /// Schema.org markup types for comments
 enum SchemaType {
-  COMMENT  // Standard comment
-  ANSWER   // Answer to a question
+  COMMENT // Standard comment
+  ANSWER // Answer to a question
   QUESTION // Question requiring answer
 }
 
@@ -66,45 +66,59 @@ enum RedirectStatus {
 
 /// Activity log action types
 enum ActivityAction {
-  CREATE         // Resource creation
-  READ           // Resource read/view
-  UPDATE         // Resource update
-  DELETE         // Resource deletion
-  LOGIN          // User login
-  LOGOUT         // User logout
-  REGISTER       // User registration
+  CREATE // Resource creation
+  READ // Resource read/view
+  UPDATE // Resource update
+  DELETE // Resource deletion
+  LOGIN // User login
+  LOGOUT // User logout
+  REGISTER // User registration
   RESET_PASSWORD // Password reset request
-  VERIFY_EMAIL   // Email verification
+  VERIFY_EMAIL // Email verification
 }
 
 /// HTTP request methods
 enum HttpMethod {
-  GET    // Retrieve data
-  POST   // Create data
-  PUT    // Replace data
-  PATCH  // Update data partially
+  GET // Retrieve data
+  POST // Create data
+  PUT // Replace data
+  PATCH // Update data partially
   DELETE // Delete data
 }
 
 /// Log severity levels
 enum LogSeverity {
-  INFO     // Informational messages
-  WARNING  // Warning messages
-  ERROR    // Error conditions
+  INFO // Informational messages
+  WARNING // Warning messages
+  ERROR // Error conditions
   CRITICAL // Critical failures
 }
 
 /// Notification types for user alerts
 enum NotificationType {
-  COMMENT_ON_POST      // New comment on user's post
-  REPLY_TO_COMMENT     // Reply to user's comment
-  MENTION_IN_COMMENT   // User mentioned in a comment
-  REACTION_ON_COMMENT  // Reaction added to user's comment
-  POST_PUBLISHED       // Followed author published new post
-  COMMENT_APPROVED     // User's comment was approved
-  COMMENT_FEATURED     // User's comment was featured
-  SYSTEM_ANNOUNCEMENT  // System-wide announcement
-  MODERATION_ACTION    // Moderation action on user's content
+  COMMENT_ON_POST // New comment on user's post
+  REPLY_TO_COMMENT // Reply to user's comment
+  MENTION_IN_COMMENT // User mentioned in a comment
+  REACTION_ON_COMMENT // Reaction added to user's comment
+  POST_PUBLISHED // Followed author published new post
+  COMMENT_APPROVED // User's comment was approved
+  COMMENT_FEATURED // User's comment was featured
+  SYSTEM_ANNOUNCEMENT // System-wide announcement
+  MODERATION_ACTION // Moderation action on user's content
+
+  // Inline comment notifications
+  INLINE_COMMENT_ON_POST // New inline comment on user's post
+  REPLY_TO_INLINE_COMMENT // Reply to user's inline comment
+  MENTION_IN_INLINE_COMMENT // User mentioned in inline comment
+  REACTION_ON_INLINE_COMMENT // Reaction on user's inline comment
+
+  // Highlight notifications
+  HIGHLIGHT_ON_POST // Someone highlighted user's post
+  NOTE_ON_HIGHLIGHT // Note/reply on user's highlight
+  REPLY_TO_HIGHLIGHT_NOTE // Reply to user's highlight note
+  MENTION_IN_HIGHLIGHT // User mentioned in highlight note
+  REACTION_ON_HIGHLIGHT // Reaction on user's highlight
+  SHARE_HIGHLIGHT // Someone shared user's highlight
 }
 
 // ==================== AUTHENTICATION MODELS ====================
@@ -163,18 +177,43 @@ model User {
   updatedAt       DateTime  @updatedAt
 
   // Relations
-  accounts              Account[] // Linked OAuth accounts
-  posts                 Post[] // Created posts
-  comments              Comment[] // Posted comments
-  media                 Media[] // Uploaded media files
-  postViews             PostView[] // Post view history
-  commentReactions      CommentReaction[] // Given reactions
-  commentMentions       CommentMention[] // Mentions in comments
-  moderatedComments     Comment[]              @relation("ModeratedBy") // Comments moderated by this user
-  activityLogs          ActivityLog[] // User activity history
-  notifications         Notification[] // Received notifications
+  accounts               Account[] // Linked OAuth accounts
+  posts                  Post[] // Created posts
+  comments               Comment[] // Posted comments
+  media                  Media[] // Uploaded media files
+  postViews              PostView[] // Post view history
+  commentReactions       CommentReaction[] // Given reactions
+  commentMentions        CommentMention[] // Mentions in comments
+  moderatedComments      Comment[]               @relation("ModeratedBy") // Comments moderated by this user
+  activityLogs           ActivityLog[] // User activity history
+  notifications          Notification[] // Received notifications
   notificationPreference NotificationPreference? // Notification settings
-  bookmarks             Bookmark[] // Saved posts for later reading
+  bookmarks              Bookmark[] // Saved posts for later reading
+
+  // Inline comment relations
+  inlineComments              InlineComment[] // Inline comments created by user
+  inlineCommentReplies        InlineCommentReply[] // Replies to inline comments
+  inlineCommentReactions      InlineCommentReaction[] // Reactions on inline comments
+  inlineCommentReplyReactions InlineCommentReplyReaction[] // Reactions on inline comment replies
+  moderatedInlineComments     InlineComment[]              @relation("InlineCommentModerator") // Inline comments moderated by user
+  inlineCommentMentions       InlineCommentMention[]       @relation("InlineCommentMentionedUser") // Mentions in inline comments
+  inlineCommentReplyMentions  InlineCommentReplyMention[]  @relation("InlineCommentReplyMentionedUser") // Mentions in inline comment replies
+
+  // Paragraph reaction relations
+  paragraphReactions ParagraphReaction[] // Reactions on paragraphs
+
+  // Highlight relations
+  highlights             Highlight[] // Highlights created by user
+  highlightNotes         HighlightNote[] // Notes on highlights
+  highlightReactions     HighlightReaction[] // Reactions on highlights
+  highlightNoteReactions HighlightNoteReaction[] // Reactions on highlight notes
+  highlightShares        HighlightShare[] // Highlight shares to social media
+  moderatedHighlights    Highlight[]             @relation("HighlightModerator") // Highlights moderated by user
+  highlightMentions      HighlightMention[]      @relation("HighlightMentionedUser") // Mentions in highlights
+  highlightNoteMentions  HighlightNoteMention[]  @relation("HighlightNoteMentionedUser") // Mentions in highlight notes
+
+  // Highlight collection relations
+  highlightCollections HighlightCollection[] // Highlight collections created by user
 
   @@index([email])
   @@index([username])
@@ -189,23 +228,46 @@ model NotificationPreference {
   id     String @id @default(cuid())
   userId String @unique
 
-  // In-app notification preferences
+  // In-app notification preferences - Comments
   commentOnPost     Boolean @default(true) // Notify when someone comments on user's post
   replyToComment    Boolean @default(true) // Notify when someone replies to user's comment
   mentionInComment  Boolean @default(true) // Notify when user is mentioned
   reactionOnComment Boolean @default(true) // Notify when someone reacts to user's comment
-  postPublished     Boolean @default(false) // Notify when followed author publishes
   commentApproved   Boolean @default(true) // Notify when user's comment is approved
   commentFeatured   Boolean @default(true) // Notify when user's comment is featured
-  moderationAction  Boolean @default(true) // Notify about moderation actions
 
-  // Email notification preferences
-  emailCommentOnPost     Boolean @default(true) // Email when someone comments on post
-  emailReplyToComment    Boolean @default(true) // Email when someone replies to comment
-  emailMentionInComment  Boolean @default(true) // Email when mentioned
-  emailPostPublished     Boolean @default(false) // Email when followed author publishes
-  emailDigest            Boolean @default(false) // Daily/weekly email digest
-  emailDigestFrequency   String  @default("weekly") // "daily" or "weekly"
+  // In-app notification preferences - Inline Comments
+  inlineCommentOnPost      Boolean @default(true) // Notify when someone adds inline comment on user's post
+  replyToInlineComment     Boolean @default(true) // Notify when someone replies to user's inline comment
+  mentionInInlineComment   Boolean @default(true) // Notify when user is mentioned in inline comment
+  reactionOnInlineComment  Boolean @default(true) // Notify when someone reacts to user's inline comment
+
+  // In-app notification preferences - Highlights
+  highlightOnPost        Boolean @default(true) // Notify when someone highlights user's post
+  noteOnHighlight        Boolean @default(true) // Notify when someone adds note on user's highlight
+  replyToHighlightNote   Boolean @default(true) // Notify when someone replies to user's highlight note
+  mentionInHighlight     Boolean @default(true) // Notify when user is mentioned in highlight note
+  reactionOnHighlight    Boolean @default(true) // Notify when someone reacts to user's highlight
+  shareHighlight         Boolean @default(false) // Notify when someone shares user's highlight
+
+  // In-app notification preferences - General
+  postPublished    Boolean @default(false) // Notify when followed author publishes
+  moderationAction Boolean @default(true) // Notify about moderation actions
+
+  // Email notification preferences - Comments
+  emailCommentOnPost    Boolean @default(true) // Email when someone comments on post
+  emailReplyToComment   Boolean @default(true) // Email when someone replies to comment
+  emailMentionInComment Boolean @default(true) // Email when mentioned
+
+  // Email notification preferences - Inline Comments & Highlights
+  emailInlineCommentOnPost Boolean @default(false) // Email when someone adds inline comment
+  emailHighlightOnPost     Boolean @default(false) // Email when someone highlights post
+  emailNoteOnHighlight     Boolean @default(false) // Email when someone adds note on highlight
+
+  // Email notification preferences - General
+  emailPostPublished   Boolean @default(false) // Email when followed author publishes
+  emailDigest          Boolean @default(false) // Daily/weekly email digest
+  emailDigestFrequency String  @default("weekly") // "daily" or "weekly"
 
   // System notifications (cannot be disabled)
   systemAnnouncement Boolean @default(true) // Important system announcements
@@ -222,36 +284,36 @@ model NotificationPreference {
 /// User notifications for in-app and email alerts
 /// Tracks all notification events with read/unread status
 model Notification {
-  id               String           @id @default(cuid())
-  userId           String
-  type             NotificationType
-  title            String // Short notification title
-  message          String           @db.Text // Notification message
+  id      String           @id @default(cuid())
+  userId  String
+  type    NotificationType
+  title   String // Short notification title
+  message String           @db.Text // Notification message
 
   // Related entity references (nullable based on notification type)
-  postId           String? // Related post ID
-  commentId        String? // Related comment ID
-  reactionId       String? // Related reaction ID
-  actorUserId      String? // User who triggered the notification
+  postId      String? // Related post ID
+  commentId   String? // Related comment ID
+  reactionId  String? // Related reaction ID
+  actorUserId String? // User who triggered the notification
 
   // Action URL for deep linking
-  actionUrl        String? // URL to navigate when notification is clicked
+  actionUrl String? // URL to navigate when notification is clicked
 
   // Notification metadata
-  metadata         Json? // Additional contextual data
+  metadata Json? // Additional contextual data
 
   // Status tracking
-  isRead           Boolean  @default(false) // Whether user has read this notification
-  readAt           DateTime? // When notification was read
-  isEmailSent      Boolean  @default(false) // Whether email was sent
-  emailSentAt      DateTime? // When email was sent
+  isRead      Boolean   @default(false) // Whether user has read this notification
+  readAt      DateTime? // When notification was read
+  isEmailSent Boolean   @default(false) // Whether email was sent
+  emailSentAt DateTime? // When email was sent
 
   // Grouping for batch notifications
-  groupKey         String? // Key for grouping similar notifications
+  groupKey String? // Key for grouping similar notifications
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  expiresAt        DateTime? // Optional expiration for time-sensitive notifications
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime? // Optional expiration for time-sensitive notifications
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -315,20 +377,20 @@ model Tag {
 /// Core post model for blog posts and tutorials
 /// Supports rich content, SEO optimization, and soft deletion
 model Post {
-  id               String           @id @default(cuid())
+  id               String     @id @default(cuid())
   authorId         String
   categoryId       String
   title            String // Post title
-  slug             String           @unique // URL-friendly identifier
-  excerpt          String?          @db.Text // Short summary for listings
+  slug             String     @unique // URL-friendly identifier
+  excerpt          String?    @db.Text // Short summary for listings
   content          Json // Rich content in JSON format (EditorJS, Lexical, etc.)
   featuredImageUrl String? // Hero/thumbnail image URL
-  postType         PostType         @default(BLOG)
-  status           PostStatus       @default(DRAFT)
+  postType         PostType   @default(BLOG)
+  status           PostStatus @default(DRAFT)
 
   // SEO optimization fields
   metaTitle       String? // Custom SEO title (defaults to title)
-  metaDescription String?  @db.Text // Meta description for search engines
+  metaDescription String? @db.Text // Meta description for search engines
   metaKeywords    String? // Comma-separated keywords
   ogImageUrl      String? // Open Graph image for social sharing
   canonicalUrl    String? // Canonical URL to prevent duplicate content
@@ -354,6 +416,11 @@ model Post {
   postViews       PostView[]
   postSeriesItems PostSeriesItem[]
   bookmarks       Bookmark[]
+
+  // Inline interaction relations
+  inlineComments     InlineComment[] // Inline comments on this post
+  paragraphReactions ParagraphReaction[] // Paragraph reactions on this post
+  highlights         Highlight[] // Highlights on this post
 
   @@index([slug])
   @@index([status])
@@ -396,7 +463,7 @@ model Comment {
   authorUrl   String? // Guest website URL
 
   // Content
-  content     Json   // Rich content in JSON format
+  content     Json // Rich content in JSON format
   contentText String @db.Text // Plain text for search indexing and SEO
 
   // Content metrics
@@ -474,8 +541,8 @@ model CommentReaction {
 /// Extended metadata for comments with Schema.org support
 /// Used for Q&A functionality and structured data
 model CommentMetadata {
-  id        String     @id @default(cuid())
-  commentId String     @unique
+  id                    String     @id @default(cuid())
+  commentId             String     @unique
   schemaType            SchemaType // Schema.org type
   upvoteCount           Int        @default(0) // Upvote count for Q&A
   downvoteCount         Int        @default(0) // Downvote count for Q&A
@@ -621,18 +688,18 @@ model PostView {
 /// User bookmarks for saving posts to read later
 /// Allows users to create reading lists and organize saved content
 model Bookmark {
-  id        String   @id @default(cuid())
-  userId    String
-  postId    String
+  id     String @id @default(cuid())
+  userId String
+  postId String
 
   // Optional organization fields
-  note      String?  @db.Text // Personal note about why this was bookmarked
-  tags      String[] // Custom tags for organizing bookmarks
-  isFavorite Boolean @default(false) // Mark as favorite bookmark
+  note       String?  @db.Text // Personal note about why this was bookmarked
+  tags       String[] // Custom tags for organizing bookmarks
+  isFavorite Boolean  @default(false) // Mark as favorite bookmark
 
   // Reading progress tracking
-  isRead    Boolean  @default(false) // Whether user has read this post
-  readAt    DateTime? // When the post was marked as read
+  isRead Boolean   @default(false) // Whether user has read this post
+  readAt DateTime? // When the post was marked as read
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -716,4 +783,488 @@ model ActivityLog {
   @@index([userId, action]) // User action types
   @@index([entity, action]) // Entity action types
   @@index([severity]) // Severity-based filtering
+}
+
+// ==================== INLINE INTERACTION SYSTEM (MEDIUM-STYLE) ====================
+
+/// Inline comments attached to specific text selections in posts
+/// Users can comment on any paragraph or sentence in the article (like Medium's inline comments)
+model InlineComment {
+  id     String  @id @default(cuid())
+  postId String
+  userId String? // Nullable for guest comments
+
+  // Guest commenter information (required if userId is null)
+  guestName  String? // Guest name
+  guestEmail String? // Guest email
+
+  // Text selection tracking - defines where the comment is attached
+  startOffset  Int // Character position where selection starts
+  endOffset    Int // Character position where selection ends
+  selectedText String  @db.Text // Exact text that was selected for context
+  blockId      String? // Reference to specific content block in editor (EditorJS, Lexical, etc.)
+  paragraphId  String? // Reference to specific paragraph element ID
+
+  // Comment content
+  content String @db.Text // Comment text content (plain text or markdown)
+
+  // Visibility and status
+  isPublic   Boolean @default(true) // Public comments visible to others
+  isResolved Boolean @default(false) // For collaborative editing/review workflow
+  isApproved Boolean @default(true) // Moderation approval (default true for registered users)
+
+  // Engagement metrics (denormalized for performance)
+  likeCount  Int @default(0) // Count of likes/reactions
+  replyCount Int @default(0) // Count of direct replies
+
+  // Edit tracking
+  isEdited Boolean   @default(false)
+  editedAt DateTime?
+
+  // Anti-spam and moderation
+  reportCount Int       @default(0) // Number of spam/abuse reports
+  isHidden    Boolean   @default(false) // Hidden by moderator
+  spamScore   Int       @default(0) // Anti-spam score (0-100)
+  moderatedBy String? // Moderator user ID
+  moderatedAt DateTime? // Moderation timestamp
+  ipAddress   String? // IP tracking for spam prevention
+  userAgent   String? // Browser/device info
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relations
+  post      Post                    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  moderator User?                   @relation("InlineCommentModerator", fields: [moderatedBy], references: [id], onDelete: SetNull)
+  replies   InlineCommentReply[]
+  reactions InlineCommentReaction[]
+  mentions  InlineCommentMention[]
+
+  @@index([postId, isPublic, deletedAt]) // Public inline comments on a post
+  @@index([postId, blockId, deletedAt]) // Comments on specific block
+  @@index([postId, paragraphId, deletedAt]) // Comments on specific paragraph
+  @@index([userId, createdAt(sort: Desc)]) // User's recent inline comments
+  @@index([deletedAt])
+  @@index([isResolved]) // Filter resolved/unresolved
+  @@index([isApproved, isHidden]) // Moderation queries
+  @@index([reportCount]) // High report count for moderation
+}
+
+/// Replies to inline comments (threaded conversations)
+model InlineCommentReply {
+  id              String  @id @default(cuid())
+  inlineCommentId String
+  userId          String? // Nullable for guest replies
+  parentReplyId   String? // For nested replies (reply to reply)
+
+  // Guest information
+  guestName  String?
+  guestEmail String?
+
+  // Content
+  content String @db.Text // Reply text content (plain text or markdown)
+
+  // Engagement
+  likeCount Int @default(0) // Denormalized like count
+
+  // Edit tracking
+  isEdited Boolean   @default(false)
+  editedAt DateTime?
+
+  // Moderation
+  reportCount Int     @default(0)
+  isHidden    Boolean @default(false)
+  spamScore   Int     @default(0)
+  ipAddress   String?
+  userAgent   String?
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relations
+  inlineComment InlineComment                @relation(fields: [inlineCommentId], references: [id], onDelete: Cascade)
+  user          User?                        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  parentReply   InlineCommentReply?          @relation("ReplyThread", fields: [parentReplyId], references: [id], onDelete: Cascade)
+  replies       InlineCommentReply[]         @relation("ReplyThread")
+  reactions     InlineCommentReplyReaction[]
+  mentions      InlineCommentReplyMention[]
+
+  @@index([inlineCommentId, createdAt])
+  @@index([userId])
+  @@index([parentReplyId])
+  @@index([deletedAt])
+  @@index([isHidden])
+}
+
+/// Reactions to inline comments
+model InlineCommentReaction {
+  id              String       @id @default(cuid())
+  inlineCommentId String
+  userId          String? // Nullable for guest reactions
+  reactionType    ReactionType // Reuse existing ReactionType enum
+  ipAddress       String? // IP tracking for guest reactions
+  createdAt       DateTime     @default(now())
+
+  // Relations
+  inlineComment InlineComment @relation(fields: [inlineCommentId], references: [id], onDelete: Cascade)
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([inlineCommentId, userId, reactionType]) // One reaction type per user
+  @@unique([inlineCommentId, ipAddress, reactionType]) // One reaction per IP (for guests)
+  @@index([inlineCommentId])
+  @@index([userId])
+}
+
+/// Reactions to inline comment replies
+model InlineCommentReplyReaction {
+  id                   String       @id @default(cuid())
+  inlineCommentReplyId String
+  userId               String?
+  reactionType         ReactionType
+  ipAddress            String?
+  createdAt            DateTime     @default(now())
+
+  // Relations
+  reply InlineCommentReply @relation(fields: [inlineCommentReplyId], references: [id], onDelete: Cascade)
+  user  User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([inlineCommentReplyId, userId, reactionType])
+  @@unique([inlineCommentReplyId, ipAddress, reactionType])
+  @@index([inlineCommentReplyId])
+  @@index([userId])
+}
+
+/// User mentions in inline comments (@username)
+model InlineCommentMention {
+  id              String   @id @default(cuid())
+  inlineCommentId String
+  mentionedUserId String
+  position        Int // Character position in comment
+  notified        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  // Relations
+  inlineComment InlineComment @relation(fields: [inlineCommentId], references: [id], onDelete: Cascade)
+  mentionedUser User          @relation("InlineCommentMentionedUser", fields: [mentionedUserId], references: [id], onDelete: Cascade)
+
+  @@index([inlineCommentId])
+  @@index([mentionedUserId])
+  @@index([notified])
+}
+
+/// User mentions in inline comment replies
+model InlineCommentReplyMention {
+  id                   String   @id @default(cuid())
+  inlineCommentReplyId String
+  mentionedUserId      String
+  position             Int
+  notified             Boolean  @default(false)
+  createdAt            DateTime @default(now())
+
+  // Relations
+  reply         InlineCommentReply @relation(fields: [inlineCommentReplyId], references: [id], onDelete: Cascade)
+  mentionedUser User               @relation("InlineCommentReplyMentionedUser", fields: [mentionedUserId], references: [id], onDelete: Cascade)
+
+  @@index([inlineCommentReplyId])
+  @@index([mentionedUserId])
+  @@index([notified])
+}
+
+// ==================== PARAGRAPH REACTION SYSTEM ====================
+
+/// Quick reactions directly on paragraphs/blocks (like Medium's clap on specific paragraphs)
+/// Allows readers to react to specific parts of the article without writing comments
+model ParagraphReaction {
+  id     String  @id @default(cuid())
+  postId String
+  userId String? // Nullable for guest reactions
+
+  // Paragraph identification
+  blockId     String? // Reference to specific content block
+  paragraphId String? // Reference to specific paragraph element
+  startOffset Int? // Optional: Specific text range start
+  endOffset   Int? // Optional: Specific text range end
+
+  // Reaction
+  reactionType ReactionType // Like, love, insightful, etc.
+
+  // Guest tracking
+  ipAddress String? // IP for guest reactions and analytics
+  userAgent String? // Device/browser info
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relations
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([postId, userId, blockId, paragraphId, reactionType]) // One reaction type per user per paragraph
+  @@unique([postId, ipAddress, blockId, paragraphId, reactionType]) // One reaction per IP (for guests)
+  @@index([postId, blockId]) // All reactions on a specific block
+  @@index([postId, paragraphId]) // All reactions on a specific paragraph
+  @@index([userId, createdAt(sort: Desc)]) // User's reaction history
+}
+
+// ==================== HIGHLIGHT SYSTEM (MEDIUM-STYLE) ====================
+
+/// User highlights on post content with notes
+/// Allows users to select and save specific text portions with personal or public notes
+model Highlight {
+  id     String @id @default(cuid())
+  postId String
+  userId String
+
+  // Text selection tracking
+  startOffset  Int // Character position where highlight starts
+  endOffset    Int // Character position where highlight ends
+  selectedText String  @db.Text // Exact text that was highlighted
+  blockId      String? // Reference to specific content block (EditorJS, Lexical, etc.)
+  paragraphId  String? // Reference to specific paragraph element
+
+  // Visual customization
+  color String @default("#FFEB3B") // Highlight color (yellow, green, blue, pink, etc.)
+
+  // Privacy and visibility
+  isPublic Boolean @default(true) // Public highlights visible to others
+  isShared Boolean @default(false) // Whether highlight has been shared to social media
+
+  // Engagement metrics (denormalized for performance)
+  noteCount     Int @default(0) // Count of notes/discussions on this highlight
+  reactionCount Int @default(0) // Count of reactions
+  shareCount    Int @default(0) // Times this highlight was shared
+
+  // Anti-spam and moderation
+  reportCount Int       @default(0) // Number of abuse reports
+  isHidden    Boolean   @default(false) // Hidden by moderator
+  moderatedBy String? // Moderator user ID
+  moderatedAt DateTime? // Moderation timestamp
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relations
+  post        Post                      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user        User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moderator   User?                     @relation("HighlightModerator", fields: [moderatedBy], references: [id], onDelete: SetNull)
+  notes       HighlightNote[]
+  reactions   HighlightReaction[]
+  shares      HighlightShare[]
+  mentions    HighlightMention[]
+  collections HighlightCollectionItem[]
+
+  @@index([postId, userId, deletedAt]) // User's highlights on specific post
+  @@index([postId, isPublic, deletedAt]) // Public highlights on a post
+  @@index([userId, createdAt(sort: Desc)]) // User's recent highlights
+  @@index([userId, isPublic, deletedAt]) // User's public highlights
+  @@index([isPublic, createdAt(sort: Desc)]) // Recent public highlights (discovery)
+  @@index([blockId, isPublic]) // Public highlights on specific block
+  @@index([deletedAt])
+  @@index([isHidden]) // Moderation queries
+  @@index([reportCount]) // High report count for moderation
+}
+
+/// Notes/comments on highlights (like Medium's highlight discussions)
+/// Supports threading for conversations around highlighted text
+model HighlightNote {
+  id          String  @id @default(cuid())
+  highlightId String
+  userId      String
+  parentId    String? // For threaded replies (reply to another note)
+
+  // Content
+  content String @db.Text // Note/comment text (plain text or markdown)
+
+  // Engagement (denormalized)
+  likeCount  Int @default(0) // Denormalized like count
+  replyCount Int @default(0) // Denormalized reply count
+
+  // Edit tracking
+  isEdited Boolean   @default(false)
+  editedAt DateTime?
+
+  // Anti-spam and moderation
+  reportCount Int     @default(0)
+  isHidden    Boolean @default(false)
+  spamScore   Int     @default(0)
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relations
+  highlight Highlight               @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+  user      User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    HighlightNote?          @relation("NoteReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   HighlightNote[]         @relation("NoteReplies")
+  reactions HighlightNoteReaction[]
+  mentions  HighlightNoteMention[]
+
+  @@index([highlightId, createdAt])
+  @@index([highlightId, deletedAt])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([parentId])
+  @@index([deletedAt])
+  @@index([isHidden])
+}
+
+/// Reactions to highlights (like, love, insightful, etc.)
+model HighlightReaction {
+  id           String       @id @default(cuid())
+  highlightId  String
+  userId       String
+  reactionType ReactionType // Reuse existing ReactionType enum
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  highlight Highlight @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([highlightId, userId, reactionType]) // One reaction type per user per highlight
+  @@index([highlightId])
+  @@index([userId])
+}
+
+/// Reactions to highlight notes
+model HighlightNoteReaction {
+  id              String       @id @default(cuid())
+  highlightNoteId String
+  userId          String
+  reactionType    ReactionType
+  createdAt       DateTime     @default(now())
+
+  // Relations
+  note HighlightNote @relation(fields: [highlightNoteId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([highlightNoteId, userId, reactionType])
+  @@index([highlightNoteId])
+  @@index([userId])
+}
+
+/// Social media sharing tracking for highlights
+/// Tracks when users share highlights to social platforms (Twitter, Facebook, LinkedIn, etc.)
+model HighlightShare {
+  id          String @id @default(cuid())
+  highlightId String
+  userId      String
+
+  // Share details
+  platform  String // twitter, facebook, linkedin, telegram, whatsapp, reddit, etc.
+  shareUrl  String? // Generated share URL (for tracking)
+  shareText String? @db.Text // Customized share text/caption
+
+  // Analytics
+  clickCount Int     @default(0) // Clicks on shared link (if tracking enabled)
+  ipAddress  String? // IP of person who clicked (for analytics)
+  userAgent  String? // Device/browser info
+
+  // Timestamps
+  sharedAt DateTime @default(now())
+
+  // Relations
+  highlight Highlight @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([highlightId])
+  @@index([userId, sharedAt(sort: Desc)])
+  @@index([platform]) // Analytics by platform
+  @@index([sharedAt(sort: Desc)]) // Recent shares
+}
+
+/// User mentions in highlights (@username)
+/// Note: This is for mentions IN the highlight itself, not in notes
+model HighlightMention {
+  id              String   @id @default(cuid())
+  highlightId     String
+  mentionedUserId String
+  position        Int // Character position in highlight
+  notified        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  // Relations
+  highlight     Highlight @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+  mentionedUser User      @relation("HighlightMentionedUser", fields: [mentionedUserId], references: [id], onDelete: Cascade)
+
+  @@index([highlightId])
+  @@index([mentionedUserId])
+  @@index([notified])
+}
+
+/// User mentions in highlight notes content
+model HighlightNoteMention {
+  id              String   @id @default(cuid())
+  highlightNoteId String
+  mentionedUserId String
+  position        Int
+  notified        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  // Relations
+  note          HighlightNote @relation(fields: [highlightNoteId], references: [id], onDelete: Cascade)
+  mentionedUser User          @relation("HighlightNoteMentionedUser", fields: [mentionedUserId], references: [id], onDelete: Cascade)
+
+  @@index([highlightNoteId])
+  @@index([mentionedUserId])
+  @@index([notified])
+}
+
+// ==================== HIGHLIGHT COLLECTIONS ====================
+
+/// User collections for organizing highlights (like folders or reading lists)
+/// Allows users to curate and categorize their saved highlights
+model HighlightCollection {
+  id          String  @id @default(cuid())
+  userId      String
+  name        String // Collection name (e.g., "Marketing Ideas", "Favorite Quotes")
+  slug        String // URL-friendly identifier
+  description String? @db.Text
+  isPublic    Boolean @default(false) // Public collections can be shared and discovered
+  color       String  @default("#3B82F6") // Collection theme color
+  iconEmoji   String? // Optional emoji icon (e.g., "📚", "💡", "⭐")
+
+  // Metrics (denormalized)
+  itemCount Int @default(0) // Number of highlights in collection
+  viewCount Int @default(0) // Views for public collections
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user  User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items HighlightCollectionItem[]
+
+  @@unique([userId, slug]) // Unique slug per user
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([isPublic, viewCount(sort: Desc)]) // Popular public collections
+  @@index([isPublic, createdAt(sort: Desc)]) // Recent public collections
+}
+
+/// Junction table for highlights in collections
+/// Many-to-many relationship: one highlight can be in multiple collections
+model HighlightCollectionItem {
+  id            String   @id @default(cuid())
+  collectionId  String
+  highlightId   String
+  note          String?  @db.Text // Personal note about this highlight in context of collection
+  orderPosition Int      @default(0) // Custom ordering within collection (for manual sorting)
+  createdAt     DateTime @default(now())
+
+  // Relations
+  collection HighlightCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  highlight  Highlight           @relation(fields: [highlightId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, highlightId]) // Highlight can only be in collection once
+  @@index([collectionId, orderPosition])
+  @@index([highlightId])
+  @@index([collectionId, createdAt(sort: Desc)]) // Recent additions to collection
 }

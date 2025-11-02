@@ -7,6 +7,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2025-11-03
+
+### Added
+- **Medium-Style Inline Interaction System**
+  - Complete inline comment system with text selection tracking (startOffset, endOffset, selectedText, blockId, paragraphId)
+  - Inline comment threading with nested replies support
+  - Inline comment reactions (like, helpful, love, insightful, amazing)
+  - Inline comment mentions with notification tracking
+  - Guest user support for inline comments with IP tracking and spam prevention
+  - Moderation system for inline comments (approval, hiding, spam score, report count)
+  - Soft delete support with deletedAt timestamp
+  - 6 new tables: InlineComment, InlineCommentReply, InlineCommentReaction, InlineCommentReplyReaction, InlineCommentMention, InlineCommentReplyMention
+
+- **Paragraph Reaction System**
+  - Quick reactions directly on paragraphs without comments (Medium-style clap)
+  - Support for blockId and paragraphId identification
+  - Guest reaction support with IP-based uniqueness constraints
+  - 1 new table: ParagraphReaction
+
+- **Highlight System with Notes and Collections**
+  - Text highlighting with customizable colors and privacy controls
+  - Highlight notes with threaded discussion support
+  - Public/private highlight visibility
+  - Social media sharing tracking (Twitter, Facebook, LinkedIn, etc.)
+  - Highlight collections for organizing saved highlights (like folders or reading lists)
+  - Mention support in highlights and notes
+  - Reactions on highlights and notes
+  - Analytics tracking (click count, share count, view count)
+  - 11 new tables: Highlight, HighlightNote, HighlightReaction, HighlightNoteReaction, HighlightShare, HighlightMention, HighlightNoteMention, HighlightCollection, HighlightCollectionItem
+
+- **Notification System Enhancement**
+  - 10 new notification types for inline interactions:
+    - INLINE_COMMENT_ON_POST
+    - REPLY_TO_INLINE_COMMENT
+    - MENTION_IN_INLINE_COMMENT
+    - REACTION_ON_INLINE_COMMENT
+    - HIGHLIGHT_ON_POST
+    - NOTE_ON_HIGHLIGHT
+    - REPLY_TO_HIGHLIGHT_NOTE
+    - MENTION_IN_HIGHLIGHT
+    - REACTION_ON_HIGHLIGHT
+    - SHARE_HIGHLIGHT
+
+- **Notification Preference Enhancement**
+  - 16 new notification preference fields organized by category:
+    - Inline Comments: inlineCommentOnPost, replyToInlineComment, mentionInInlineComment, reactionOnInlineComment
+    - Highlights: highlightOnPost, noteOnHighlight, replyToHighlightNote, mentionInHighlight, reactionOnHighlight, shareHighlight
+    - Email notifications: emailInlineCommentOnPost, emailHighlightOnPost, emailNoteOnHighlight
+  - Reorganized notification preferences into logical sections (Comments, Inline Comments, Highlights, General)
+  - Updated API validators and OpenAPI schemas for new preferences
+
+### Changed
+- **Database Schema**
+  - Updated NotificationType enum with 10 new values for inline interactions
+  - Updated NotificationPreference model with 16 new boolean fields
+  - Updated Post model with 3 new relations (inlineComments, paragraphReactions, highlights)
+  - Updated User model with 24 new relations for inline interaction features
+  - Enhanced ERD documentation with complete inline interaction system models (18 new tables)
+
+- **API Documentation**
+  - Updated OpenAPI schemas for notification preferences with new fields
+  - Enhanced request/response examples for inline interaction features
+  - Improved documentation organization with categorized notification types
+
+### Database Migrations
+- **Migration: add_medium_style_inline_interactions**
+  - Created 18 new tables for inline interaction system
+  - Added 89 composite indexes for optimized query performance
+  - Added 24 foreign key constraints with proper cascade rules
+  - Guest user support with nullable userId fields
+
+- **Migration: add_notification_prefs_for_inline_interactions**
+  - Added 16 new notification preference columns to NotificationPreference table
+  - Set appropriate default values for all new preferences
+
+### Technical Details
+- All inline interactions support guest users (nullable userId with IP tracking)
+- Text selection tracking works with any editor (EditorJS, Lexical, etc.)
+- No HTML storage or fixed positioning for mobile-friendly design
+- Complete anti-spam system (reportCount, spamScore, isHidden, moderation tracking)
+- Denormalized metrics for performance (likeCount, replyCount, noteCount, etc.)
+- Soft delete pattern for recoverability
+- Composite indexes for common query patterns
+
 ## [0.12.0] - 2025-10-29
 
 ### Added
