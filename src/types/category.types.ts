@@ -81,6 +81,8 @@ export interface CategoryListItemResponse {
   slug: string;
   description: string | null;
   parentId: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
   iconUrl: string | null;
   orderPosition: number;
   createdAt: Date;

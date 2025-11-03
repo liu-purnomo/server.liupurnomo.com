@@ -230,6 +230,21 @@ export const categorySchemas = {
         nullable: true,
         example: 'Everything related to web development',
       },
+      parentId: {
+        type: 'string',
+        nullable: true,
+        example: 'clxyz123abc456def',
+      },
+      metaTitle: {
+        type: 'string',
+        nullable: true,
+        example: 'Web Development Articles and Tutorials',
+      },
+      metaDescription: {
+        type: 'string',
+        nullable: true,
+        example: 'Explore our collection of web development articles, tutorials, and resources',
+      },
       iconUrl: {
         type: 'string',
         nullable: true,
@@ -238,6 +253,11 @@ export const categorySchemas = {
       orderPosition: {
         type: 'integer',
         example: 0,
+      },
+      createdAt: {
+        type: 'string',
+        format: 'date-time',
+        example: '2025-01-15T10:30:00.000Z',
       },
       _count: {
         type: 'object',

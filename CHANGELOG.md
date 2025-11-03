@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.1] - 2025-11-03
+
+### Added
+- **Category SEO Enhancement**
+  - Added `metaTitle` field to category schema for custom SEO titles
+  - Added `metaDescription` field to category schema for SEO descriptions
+  - Updated category list response to include SEO metadata fields
+  - Enhanced OpenAPI documentation for category endpoints
+
 ## [0.13.0] - 2025-11-03
 
 ### Added

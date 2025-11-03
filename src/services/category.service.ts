@@ -62,6 +62,8 @@ function toCategoryListItem(category: any): CategoryListItemResponse {
     slug: category.slug,
     description: category.description,
     parentId: category.parentId,
+    metaTitle: category.metaTitle,
+    metaDescription: category.metaDescription,
     iconUrl: category.iconUrl,
     orderPosition: category.orderPosition,
     createdAt: category.createdAt,
