@@ -86,7 +86,8 @@ function toMediaListItem(media: any): MediaListItemResponse {
     // Extract filename and construct thumbnail URL
     const urlParts = media.fileUrl.split('/');
     const filename = urlParts[urlParts.length - 1];
-    const baseFilename = filename.replace(/-original\.webp$/, '');
+    // Remove any size suffix (-original, -large, -medium, -small) and replace with -thumb
+    const baseFilename = filename.replace(/-(original|large|medium|small)\.webp$/, '');
     const thumbnailUrl = media.fileUrl.replace(
       filename,
       `${baseFilename}-thumb.webp`

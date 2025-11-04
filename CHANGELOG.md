@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.1] - 2025-01-04
+
+### Fixed
+- **Media Service**
+  - Fixed thumbnail URL generation to handle all image size variants (-original, -large, -medium, -small)
+  - Improved regex pattern for extracting base filename from image URLs
+
+### Added
+- **Post OpenAPI Documentation**
+  - Complete OpenAPI schema for post endpoints
+  - Added post schemas to OpenAPI documentation
+  - Integrated post API paths into Scalar API reference
+
 ## [0.14.0] - 2025-11-04
 
 ### Added
