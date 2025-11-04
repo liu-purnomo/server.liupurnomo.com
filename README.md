@@ -6,7 +6,7 @@
 
 **A modern, scalable personal blog backend with advanced content management and SEO optimization**
 
-[![Version](https://img.shields.io/badge/version-0.13.1-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
+[![Version](https://img.shields.io/badge/version-0.14.0-blue.svg)](https://github.com/liu-purnomo/server.liupurnomo.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748)](https://www.prisma.io/)
@@ -36,14 +36,22 @@ Liu Purnomo's personal blog - a production-ready backend built with TypeScript, 
 ## Features
 
 ### Content Management
-- Multi-type content support (Blog posts, Tutorials)
-- Rich text editor with JSON storage
-- Content scheduling and draft management
-- Hierarchical category system
-- Flexible tagging mechanism
-- Post series organization
-- Reading time calculation
-- Difficulty level classification
+- **Post Management**
+  - Multi-type content support (Blog posts, Tutorials)
+  - Rich text editor with JSON storage
+  - Content scheduling and draft management
+  - Post types: BLOG, TUTORIAL with difficulty levels
+  - Post status: DRAFT, PUBLISHED, SCHEDULED, ARCHIVED
+  - View count tracking and reading time calculation
+- **Media Library**
+  - WordPress-like media management system
+  - Image upload with automatic processing (5 sizes)
+  - Support for images (20MB), videos (100MB), documents
+  - User-based ownership and access control
+- **Organization**
+  - Hierarchical category system
+  - Flexible tagging mechanism
+  - Post series organization
 
 ### Authentication & User System
 - **Modern email-first authentication flow**

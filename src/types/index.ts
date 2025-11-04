@@ -6,5 +6,7 @@
 export * from './activity-log.types.js';
 export * from './auth.types.js';
 export * from './category.types.js';
+export * from './media.types.js';
+export * from './post.types.js';
 export * from './response.types.js';
 export * from './user.types.js';

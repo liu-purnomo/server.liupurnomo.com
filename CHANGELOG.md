@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2025-11-04
+
+### Added
+- **Media Library System**
+  - WordPress-like media management with full CRUD operations
+  - Image upload with automatic processing (5 sizes: thumbnail, small, medium, large, original)
+  - Support for images (20MB max), videos (100MB max), and documents
+  - Image processing with Sharp library for optimization
+  - Media metadata: altText, caption, width, height, mimeType, fileSize
+  - User-based media ownership and access control
+  - OpenAPI documentation for all media endpoints
+  - 5 endpoints: Upload, Get All (paginated), Get by ID, Update, Delete
+
+- **Post Management CRUD**
+  - Complete post CRUD with role-based access control (AUTHOR and ADMIN only)
+  - Public endpoints for published posts (by ID, slug, paginated list)
+  - Admin/Author endpoints with draft access and ownership validation
+  - JSON-based post creation with URL references to media library
+  - Featured image and OG image support via URL strings
+  - Post types: BLOG, TUTORIAL with difficulty levels
+  - Post status: DRAFT, PUBLISHED, SCHEDULED, ARCHIVED
+  - Post scheduling with publishedAt and scheduledAt fields
+  - Soft delete and permanent delete operations
+  - View count tracking with async increment
+  - Reading time calculation support
+  - Rich content support with JSON content blocks
+  - Category and tag associations
+  - SEO metadata: metaTitle, metaDescription, metaKeywords, ogImageUrl, canonicalUrl
+  - Activity logging for all post operations
+
+### Changed
+- **Upload Middleware Enhancement**
+  - Increased image size limit from 5MB to 20MB
+  - Increased video size limit from 50MB to 100MB
+  - Added support for multiple file types in media uploads
+
+### Technical
+- Post images now reference media library URLs instead of direct file uploads
+- Image processing logic moved from post service to media service
+- Consistent use of `avatarUrl` field for user profile pictures across all modules
+- Improved TypeScript type safety with non-null assertions where guaranteed
+
 ## [0.13.1] - 2025-11-03
 
 ### Added

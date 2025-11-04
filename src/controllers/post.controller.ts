@@ -1,0 +1,285 @@
+import { Request, Response } from 'express';
+import { postService } from '../services/index.js';
+import {
+  asyncHandler,
+  logActivity,
+  sendCreated,
+  sendSuccess,
+} from '../utils/index.js';
+import type {
+  CreatePostRequest,
+  UpdatePostRequest,
+  PostQueryParams,
+} from '../types/index.js';
+
+/**
+ * Post Controllers
+ * Handle HTTP requests for post management operations
+ */
+
+// ==================== PUBLIC POST ENDPOINTS ====================
+
+/**
+ * Get All Posts (Paginated)
+ * GET /api/posts
+ * Public access - returns only published posts
+ */
+export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
+  const query: PostQueryParams = {
+    page: req.query.page ? Number(req.query.page) : 1,
+    limit: req.query.limit ? Number(req.query.limit) : 10,
+    search: req.query.search as string,
+    categoryId: req.query.categoryId as string,
+    categorySlug: req.query.categorySlug as string,
+    tagId: req.query.tagId as string,
+    tagSlug: req.query.tagSlug as string,
+    authorId: req.query.authorId as string,
+    authorUsername: req.query.authorUsername as string,
+    status: req.query.status as any,
+    postType: req.query.postType as any,
+    difficultyLevel: req.query.difficultyLevel as any,
+    sortBy: (req.query.sortBy as any) || 'publishedAt',
+    sortOrder: (req.query.sortOrder as any) || 'desc',
+  };
+
+  const result = await postService.getAllPosts(query, false);
+
+  return sendSuccess(
+    res,
+    200,
+    result.message,
+    { posts: result.data!.data },
+    result.data!.pagination
+  );
+});
+
+/**
+ * Get Post by ID
+ * GET /api/posts/:id
+ * Public access - returns only published posts
+ */
+export const getPostById = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const result = await postService.getPostById(id!, false);
+
+  // Increment view count asynchronously
+  postService.incrementViewCount(id!).catch((err) => {
+    console.error('Failed to increment view count:', err);
+  });
+
+  return sendSuccess(res, 200, result.message, { post: result.data });
+});
+
+/**
+ * Get Post by Slug
+ * GET /api/posts/slug/:slug
+ * Public access - returns only published posts
+ */
+export const getPostBySlug = asyncHandler(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+
+  const result = await postService.getPostBySlug(slug!, false);
+
+  // Increment view count asynchronously
+  postService.incrementViewCount(result.data!.id).catch((err) => {
+    console.error('Failed to increment view count:', err);
+  });
+
+  return sendSuccess(res, 200, result.message, { post: result.data });
+});
+
+// ==================== AUTHOR/ADMIN POST ENDPOINTS ====================
+
+/**
+ * Create Post
+ * POST /api/posts
+ * Requires authentication and AUTHOR or ADMIN role
+ * Images are URLs from media library (JSON body)
+ */
+export const createPost = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const postData: CreatePostRequest = req.body;
+
+  const result = await postService.createPost(userId, postData);
+
+  // Log activity
+  await logActivity({
+    userId,
+    action: 'CREATE',
+    entity: 'Post',
+    entityId: result.data!.id,
+    description: `Created post: ${result.data!.title}`,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+  });
+
+  return sendCreated(res, result.message, { post: result.data });
+});
+
+/**
+ * Get All Posts (Admin/Author - includes drafts)
+ * GET /api/posts/admin/all
+ * Requires authentication and AUTHOR or ADMIN role
+ */
+export const getAllPostsAdmin = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+
+  const query: PostQueryParams = {
+    page: req.query.page ? Number(req.query.page) : 1,
+    limit: req.query.limit ? Number(req.query.limit) : 10,
+    search: req.query.search as string,
+    categoryId: req.query.categoryId as string,
+    categorySlug: req.query.categorySlug as string,
+    tagId: req.query.tagId as string,
+    tagSlug: req.query.tagSlug as string,
+    authorId: req.query.authorId as string,
+    authorUsername: req.query.authorUsername as string,
+    status: req.query.status as any,
+    postType: req.query.postType as any,
+    difficultyLevel: req.query.difficultyLevel as any,
+    sortBy: (req.query.sortBy as any) || 'createdAt',
+    sortOrder: (req.query.sortOrder as any) || 'desc',
+  };
+
+  // If user is AUTHOR (not ADMIN), only show their own posts
+  if (userRole === 'AUTHOR') {
+    query.authorId = userId;
+  }
+
+  const result = await postService.getAllPosts(query, true);
+
+  return sendSuccess(
+    res,
+    200,
+    result.message,
+    { posts: result.data!.data },
+    result.data!.pagination
+  );
+});
+
+/**
+ * Get Post by ID (Admin/Author - includes drafts)
+ * GET /api/posts/admin/:id
+ * Requires authentication and AUTHOR or ADMIN role
+ */
+export const getPostByIdAdmin = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+
+  const result = await postService.getPostById(id!, true);
+
+  // If user is AUTHOR (not ADMIN), verify they own the post
+  if (userRole === 'AUTHOR' && result.data!.authorId !== userId) {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to access this post',
+    });
+  }
+
+  return sendSuccess(res, 200, result.message, { post: result.data });
+});
+
+/**
+ * Update Post
+ * PUT /api/posts/:id
+ * Requires authentication and AUTHOR or ADMIN role
+ */
+export const updatePost = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+  const postData: UpdatePostRequest = req.body;
+
+  // First, get the post to check ownership
+  const existingPost = await postService.getPostById(id!, true);
+
+  // If user is AUTHOR (not ADMIN), verify they own the post
+  if (userRole === 'AUTHOR' && existingPost.data!.authorId !== userId) {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to update this post',
+    });
+  }
+
+  const result = await postService.updatePost(id!, postData);
+
+  // Log activity
+  await logActivity({
+    userId,
+    action: 'UPDATE',
+    entity: 'Post',
+    entityId: id!,
+    description: `Updated post: ${result.data!.title}`,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+  });
+
+  return sendSuccess(res, 200, result.message, { post: result.data });
+});
+
+/**
+ * Delete Post (Soft Delete)
+ * DELETE /api/posts/:id
+ * Requires authentication and AUTHOR or ADMIN role
+ */
+export const deletePost = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+
+  // First, get the post to check ownership
+  const existingPost = await postService.getPostById(id!, true);
+
+  // If user is AUTHOR (not ADMIN), verify they own the post
+  if (userRole === 'AUTHOR' && existingPost.data!.authorId !== userId) {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to delete this post',
+    });
+  }
+
+  await postService.deletePost(id!);
+
+  // Log activity
+  await logActivity({
+    userId,
+    action: 'DELETE',
+    entity: 'Post',
+    entityId: id!,
+    description: `Deleted post: ${existingPost.data!.title}`,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+  });
+
+  return sendSuccess(res, 200, 'Post deleted successfully', null);
+});
+
+/**
+ * Permanently Delete Post
+ * DELETE /api/posts/:id/permanent
+ * Requires authentication and ADMIN role only
+ */
+export const permanentlyDeletePost = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.userId;
+
+  const existingPost = await postService.getPostById(id!, true);
+
+  await postService.permanentlyDeletePost(id!);
+
+  // Log activity
+  await logActivity({
+    userId,
+    action: 'DELETE',
+    entity: 'Post',
+    entityId: id!,
+    description: `Permanently deleted post: ${existingPost.data!.title}`,
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+  });
+
+  return sendSuccess(res, 200, 'Post permanently deleted', null);
+});
