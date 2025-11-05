@@ -29,6 +29,13 @@ const router = Router();
 // No authentication required
 
 /**
+ * Search Users for Mention/Autocomplete
+ * GET /api/users/search
+ * Query params: q (search query), limit (default 10)
+ */
+router.get('/search', userController.searchUsers);
+
+/**
  * Get Public User Profile by Username
  * GET /api/users/public/@:username
  */

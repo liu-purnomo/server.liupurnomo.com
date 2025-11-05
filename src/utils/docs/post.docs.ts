@@ -145,7 +145,7 @@ export const postPaths = {
     get: {
       tags: ['Posts'],
       summary: 'Get published post by ID',
-      description: 'Get published post details by ID. No authentication required. View count is incremented automatically.',
+      description: 'Get published post details by ID. Includes post reactions (up to 50 recent reactions) and reaction counts. No authentication required. View count is incremented automatically.',
       security: [],
       parameters: [
         {
@@ -274,8 +274,8 @@ export const postPaths = {
   '/api/posts/slug/{slug}': {
     get: {
       tags: ['Posts'],
-      summary: 'Get published post by slug',
-      description: 'Get published post details by slug (URL-friendly identifier). No authentication required. View count is incremented automatically.',
+      summary: 'Get published post by slug with related posts',
+      description: 'Get published post details by slug (URL-friendly identifier) with related posts from the same category and latest posts for sidebar. Includes post reactions (up to 50 recent reactions) and reaction counts. No authentication required. View count is incremented automatically. Returns up to 5 related posts and 5 latest posts.',
       security: [],
       parameters: [
         {
@@ -289,7 +289,7 @@ export const postPaths = {
       ],
       responses: {
         200: {
-          description: 'Post retrieved successfully',
+          description: 'Post retrieved successfully with related and latest posts',
           content: {
             'application/json': {
               schema: {
@@ -297,12 +297,7 @@ export const postPaths = {
                 properties: {
                   success: { type: 'boolean', example: true },
                   message: { type: 'string', example: 'Post retrieved successfully' },
-                  data: {
-                    type: 'object',
-                    properties: {
-                      post: { $ref: '#/components/schemas/PostResponse' },
-                    },
-                  },
+                  data: { $ref: '#/components/schemas/PostDetailResponse' },
                 },
               },
             },
@@ -497,6 +492,241 @@ export const postPaths = {
         },
         401: { $ref: '#/components/responses/Unauthorized' },
         403: { $ref: '#/components/responses/Forbidden' },
+        404: { $ref: '#/components/responses/NotFound' },
+      },
+    },
+  },
+
+  // ==================== POST REACTION ENDPOINTS ====================
+
+  '/api/posts/{postId}/reactions': {
+    post: {
+      tags: ['Post Reactions'],
+      summary: 'Add or toggle reaction on post',
+      description:
+        'Add or toggle a reaction on a post. If user already has this reaction type, it will be removed (toggle off). If user has different reaction type, it will be switched to new type. Supports both authenticated users and guests.',
+      security: [{ BearerAuth: [] }, {}], // Optional authentication
+      parameters: [
+        {
+          name: 'postId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Post ID',
+          example: 'clpost123abc',
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/PostReactionRequest' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description:
+            'Reaction added/updated or removed successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: {
+                    type: 'string',
+                    example: 'Reaction added successfully',
+                  },
+                  data: {
+                    $ref: '#/components/schemas/AddOrToggleReactionResponse',
+                  },
+                },
+              },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: { $ref: '#/components/responses/NotFound' },
+      },
+    },
+    get: {
+      tags: ['Post Reactions'],
+      summary: 'Get all reactions for post',
+      description:
+        'Get all reactions for a post with pagination. Optionally filter by reaction type.',
+      parameters: [
+        {
+          name: 'postId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Post ID',
+          example: 'clpost123abc',
+        },
+        {
+          name: 'reactionType',
+          in: 'query',
+          required: false,
+          schema: {
+            type: 'string',
+            enum: ['LIKE', 'HELPFUL', 'LOVE', 'INSIGHTFUL', 'AMAZING'],
+          },
+          description: 'Filter by reaction type',
+          example: 'LIKE',
+        },
+        {
+          name: 'page',
+          in: 'query',
+          required: false,
+          schema: { type: 'integer', minimum: 1, default: 1 },
+          description: 'Page number',
+          example: 1,
+        },
+        {
+          name: 'limit',
+          in: 'query',
+          required: false,
+          schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+          description: 'Items per page',
+          example: 20,
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Post reactions retrieved successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: {
+                    type: 'string',
+                    example: 'Post reactions retrieved successfully',
+                  },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      reactions: {
+                        type: 'array',
+                        items: {
+                          $ref: '#/components/schemas/PostReactionResponse',
+                        },
+                      },
+                    },
+                  },
+                  pagination: {
+                    type: 'object',
+                    properties: {
+                      page: { type: 'integer', example: 1 },
+                      limit: { type: 'integer', example: 20 },
+                      total: { type: 'integer', example: 145 },
+                      totalPages: { type: 'integer', example: 8 },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        404: { $ref: '#/components/responses/NotFound' },
+      },
+    },
+  },
+
+  '/api/posts/{postId}/reactions/summary': {
+    get: {
+      tags: ['Post Reactions'],
+      summary: 'Get reactions summary for post',
+      description:
+        'Get aggregate reaction counts for a post and optionally the current user\'s reactions (if authenticated).',
+      security: [{ BearerAuth: [] }, {}], // Optional authentication
+      parameters: [
+        {
+          name: 'postId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Post ID',
+          example: 'clpost123abc',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Post reactions summary retrieved successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: {
+                    type: 'string',
+                    example: 'Post reactions summary retrieved successfully',
+                  },
+                  data: {
+                    $ref: '#/components/schemas/PostReactionsSummary',
+                  },
+                },
+              },
+            },
+          },
+        },
+        404: { $ref: '#/components/responses/NotFound' },
+      },
+    },
+  },
+
+  '/api/posts/{postId}/reactions/{reactionType}': {
+    delete: {
+      tags: ['Post Reactions'],
+      summary: 'Remove reaction from post',
+      description:
+        'Remove a specific reaction type from a post. Supports both authenticated users and guests.',
+      security: [{ BearerAuth: [] }, {}], // Optional authentication
+      parameters: [
+        {
+          name: 'postId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Post ID',
+          example: 'clpost123abc',
+        },
+        {
+          name: 'reactionType',
+          in: 'path',
+          required: true,
+          schema: {
+            type: 'string',
+            enum: ['LIKE', 'HELPFUL', 'LOVE', 'INSIGHTFUL', 'AMAZING'],
+          },
+          description: 'Reaction type to remove',
+          example: 'LIKE',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Reaction removed successfully',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: {
+                    type: 'string',
+                    example: 'Reaction removed successfully',
+                  },
+                  data: { type: 'null' },
+                },
+              },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
         404: { $ref: '#/components/responses/NotFound' },
       },
     },

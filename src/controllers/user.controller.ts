@@ -329,3 +329,24 @@ export const deleteAvatar = asyncHandler(
     return sendSuccess(res, 200, 'Avatar deleted successfully', { user });
   }
 );
+
+// ==================== AUTOCOMPLETE/SEARCH ENDPOINTS ====================
+
+/**
+ * Search Users for Mention/Autocomplete
+ * GET /api/users/search
+ * Public access - returns limited user info for mentions
+ * Query params: q (search query), limit (default 10)
+ */
+export const searchUsers = asyncHandler(async (req: Request, res: Response) => {
+  const { q = '', limit = '10' } = req.query;
+  const searchQuery = q as string;
+  const limitNum = parseInt(limit as string, 10);
+
+  const users = await userService.searchUsersForMention(
+    searchQuery,
+    limitNum
+  );
+
+  return sendSuccess(res, 200, 'Users retrieved successfully', { users });
+});

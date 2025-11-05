@@ -1,4 +1,9 @@
-import { PostType, PostStatus, DifficultyLevel } from '@prisma/client';
+import {
+  PostType,
+  PostStatus,
+  DifficultyLevel,
+  ReactionType,
+} from '@prisma/client';
 
 /**
  * Post Type Definitions
@@ -96,6 +101,13 @@ export interface PostResponse {
   readingTime: number | null;
   difficultyLevel: DifficultyLevel | null;
 
+  // Reaction counts
+  likeCount: number;
+  helpfulCount: number;
+  loveCount: number;
+  insightfulCount: number;
+  amazingCount: number;
+
   // Timestamps
   publishedAt: Date | null;
   scheduledAt: Date | null;
@@ -122,10 +134,22 @@ export interface PostResponse {
       slug: string;
     };
   }>;
+  postReactions?: Array<{
+    id: string;
+    reactionType: ReactionType;
+    createdAt: Date;
+    user: {
+      id: string;
+      username: string;
+      name: string | null;
+      avatarUrl: string | null;
+    } | null;
+  }>;
   _count?: {
     comments?: number;
     postViews?: number;
     bookmarks?: number;
+    postReactions?: number;
     inlineComments?: number;
     paragraphReactions?: number;
     highlights?: number;
@@ -175,6 +199,32 @@ export interface PostListItemResponse {
 }
 
 /**
+ * Post Detail Response with Related Posts
+ * Extended post response with related and latest posts
+ */
+export interface PostDetailResponse {
+  post: PostResponse;
+  relatedPosts: PostListItemResponse[];
+  latestPosts: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    featuredImageUrl: string | null;
+    publishedAt: Date | null;
+    readingTime: number | null;
+    viewCount: number;
+    category: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+    _count: {
+      comments: number;
+    };
+  }>;
+}
+
+/**
  * Query parameters for post listing
  */
 export interface PostQueryParams {
@@ -192,4 +242,47 @@ export interface PostQueryParams {
   difficultyLevel?: DifficultyLevel;
   sortBy?: 'publishedAt' | 'createdAt' | 'updatedAt' | 'viewCount' | 'title';
   sortOrder?: 'asc' | 'desc';
+}
+
+// ==================== POST REACTION TYPES ====================
+
+/**
+ * Post Reaction Request
+ * Add or remove reaction from a post
+ */
+export interface PostReactionRequest {
+  reactionType: ReactionType; // LIKE, HELPFUL, LOVE, INSIGHTFUL, AMAZING
+}
+
+/**
+ * Post Reaction Response
+ * Individual reaction record
+ */
+export interface PostReactionResponse {
+  id: string;
+  postId: string;
+  userId: string | null;
+  reactionType: ReactionType;
+  createdAt: Date;
+  user?: {
+    id: string;
+    username: string;
+    name: string | null;
+    avatarUrl: string | null;
+  } | null;
+}
+
+/**
+ * Post Reactions Summary
+ * Aggregate reaction counts for a post
+ */
+export interface PostReactionsSummary {
+  postId: string;
+  totalReactions: number;
+  likeCount: number;
+  helpfulCount: number;
+  loveCount: number;
+  insightfulCount: number;
+  amazingCount: number;
+  userReactions?: ReactionType[]; // Reactions from current user
 }

@@ -202,6 +202,9 @@ model User {
   // Paragraph reaction relations
   paragraphReactions ParagraphReaction[] // Reactions on paragraphs
 
+  // Post reaction relations
+  postReactions PostReaction[] // Reactions on posts
+
   // Highlight relations
   highlights             Highlight[] // Highlights created by user
   highlightNotes         HighlightNote[] // Notes on highlights
@@ -237,18 +240,18 @@ model NotificationPreference {
   commentFeatured   Boolean @default(true) // Notify when user's comment is featured
 
   // In-app notification preferences - Inline Comments
-  inlineCommentOnPost      Boolean @default(true) // Notify when someone adds inline comment on user's post
-  replyToInlineComment     Boolean @default(true) // Notify when someone replies to user's inline comment
-  mentionInInlineComment   Boolean @default(true) // Notify when user is mentioned in inline comment
-  reactionOnInlineComment  Boolean @default(true) // Notify when someone reacts to user's inline comment
+  inlineCommentOnPost     Boolean @default(true) // Notify when someone adds inline comment on user's post
+  replyToInlineComment    Boolean @default(true) // Notify when someone replies to user's inline comment
+  mentionInInlineComment  Boolean @default(true) // Notify when user is mentioned in inline comment
+  reactionOnInlineComment Boolean @default(true) // Notify when someone reacts to user's inline comment
 
   // In-app notification preferences - Highlights
-  highlightOnPost        Boolean @default(true) // Notify when someone highlights user's post
-  noteOnHighlight        Boolean @default(true) // Notify when someone adds note on user's highlight
-  replyToHighlightNote   Boolean @default(true) // Notify when someone replies to user's highlight note
-  mentionInHighlight     Boolean @default(true) // Notify when user is mentioned in highlight note
-  reactionOnHighlight    Boolean @default(true) // Notify when someone reacts to user's highlight
-  shareHighlight         Boolean @default(false) // Notify when someone shares user's highlight
+  highlightOnPost      Boolean @default(true) // Notify when someone highlights user's post
+  noteOnHighlight      Boolean @default(true) // Notify when someone adds note on user's highlight
+  replyToHighlightNote Boolean @default(true) // Notify when someone replies to user's highlight note
+  mentionInHighlight   Boolean @default(true) // Notify when user is mentioned in highlight note
+  reactionOnHighlight  Boolean @default(true) // Notify when someone reacts to user's highlight
+  shareHighlight       Boolean @default(false) // Notify when someone shares user's highlight
 
   // In-app notification preferences - General
   postPublished    Boolean @default(false) // Notify when followed author publishes
@@ -401,6 +404,13 @@ model Post {
   readingTime     Int? // Estimated reading time in minutes
   difficultyLevel DifficultyLevel? // Tutorial difficulty (null for blogs)
 
+  // Post reaction counts (denormalized for performance)
+  likeCount       Int @default(0) // Count of LIKE reactions
+  helpfulCount    Int @default(0) // Count of HELPFUL reactions
+  loveCount       Int @default(0) // Count of LOVE reactions
+  insightfulCount Int @default(0) // Count of INSIGHTFUL reactions
+  amazingCount    Int @default(0) // Count of AMAZING reactions
+
   // Timestamps
   publishedAt DateTime? // Publication timestamp
   scheduledAt DateTime? // Scheduled publication time
@@ -421,6 +431,7 @@ model Post {
   inlineComments     InlineComment[] // Inline comments on this post
   paragraphReactions ParagraphReaction[] // Paragraph reactions on this post
   highlights         Highlight[] // Highlights on this post
+  postReactions      PostReaction[] // Post-level reactions
 
   @@index([slug])
   @@index([status])
@@ -1009,6 +1020,36 @@ model ParagraphReaction {
   @@index([postId, blockId]) // All reactions on a specific block
   @@index([postId, paragraphId]) // All reactions on a specific paragraph
   @@index([userId, createdAt(sort: Desc)]) // User's reaction history
+}
+
+// ==================== POST REACTION SYSTEM ====================
+
+/// Quick reactions on entire posts (overall engagement)
+/// Simpler than paragraph reactions - applies to the whole article
+/// Provides aggregate engagement metrics for posts (likes, loves, etc.)
+model PostReaction {
+  id           String       @id @default(cuid())
+  postId       String
+  userId       String? // Nullable for guest reactions
+  reactionType ReactionType // Like, love, helpful, insightful, amazing
+
+  // Guest tracking
+  ipAddress String? // IP for guest reactions
+  userAgent String? // Device/browser info
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relations
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([postId, userId, reactionType]) // One reaction type per user per post
+  @@unique([postId, ipAddress, reactionType]) // One reaction per IP (for guests)
+  @@index([postId]) // All reactions on a post
+  @@index([userId, createdAt(sort: Desc)]) // User's reaction history
+  @@index([reactionType]) // Filter by reaction type
+  @@index([postId, reactionType]) // Count reactions by type for a post
 }
 
 // ==================== HIGHLIGHT SYSTEM (MEDIUM-STYLE) ====================

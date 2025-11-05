@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import categoryRoutes from './category.routes.js';
 import mediaRoutes from './media.routes.js';
 import postRoutes from './post.routes.js';
+import postSeriesRoutes from './postSeries.routes.js';
 import tagRoutes from './tag.routes.js';
 import userRoutes from './user.routes.js';
 
@@ -20,6 +21,7 @@ router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/media', mediaRoutes);
 router.use('/posts', postRoutes);
+router.use('/post-series', postSeriesRoutes);
 router.use('/tags', tagRoutes);
 router.use('/users', userRoutes);
 

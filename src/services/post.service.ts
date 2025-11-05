@@ -5,6 +5,7 @@ import type {
   UpdatePostRequest,
   PostResponse,
   PostListItemResponse,
+  PostDetailResponse,
   PostQueryParams,
 } from '../types/index.js';
 import { PaginatedResult, ApiResponse } from '../types/response.types.js';
@@ -45,6 +46,11 @@ function toPostResponse(post: any): PostResponse {
     viewCount: post.viewCount,
     readingTime: post.readingTime,
     difficultyLevel: post.difficultyLevel,
+    likeCount: post.likeCount || 0,
+    helpfulCount: post.helpfulCount || 0,
+    loveCount: post.loveCount || 0,
+    insightfulCount: post.insightfulCount || 0,
+    amazingCount: post.amazingCount || 0,
     publishedAt: post.publishedAt,
     scheduledAt: post.scheduledAt,
     createdAt: post.createdAt,
@@ -55,7 +61,7 @@ function toPostResponse(post: any): PostResponse {
           id: post.author.id,
           name: post.author.name,
           username: post.author.username,
-          avatarUrl: post.author.profilePictureUrl,
+          avatarUrl: post.author.avatarUrl,
         }
       : undefined,
     category: post.category
@@ -72,6 +78,21 @@ function toPostResponse(post: any): PostResponse {
             name: pt.tag.name,
             slug: pt.tag.slug,
           },
+        }))
+      : undefined,
+    postReactions: post.postReactions
+      ? post.postReactions.map((reaction: any) => ({
+          id: reaction.id,
+          reactionType: reaction.reactionType,
+          createdAt: reaction.createdAt,
+          user: reaction.user
+            ? {
+                id: reaction.user.id,
+                username: reaction.user.username,
+                name: reaction.user.name,
+                avatarUrl: reaction.user.avatarUrl,
+              }
+            : null,
         }))
       : undefined,
     _count: post._count,
@@ -487,11 +508,31 @@ export async function getPostById(
           },
         },
       },
+      postReactions: {
+        select: {
+          id: true,
+          reactionType: true,
+          createdAt: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 50, // Limit initial reactions
+      },
       _count: {
         select: {
           comments: true,
           postViews: true,
           bookmarks: true,
+          postReactions: true,
           inlineComments: true,
           paragraphReactions: true,
           highlights: true,
@@ -517,7 +558,7 @@ export async function getPostById(
 export async function getPostBySlug(
   slug: string,
   includeUnpublished = false
-): Promise<ApiResponse<PostResponse>> {
+): Promise<ApiResponse<PostDetailResponse>> {
   const where: Prisma.PostWhereInput = {
     slug,
     deletedAt: null,
@@ -536,6 +577,8 @@ export async function getPostBySlug(
           name: true,
           username: true,
           avatarUrl: true,
+          bio: true,
+          location: true,
         },
       },
       category: {
@@ -543,6 +586,8 @@ export async function getPostBySlug(
           id: true,
           name: true,
           slug: true,
+          description: true,
+          iconUrl: true,
         },
       },
       postTags: {
@@ -552,18 +597,173 @@ export async function getPostBySlug(
               id: true,
               name: true,
               slug: true,
+              description: true,
             },
           },
         },
       },
+      postSeriesItems: {
+        include: {
+          series: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              description: true,
+              thumbnailUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          orderPosition: 'asc',
+        },
+      },
+      comments: {
+        where: {
+          isApproved: true,
+          deletedAt: null,
+          parentId: null, // Only root comments
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+          _count: {
+            select: {
+              replies: true,
+              commentReactions: true,
+            },
+          },
+        },
+        orderBy: [
+          { isPinned: 'desc' },
+          { isFeatured: 'desc' },
+          { createdAt: 'desc' },
+        ],
+        take: 10, // Limit initial comments load
+      },
+      inlineComments: {
+        where: {
+          isPublic: true,
+          isApproved: true,
+          deletedAt: null,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+          _count: {
+            select: {
+              replies: true,
+              reactions: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      paragraphReactions: {
+        where: {
+          userId: { not: null }, // Only authenticated user reactions
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      highlights: {
+        where: {
+          isPublic: true,
+          isHidden: false,
+          deletedAt: null,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+          _count: {
+            select: {
+              notes: true,
+              reactions: true,
+              shares: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 20, // Limit initial highlights
+      },
+      postReactions: {
+        select: {
+          id: true,
+          reactionType: true,
+          createdAt: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 50, // Limit initial reactions
+      },
       _count: {
         select: {
-          comments: true,
+          comments: {
+            where: {
+              isApproved: true,
+              deletedAt: null,
+            },
+          },
           postViews: true,
           bookmarks: true,
-          inlineComments: true,
+          postReactions: true,
+          inlineComments: {
+            where: {
+              isPublic: true,
+              isApproved: true,
+              deletedAt: null,
+            },
+          },
           paragraphReactions: true,
-          highlights: true,
+          highlights: {
+            where: {
+              isPublic: true,
+              isHidden: false,
+              deletedAt: null,
+            },
+          },
         },
       },
     },
@@ -573,10 +773,124 @@ export async function getPostBySlug(
     throw new NotFoundError(`Post with slug '${slug}' not found`);
   }
 
+  // Fetch related posts (same category, exclude current post)
+  const relatedPosts = await prisma.post.findMany({
+    where: {
+      categoryId: post.categoryId,
+      id: { not: post.id },
+      status: PostStatus.PUBLISHED,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      featuredImageUrl: true,
+      postType: true,
+      status: true,
+      viewCount: true,
+      readingTime: true,
+      difficultyLevel: true,
+      publishedAt: true,
+      createdAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          avatarUrl: true,
+          bio: true,
+          location: true,
+        },
+      },
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          iconUrl: true,
+        },
+      },
+      postTags: {
+        include: {
+          tag: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              description: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          comments: {
+            where: {
+              isApproved: true,
+              deletedAt: null,
+            },
+          },
+          bookmarks: true,
+        },
+      },
+    },
+    orderBy: [
+      { viewCount: 'desc' }, // Prioritize popular posts
+      { publishedAt: 'desc' },
+    ],
+    take: 5,
+  });
+
+  // Fetch latest posts for sidebar
+  const latestPosts = await prisma.post.findMany({
+    where: {
+      status: PostStatus.PUBLISHED,
+      deletedAt: null,
+      id: { not: post.id }, // Exclude current post
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      featuredImageUrl: true,
+      publishedAt: true,
+      readingTime: true,
+      viewCount: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          comments: {
+            where: {
+              isApproved: true,
+              deletedAt: null,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      publishedAt: 'desc',
+    },
+    take: 5,
+  });
+
   return {
     success: true,
     message: 'Post retrieved successfully',
-    data: toPostResponse(post),
+    data: {
+      post: toPostResponse(post),
+      relatedPosts: relatedPosts.map(toPostListItem),
+      latestPosts: latestPosts,
+    },
   };
 }
 
@@ -791,4 +1105,53 @@ export async function incrementViewCount(postId: string): Promise<void> {
       },
     },
   });
+}
+
+// ==================== AUTOCOMPLETE/SEARCH OPERATIONS ====================
+
+/**
+ * Search Posts for Internal Link/Autocomplete
+ * Returns limited post info for link suggestions
+ */
+export async function searchPostsForLink(
+  searchQuery: string,
+  limit: number = 10
+): Promise<Array<{ id: string; title: string; slug: string; url: string; type: string }>> {
+  // Build search condition
+  const where: any = {
+    status: PostStatus.PUBLISHED,
+    deletedAt: null,
+  };
+
+  // Add search filter if query provided
+  if (searchQuery) {
+    where.OR = [
+      { title: { contains: searchQuery, mode: 'insensitive' } },
+      { slug: { contains: searchQuery, mode: 'insensitive' } },
+    ];
+  }
+
+  // Search posts
+  const posts = await prisma.post.findMany({
+    where,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      postType: true,
+    },
+    take: limit,
+    orderBy: {
+      publishedAt: 'desc',
+    },
+  });
+
+  // Transform to expected format
+  return posts.map(post => ({
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    url: `/${post.slug}`,
+    type: post.postType.toLowerCase(),
+  }));
 }

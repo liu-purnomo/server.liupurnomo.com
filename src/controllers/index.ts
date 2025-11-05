@@ -10,5 +10,7 @@ export * as githubAuthController from './githubAuth.controller.js';
 export * as googleAuthController from './googleAuth.controller.js';
 export * as mediaController from './media.controller.js';
 export * as postController from './post.controller.js';
+export * as postReactionController from './post-reaction.controller.js';
+export * as postSeriesController from './postSeries.controller.js';
 export * as tagController from './tag.controller.js';
 export * as userController from './user.controller.js';

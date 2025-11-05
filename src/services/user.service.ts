@@ -508,3 +508,44 @@ export async function deleteUserAvatar(userId: string): Promise<UserProfileRespo
 
   return toUserProfileResponse(updatedUser);
 }
+
+// ==================== AUTOCOMPLETE/SEARCH OPERATIONS ====================
+
+/**
+ * Search Users for Mention/Autocomplete
+ * Returns limited user info for mention suggestions
+ */
+export async function searchUsersForMention(
+  searchQuery: string,
+  limit: number = 10
+): Promise<Array<{ id: string; username: string; name: string | null; avatarUrl: string | null }>> {
+  // Build search condition
+  const where: any = {
+    isActive: true,
+  };
+
+  // Add search filter if query provided
+  if (searchQuery) {
+    where.OR = [
+      { username: { contains: searchQuery, mode: 'insensitive' } },
+      { name: { contains: searchQuery, mode: 'insensitive' } },
+    ];
+  }
+
+  // Search users
+  const users = await prisma.user.findMany({
+    where,
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      avatarUrl: true,
+    },
+    take: limit,
+    orderBy: {
+      username: 'asc',
+    },
+  });
+
+  return users;
+}

@@ -75,18 +75,19 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
  * Get Post by Slug
  * GET /api/posts/slug/:slug
  * Public access - returns only published posts
+ * Returns post with related posts and latest posts
  */
 export const getPostBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
 
   const result = await postService.getPostBySlug(slug!, false);
 
-  // Increment view count asynchronously
-  postService.incrementViewCount(result.data!.id).catch((err) => {
+  // Increment view count asynchronously (result.data is PostDetailResponse)
+  postService.incrementViewCount(result.data!.post.id).catch((err) => {
     console.error('Failed to increment view count:', err);
   });
 
-  return sendSuccess(res, 200, result.message, { post: result.data });
+  return sendSuccess(res, 200, result.message, result.data);
 });
 
 // ==================== AUTHOR/ADMIN POST ENDPOINTS ====================
@@ -282,4 +283,22 @@ export const permanentlyDeletePost = asyncHandler(async (req: Request, res: Resp
   });
 
   return sendSuccess(res, 200, 'Post permanently deleted', null);
+});
+
+// ==================== AUTOCOMPLETE/SEARCH ENDPOINTS ====================
+
+/**
+ * Search Posts for Internal Link/Autocomplete
+ * GET /api/posts/search
+ * Public access - returns limited post info for internal linking
+ * Query params: q (search query), limit (default 10)
+ */
+export const searchPosts = asyncHandler(async (req: Request, res: Response) => {
+  const { q = '', limit = '10' } = req.query;
+  const searchQuery = q as string;
+  const limitNum = parseInt(limit as string, 10);
+
+  const posts = await postService.searchPostsForLink(searchQuery, limitNum);
+
+  return sendSuccess(res, 200, 'Posts retrieved successfully', { posts });
 });

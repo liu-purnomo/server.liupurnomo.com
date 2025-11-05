@@ -1,9 +1,13 @@
 import { Router } from 'express';
-import { postController } from '../controllers/index.js';
+import {
+  postController,
+  postReactionController,
+} from '../controllers/index.js';
 import {
   authenticate,
   requireRole,
   validate,
+  optionalAuth,
 } from '../middlewares/index.js';
 import {
   createPostValidator,
@@ -23,6 +27,13 @@ const router = Router();
 
 // ==================== PUBLIC ROUTES ====================
 // No authentication required - returns only published posts
+
+/**
+ * Search Posts for Internal Link/Autocomplete
+ * GET /api/posts/search
+ * Query params: q (search query), limit (default 10)
+ */
+router.get('/search', postController.searchPosts);
 
 /**
  * Get Post by Slug
@@ -55,6 +66,53 @@ router.get(
   '/:id',
   validate(getPostByIdValidator, 'params'),
   postController.getPostById
+);
+
+// ==================== POST REACTION ROUTES ====================
+// Public routes with optional authentication
+
+/**
+ * Add or Toggle Reaction on Post
+ * POST /api/posts/:postId/reactions
+ * Body: { reactionType: "LIKE" | "HELPFUL" | "LOVE" | "INSIGHTFUL" | "AMAZING" }
+ * Supports both authenticated users and guests
+ */
+router.post(
+  '/:postId/reactions',
+  optionalAuth,
+  postReactionController.addOrToggleReaction
+);
+
+/**
+ * Get Reactions Summary for Post
+ * GET /api/posts/:postId/reactions/summary
+ * Returns aggregate counts and user's reactions (if authenticated)
+ */
+router.get(
+  '/:postId/reactions/summary',
+  optionalAuth,
+  postReactionController.getReactionsSummary
+);
+
+/**
+ * Get All Reactions for Post (Paginated)
+ * GET /api/posts/:postId/reactions
+ * Query params: reactionType (optional), page (default 1), limit (default 20)
+ */
+router.get(
+  '/:postId/reactions',
+  postReactionController.getPostReactions
+);
+
+/**
+ * Remove Reaction from Post
+ * DELETE /api/posts/:postId/reactions/:reactionType
+ * Supports both authenticated users and guests
+ */
+router.delete(
+  '/:postId/reactions/:reactionType',
+  optionalAuth,
+  postReactionController.removeReaction
 );
 
 // ==================== AUTHOR/ADMIN ROUTES ====================

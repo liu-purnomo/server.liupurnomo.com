@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2025-11-05
+
+### Added
+- **Post Reactions Feature**
+  - Complete post reaction system with 5 reaction types: LIKE, HELPFUL, LOVE, INSIGHTFUL, AMAZING
+  - Toggle reaction endpoint: POST `/api/posts/:postId/reactions` to add or remove reactions
+  - Get reactions by type endpoint: GET `/api/posts/:postId/reactions/:reactionType`
+  - List all reactions endpoint: GET `/api/posts/:postId/reactions` with pagination
+  - User-based reaction tracking and filtering
+  - IP address and user agent tracking for analytics
+  - Reaction counts aggregation on post model (likeCount, helpfulCount, loveCount, insightfulCount, amazingCount)
+  - Database triggers to maintain accurate reaction counts
+  - Soft delete support for reactions
+  - OpenAPI documentation for all reaction endpoints
+
+### Changed
+- **Post Service**
+  - Updated `getPostBySlug` to include `postReactions` with user details
+  - Updated `getPostById` to include `postReactions` with user details
+  - Added `_count.postReactions` to post response for total reaction count
+  - Modified `toPostResponse` helper to map and return postReactions array
+
+- **Post Schema**
+  - Added `postReactions` field to PostResponse schema in OpenAPI
+  - Added reaction count fields to Post model schema
+  - Updated post response examples to include reaction data
+
+- **Database Schema**
+  - Added `PostReaction` model with relations to Post and User
+  - Added reaction count fields to Post model (likeCount, helpfulCount, loveCount, insightfulCount, amazingCount)
+  - Created database migration for post reaction feature
+  - Added indexes for performance optimization on reaction queries
+
+### Security
+- **Post Reactions**
+  - Optional authentication for reaction endpoints (works for both authenticated and anonymous users)
+  - User-based reaction ownership validation
+  - IP-based rate limiting ready for anonymous reactions
+
 ## [0.14.1] - 2025-01-04
 
 ### Fixed
