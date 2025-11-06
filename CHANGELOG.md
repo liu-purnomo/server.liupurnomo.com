@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2025-01-06
+
+### Added
+- **Comment System with Nested Replies**
+  - Complete CRUD operations for comments and replies
+  - Create comment endpoint: POST `/api/comments` with post association
+  - Create reply endpoint: POST `/api/comments/:commentId/replies` for nested discussions
+  - Get comments by post: GET `/api/posts/:postId/comments` with pagination and sorting
+  - Get single comment with replies: GET `/api/comments/:commentId` with nested reply tree
+  - Update comment: PATCH `/api/comments/:commentId` for editing
+  - Delete comment: DELETE `/api/comments/:commentId` with soft delete support
+  - Nested comment structure with unlimited depth support
+  - Author information included in comment responses
+  - Reply count tracking per comment
+  - Soft delete cascade for comments and replies
+  - OpenAPI documentation for all comment endpoints
+
+- **Comment Validation**
+  - Comprehensive validation schema for comment creation and updates
+  - Content validation (min 1, max 5000 characters)
+  - Sanitization for security
+  - Parent comment validation for replies
+
+- **Comment Documentation**
+  - Complete OpenAPI schema for Comment and CommentReply types
+  - Request/response examples with nested structures
+  - Error response documentation
+  - Authentication requirements
+
+### Changed
+- **Post Reaction Service**
+  - Refactored reaction toggle logic for better code organization
+  - Improved error handling with detailed error messages
+  - Enhanced validation for reaction types
+  - Better type safety with PostReactionType enum usage
+
+- **Post Validator**
+  - Improved validation schemas formatting
+  - Better error messages for validation failures
+  - Enhanced type inference
+
+- **Database Schema**
+  - Updated Comment model relations for better query performance
+  - Added composite unique constraint removal migration for PostReaction
+  - Improved indexing for comment queries
+
+### Fixed
+- **Post Reaction Constraints**
+  - Removed duplicate unique constraints on PostReaction model
+  - Fixed userId and postId relation constraints
+  - Migration: `20251105201341_remove_post_reaction_unique_constraints`
+
+### Security
+- **Comment System**
+  - User authentication required for comment operations
+  - Comment ownership validation for updates and deletes
+  - Content sanitization to prevent XSS attacks
+  - Rate limiting ready for comment spam prevention
+
 ## [0.15.0] - 2025-11-05
 
 ### Added

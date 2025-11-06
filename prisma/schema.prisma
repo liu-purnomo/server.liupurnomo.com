@@ -1027,6 +1027,9 @@ model ParagraphReaction {
 /// Quick reactions on entire posts (overall engagement)
 /// Simpler than paragraph reactions - applies to the whole article
 /// Provides aggregate engagement metrics for posts (likes, loves, etc.)
+/// Authenticated users identified by userId only (can have multiple from same IP)
+/// Anonymous users identified by ipAddress + userId=null (same IP = same user)
+/// No unique constraints - uniqueness handled in service layer logic
 model PostReaction {
   id           String       @id @default(cuid())
   postId       String
@@ -1044,9 +1047,9 @@ model PostReaction {
   post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  @@unique([postId, userId, reactionType]) // One reaction type per user per post
-  @@unique([postId, ipAddress, reactionType]) // One reaction per IP (for guests)
   @@index([postId]) // All reactions on a post
+  @@index([postId, userId, reactionType]) // For authenticated user lookup and uniqueness check
+  @@index([postId, ipAddress, userId]) // For anonymous user lookup (userId=null + ipAddress)
   @@index([userId, createdAt(sort: Desc)]) // User's reaction history
   @@index([reactionType]) // Filter by reaction type
   @@index([postId, reactionType]) // Count reactions by type for a post

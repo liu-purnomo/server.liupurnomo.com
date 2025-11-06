@@ -1,5 +1,5 @@
+import { DifficultyLevel, PostStatus, PostType } from '@prisma/client';
 import { z } from 'zod';
-import { PostType, PostStatus, DifficultyLevel } from '@prisma/client';
 
 /**
  * Post Validators
@@ -47,9 +47,7 @@ const postContentSchema = z.any(); // JSON content blocks from editor
 /**
  * Category ID Schema
  */
-const categoryIdSchema = z
-  .string({ message: 'Category ID must be a string' })
-  .cuid('Invalid category ID format');
+const categoryIdSchema = z.cuid('Invalid category ID format');
 
 /**
  * Tags Schema
@@ -120,7 +118,6 @@ const metaKeywordsSchema = z
  * Featured Image URL Schema
  */
 const featuredImageUrlSchema = z
-  .string({ message: 'Featured image URL must be a string' })
   .url('Invalid featured image URL format')
   .trim()
   .optional();
@@ -128,17 +125,12 @@ const featuredImageUrlSchema = z
 /**
  * OG Image URL Schema
  */
-const ogImageUrlSchema = z
-  .string({ message: 'OG image URL must be a string' })
-  .url('Invalid OG image URL format')
-  .trim()
-  .optional();
+const ogImageUrlSchema = z.url('Invalid OG image URL format').trim().optional();
 
 /**
  * Canonical URL Schema
  */
 const canonicalUrlSchema = z
-  .string({ message: 'Canonical URL must be a string' })
   .url('Invalid canonical URL format')
   .trim()
   .optional();
@@ -156,8 +148,7 @@ const readingTimeSchema = z
 /**
  * Datetime String Schema
  */
-const datetimeStringSchema = z
-  .string({ message: 'Date must be a string' })
+const datetimeStringSchema = z.iso
   .datetime('Invalid datetime format. Use ISO 8601 format')
   .optional();
 
@@ -322,25 +313,31 @@ export const getPostsQueryValidator = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().optional(),
-  categoryId: z.string().cuid().optional(),
+  categoryId: z.cuid().optional(),
   categorySlug: z.string().trim().optional(),
-  tagId: z.string().cuid().optional(),
+  tagId: z.cuid().optional(),
   tagSlug: z.string().trim().optional(),
-  authorId: z.string().cuid().optional(),
+  authorId: z.cuid().optional(),
   authorUsername: z.string().trim().optional(),
-  status: z.enum([
-    PostStatus.DRAFT,
-    PostStatus.PUBLISHED,
-    PostStatus.SCHEDULED,
-    PostStatus.ARCHIVED,
-  ]).optional(),
+  status: z
+    .enum([
+      PostStatus.DRAFT,
+      PostStatus.PUBLISHED,
+      PostStatus.SCHEDULED,
+      PostStatus.ARCHIVED,
+    ])
+    .optional(),
   postType: z.enum([PostType.BLOG, PostType.TUTORIAL]).optional(),
-  difficultyLevel: z.enum([
-    DifficultyLevel.BEGINNER,
-    DifficultyLevel.INTERMEDIATE,
-    DifficultyLevel.ADVANCED,
-  ]).optional(),
-  sortBy: z.enum(['publishedAt', 'createdAt', 'updatedAt', 'viewCount', 'title']).default('publishedAt'),
+  difficultyLevel: z
+    .enum([
+      DifficultyLevel.BEGINNER,
+      DifficultyLevel.INTERMEDIATE,
+      DifficultyLevel.ADVANCED,
+    ])
+    .optional(),
+  sortBy: z
+    .enum(['publishedAt', 'createdAt', 'updatedAt', 'viewCount', 'title'])
+    .default('publishedAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 

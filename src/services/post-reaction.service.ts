@@ -44,19 +44,23 @@ export async function addOrToggleReaction(
     throw new AppError('Cannot react to unpublished post', 403);
   }
 
-  // Check if user already has this exact reaction
-  const existingReaction = await prisma.postReaction.findFirst({
-    where: userId
-      ? {
-          postId,
-          userId,
-          reactionType,
-        }
-      : {
-          postId,
-          ipAddress,
-          reactionType,
-        },
+  // Build where clause based on authentication status
+  // Authenticated users are identified by userId only
+  // Anonymous users are identified by ipAddress + userId=null
+  const whereClause = userId
+    ? {
+        postId,
+        userId, // Only find reactions from this specific user
+      }
+    : {
+        postId,
+        ipAddress,
+        userId: null, // Only find anonymous reactions from this IP
+      };
+
+  // Find existing reactions from this user
+  const existingReactions = await prisma.postReaction.findMany({
+    where: whereClause,
     include: {
       user: {
         select: {
@@ -69,12 +73,17 @@ export async function addOrToggleReaction(
     },
   });
 
+  // Check if user has this exact reaction type
+  const exactReaction = existingReactions.find(
+    (r) => r.reactionType === reactionType
+  );
+
   // If exact reaction exists, remove it (toggle off)
-  if (existingReaction) {
+  if (exactReaction) {
     await prisma.$transaction(async (tx) => {
       // Delete the reaction
       await tx.postReaction.delete({
-        where: { id: existingReaction.id },
+        where: { id: exactReaction.id },
       });
 
       // Decrement the appropriate count on Post
@@ -106,28 +115,17 @@ export async function addOrToggleReaction(
   }
 
   // Check if user has a different reaction type on this post
-  const otherReaction = await prisma.postReaction.findFirst({
-    where: userId
-      ? {
-          postId,
-          userId,
-          reactionType: { not: reactionType },
-        }
-      : {
-          postId,
-          ipAddress,
-          reactionType: { not: reactionType },
-        },
-  });
+  const otherReaction = existingReactions.find(
+    (r) => r.reactionType !== reactionType
+  );
 
   // If user has different reaction, switch to new one
   if (otherReaction) {
     const newReaction = await prisma.$transaction(async (tx) => {
-      const oldReactionType = otherReaction.reactionType;
-
-      // Delete old reaction
-      await tx.postReaction.delete({
-        where: { id: otherReaction.id },
+      // Delete ALL existing reactions from this user/IP to avoid conflicts
+      // This handles edge cases where both authenticated and anonymous reactions exist
+      await tx.postReaction.deleteMany({
+        where: whereClause,
       });
 
       // Create new reaction
@@ -152,13 +150,6 @@ export async function addOrToggleReaction(
       });
 
       // Update counts: decrement old, increment new
-      const oldCountField = `${oldReactionType.toLowerCase()}Count` as
-        | 'likeCount'
-        | 'helpfulCount'
-        | 'loveCount'
-        | 'insightfulCount'
-        | 'amazingCount';
-
       const newCountField = `${reactionType.toLowerCase()}Count` as
         | 'likeCount'
         | 'helpfulCount'
@@ -166,12 +157,24 @@ export async function addOrToggleReaction(
         | 'insightfulCount'
         | 'amazingCount';
 
+      // Decrement for each deleted reaction
+      const decrementData: any = {};
+      existingReactions.forEach((r) => {
+        const field = `${r.reactionType.toLowerCase()}Count` as
+          | 'likeCount'
+          | 'helpfulCount'
+          | 'loveCount'
+          | 'insightfulCount'
+          | 'amazingCount';
+        decrementData[field] = { decrement: 1 };
+      });
+
+      // Increment for new reaction
+      decrementData[newCountField] = { increment: 1 };
+
       await tx.post.update({
         where: { id: postId },
-        data: {
-          [oldCountField]: { decrement: 1 },
-          [newCountField]: { increment: 1 },
-        },
+        data: decrementData,
       });
 
       return created;
