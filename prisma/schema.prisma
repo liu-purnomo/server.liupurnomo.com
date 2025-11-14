@@ -121,6 +121,44 @@ enum NotificationType {
   SHARE_HIGHLIGHT // Someone shared user's highlight
 }
 
+/// Event types for categorizing events
+enum EventType {
+  WORKSHOP // Hands-on workshop or training session
+  TRAINING // Training program or course
+  SEMINAR // Educational seminar or lecture
+  CONFERENCE // Large conference or convention
+  MEETUP // Informal meetup or networking event
+  WEBINAR // Online webinar or virtual event
+  HACKATHON // Coding competition or hackathon
+  TALK // Speaking engagement or presentation
+  OTHER // Other type of event
+}
+
+/// Event status for lifecycle management
+enum EventStatus {
+  DRAFT // Event is being planned, not visible
+  UPCOMING // Event is published and scheduled for future
+  ONGOING // Event is currently happening
+  COMPLETED // Event has finished
+  CANCELLED // Event was cancelled
+}
+
+/// Event location type
+enum EventLocationType {
+  ONLINE // Virtual/online event
+  OFFLINE // Physical in-person event
+  HYBRID // Both online and offline
+}
+
+/// Post reaction types for events
+enum PostReactionType {
+  LIKE
+  HELPFUL
+  LOVE
+  INSIGHTFUL
+  AMAZING
+}
+
 // ==================== AUTHENTICATION MODELS ====================
 
 /// OAuth and external account management for social authentication
@@ -1311,4 +1349,72 @@ model HighlightCollectionItem {
   @@index([collectionId, orderPosition])
   @@index([highlightId])
   @@index([collectionId, createdAt(sort: Desc)]) // Recent additions to collection
+}
+
+// ==================== EVENT PORTFOLIO ====================
+
+/// Events portfolio showcasing speaking engagements, workshops, and activities
+/// SEO-optimized with full metadata support and image galleries
+model Event {
+  id          String            @id @default(cuid())
+  title       String // Event title
+  slug        String            @unique // SEO-friendly URL identifier
+  description String?           @db.Text // Short description/summary
+  content     Json? // Rich content (JSON format for detailed information)
+  eventType   EventType         @default(OTHER) // Type of event
+  status      EventStatus       @default(DRAFT) // Publication status
+  locationType EventLocationType @default(OFFLINE) // Online, Offline, or Hybrid
+
+  // Event details
+  eventDate DateTime // Event date
+  startTime String? // Start time (e.g., "09:00")
+  endTime   String? // End time (e.g., "17:00")
+  timezone  String   @default("Asia/Jakarta") // Event timezone
+
+  // Location details
+  venue   String? // Venue name (for offline/hybrid events)
+  address String? @db.Text // Full address (for offline/hybrid events)
+  city    String? // City name
+  country String? @default("Indonesia") // Country
+  mapUrl  String? // Google Maps URL or embed link
+
+  // Online event details (for online/hybrid events)
+  platformName String? // Platform name (Zoom, Google Meet, YouTube, etc.)
+  platformUrl  String? // Recording URL or event page
+
+  // Organizer/Host information
+  organizerName String? // Organization or event host name
+  organizerUrl  String? // Organizer website or social media
+
+  // Your role in this event
+  role         String? // Your role: Speaker, Trainer, Facilitator, Panelist, etc.
+  topics       String[] // Topics/subjects you covered
+  participants Int? // Estimated number of participants
+
+  // Images - portfolio showcase
+  featuredImageUrl String? // Main event banner/poster
+  galleryImages    String[] // Array of gallery image URLs (event photos, certificates, etc.)
+
+  // SEO fields
+  metaTitle       String? // Custom SEO title (defaults to title)
+  metaDescription String? @db.Text // SEO meta description
+  metaKeywords    String[] // SEO keywords array
+  ogImageUrl      String? // Open Graph image URL
+  canonicalUrl    String? // Canonical URL for SEO
+
+  // Metrics
+  viewCount Int @default(0) // Page view count
+
+  // Timestamps
+  publishedAt DateTime? // When event was published
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Indexes for performance
+  @@index([slug])
+  @@index([status, eventDate(sort: Desc)]) // Latest events first
+  @@index([eventType, status])
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([city, status])
+  @@index([createdAt(sort: Desc)])
 }

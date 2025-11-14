@@ -10,7 +10,7 @@ export const openapiConfig = {
   openapi: '3.1.0',
   info: {
     title: 'Liu Purnomo Blog API',
-    version: '0.16.1',
+    version: '0.17.0',
     description: `
 Liu Purnomo's personal blog - a modern, scalable backend with advanced content management,
 interactive commenting system, and comprehensive SEO optimization built with
@@ -105,6 +105,14 @@ Authorization: Bearer <your_jwt_token>
     {
       name: 'Comments',
       description: 'Comment system with threading and moderation',
+    },
+    {
+      name: 'Events',
+      description: 'Event portfolio showcasing speaking engagements, workshops, and activities',
+    },
+    {
+      name: 'Bookmarks',
+      description: 'User bookmark management for saved posts',
     },
     {
       name: 'Notifications',

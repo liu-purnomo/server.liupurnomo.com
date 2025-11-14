@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2025-11-14
+
+### Added
+- **Event Portfolio System**
+  - Complete CRUD operations for event portfolio management
+  - Create event: POST `/api/events` for adding workshops, trainings, seminars, and speaking engagements
+  - Get all events: GET `/api/events` with filtering by type, location, status, and date range
+  - Get single event: GET `/api/events/:id` or `/api/events/slug/:slug` with full details
+  - Update event: PATCH `/api/events/:id` for editing event information
+  - Delete event: DELETE `/api/events/:id` with soft delete support
+  - Event types: WORKSHOP, TRAINING, SEMINAR, CONFERENCE, MEETUP, WEBINAR, HACKATHON, TALK, OTHER
+  - Location types: ONLINE, OFFLINE, HYBRID with full address and map URL support
+  - Gallery images support for event photos and documentation
+  - Role and topics tracking for speaker engagements
+  - Participant count tracking for event metrics
+  - SEO optimization with meta tags, Open Graph, and Twitter Card support
+  - Public access for published events, admin/author access for management
+
+- **Bookmark System**
+  - Complete CRUD operations for user bookmarks
+  - Create bookmark: POST `/api/bookmarks` to save posts for later reading
+  - Get all bookmarks: GET `/api/bookmarks` with filtering by favorite, read status, and tags
+  - Get single bookmark: GET `/api/bookmarks/:id` with post details
+  - Update bookmark: PATCH `/api/bookmarks/:id` to edit notes, tags, and status
+  - Delete bookmark: DELETE `/api/bookmarks/:id` to remove saved posts
+  - Toggle read status: POST `/api/bookmarks/:id/toggle-read` to mark as read/unread
+  - Toggle favorite: POST `/api/bookmarks/:id/toggle-favorite` to add/remove from favorites
+  - Personal notes support up to 5000 characters
+  - Tag system with up to 20 tags per bookmark
+  - Read tracking with timestamp
+  - Favorite bookmarks for quick access
+  - Advanced filtering: search in titles and notes, sort by multiple fields
+  - User ownership validation for security
+  - Unique constraint prevents duplicate bookmarks
+
+### Changed
+- **Database Schema Updates**
+  - Added Event model with enums for EventType, EventStatus, and EventLocationType
+  - Added Bookmark model with unique constraint on [userId, postId]
+  - Added migration: `20251114160425_add_event_portfolio_system`
+
+- **API Documentation**
+  - Added comprehensive OpenAPI documentation for Event endpoints
+  - Added comprehensive OpenAPI documentation for Bookmark endpoints
+  - Updated API tags: Added "Events" and "Bookmarks" categories
+  - Enhanced schema definitions with detailed examples
+
+- **Routes Configuration**
+  - Added `/api/events` route with full CRUD operations
+  - Added `/api/bookmarks` route with full CRUD operations
+  - Integrated new routes into main router
+
 ## [0.16.1] - 2025-11-14
 
 ### Changed
