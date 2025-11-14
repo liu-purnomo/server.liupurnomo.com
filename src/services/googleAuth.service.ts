@@ -56,7 +56,8 @@ async function generateUsernameFromEmail(email: string): Promise<string> {
 export async function handleGoogleOAuth(
   googleData: GoogleOAuthUserData
 ): Promise<AuthResponse> {
-  const { googleId, email, name, avatarUrl, accessToken, refreshToken } = googleData;
+  const { googleId, email, name, avatarUrl, accessToken, refreshToken } =
+    googleData;
 
   // Check if user exists
   let user = await prisma.user.findUnique({
@@ -98,7 +99,7 @@ export async function handleGoogleOAuth(
     sendEmail({
       to: email,
       subject: 'Your Account is Ready - Temporary Password',
-      html: googleOAuthPasswordTemplate(name || username, email, tempPassword),
+      html: googleOAuthPasswordTemplate(name || username, email),
     }).catch((error) => {
       console.error('Failed to send Google OAuth password email:', error);
     });

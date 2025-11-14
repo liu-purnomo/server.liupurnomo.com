@@ -7,7 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.16.0] - 2025-01-06
+## [0.16.1] - 2025-11-14
+
+### Changed
+- **Email Template Redesign**
+  - Complete redesign of all email templates with modern, clean aesthetics
+  - Replaced gradient backgrounds with solid colors for better email client compatibility
+  - Updated font stack to use Inter with system font fallbacks
+  - Improved color scheme with modern indigo (#4f46e5) as primary color
+  - Enhanced spacing, padding, and border-radius for better visual hierarchy
+  - Better mobile responsiveness with optimized breakpoints
+  - Improved accessibility with better contrast ratios
+
+- **OAuth Email Templates Enhancement**
+  - Updated Google OAuth welcome email template to remove temporary password display
+  - Updated GitHub OAuth welcome email template to remove temporary password display
+  - Added clearer instructions for setting up password through "Forgot Password" feature
+  - Improved security notices and user guidance in OAuth emails
+  - Enhanced info boxes with better visual structure
+
+- **Code Quality Improvements**
+  - Fixed formatting in `post.service.ts` with better code organization
+  - Removed unnecessary `tempPassword` parameter from OAuth email template calls
+  - Improved code readability with consistent formatting
+
+### Fixed
+- **OAuth Service**
+  - Fixed trailing comma formatting in `githubAuth.service.ts`
+  - Fixed line breaks and formatting in `googleAuth.service.ts`
+  - Removed obsolete temporary password parameter from email template functions
+
+## [0.16.0] - 2025-11-06
 
 ### Added
 - **Comment System with Nested Replies**
@@ -105,7 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - User-based reaction ownership validation
   - IP-based rate limiting ready for anonymous reactions
 
-## [0.14.1] - 2025-01-04
+## [0.14.1] - 2025-11-04
 
 ### Fixed
 - **Media Service**
@@ -759,7 +789,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JWT token type safety issues with expiresIn parameter
 - JWT import statement to use proper namespace import
 
-## [0.2.0] - 2025-01-23
+## [0.2.0] - 2025-11-23
 
 ### Added
 - Complete Prisma database schema with 19 models and 11 enums
@@ -795,7 +825,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hierarchical category structure
 - Post series for multi-part content
 
-## [0.1.0] - 2025-01-23
+## [0.1.0] - 2025-11-23
 
 ### Added
 - Initial project setup with comprehensive documentation

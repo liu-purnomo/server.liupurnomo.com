@@ -1,17 +1,17 @@
-import { Prisma, PostStatus } from '@prisma/client';
+import { PostStatus, Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import type {
   CreatePostRequest,
-  UpdatePostRequest,
-  PostResponse,
-  PostListItemResponse,
   PostDetailResponse,
+  PostListItemResponse,
   PostQueryParams,
+  PostResponse,
+  UpdatePostRequest,
 } from '../types/index.js';
-import { PaginatedResult, ApiResponse } from '../types/response.types.js';
+import { ApiResponse, PaginatedResult } from '../types/response.types.js';
 import {
-  NotFoundError,
   ConflictError,
+  NotFoundError,
   calculatePagination,
 } from '../utils/index.js';
 
@@ -170,7 +170,9 @@ export async function createPost(
   }
 
   // Handle tags - find or create
-  let tagConnections: Prisma.PostTagCreateNestedManyWithoutPostInput | undefined;
+  let tagConnections:
+    | Prisma.PostTagCreateNestedManyWithoutPostInput
+    | undefined;
   if (data.tags && data.tags.length > 0) {
     // Find or create tags
     const tagOperations = data.tags.map(async (tagInput) => {
@@ -330,10 +332,11 @@ export async function updatePost(
     });
 
     if (!category) {
-      throw new NotFoundError(`Category with ID '${data.categoryId}' not found`);
+      throw new NotFoundError(
+        `Category with ID '${data.categoryId}' not found`
+      );
     }
   }
-
 
   // Handle tags update
   let tagUpdates: any = {};
@@ -383,7 +386,10 @@ export async function updatePost(
   let publishedAt = existingPost.publishedAt;
   if (data.publishedAt !== undefined) {
     publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
-  } else if (data.status === PostStatus.PUBLISHED && !existingPost.publishedAt) {
+  } else if (
+    data.status === PostStatus.PUBLISHED &&
+    !existingPost.publishedAt
+  ) {
     publishedAt = new Date();
   }
 
@@ -402,15 +408,20 @@ export async function updatePost(
       excerpt: data.excerpt !== undefined ? data.excerpt : undefined,
       content: data.content,
       categoryId: data.categoryId,
-      featuredImageUrl: data.featuredImageUrl !== undefined ? data.featuredImageUrl : undefined,
+      featuredImageUrl:
+        data.featuredImageUrl !== undefined ? data.featuredImageUrl : undefined,
       postType: data.postType,
       status: data.status,
-      difficultyLevel: data.difficultyLevel !== undefined ? data.difficultyLevel : undefined,
+      difficultyLevel:
+        data.difficultyLevel !== undefined ? data.difficultyLevel : undefined,
       metaTitle: data.metaTitle !== undefined ? data.metaTitle : undefined,
-      metaDescription: data.metaDescription !== undefined ? data.metaDescription : undefined,
-      metaKeywords: data.metaKeywords !== undefined ? data.metaKeywords : undefined,
+      metaDescription:
+        data.metaDescription !== undefined ? data.metaDescription : undefined,
+      metaKeywords:
+        data.metaKeywords !== undefined ? data.metaKeywords : undefined,
       ogImageUrl: data.ogImageUrl !== undefined ? data.ogImageUrl : undefined,
-      canonicalUrl: data.canonicalUrl !== undefined ? data.canonicalUrl : undefined,
+      canonicalUrl:
+        data.canonicalUrl !== undefined ? data.canonicalUrl : undefined,
       readingTime: data.readingTime,
       publishedAt,
       scheduledAt,
@@ -919,8 +930,10 @@ export async function getAllPosts(
   } = query;
 
   // Ensure numbers
-  const pageNum = typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
-  const limitNum = typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
+  const pageNum =
+    typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
+  const limitNum =
+    typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
   const skip = (pageNum - 1) * limitNum;
 
   // Build where clause
@@ -956,9 +969,7 @@ export async function getAllPosts(
 
   if (tagId || tagSlug) {
     where.postTags = {
-      some: tagId
-        ? { tagId }
-        : { tag: { slug: tagSlug } },
+      some: tagId ? { tagId } : { tag: { slug: tagSlug } },
     };
   }
 
@@ -1019,6 +1030,7 @@ export async function getAllPosts(
           select: {
             comments: true,
             bookmarks: true,
+            postReactions: true,
           },
         },
       },
@@ -1071,7 +1083,9 @@ export async function deletePost(postId: string): Promise<ApiResponse<null>> {
 /**
  * Permanently Delete Post
  */
-export async function permanentlyDeletePost(postId: string): Promise<ApiResponse<null>> {
+export async function permanentlyDeletePost(
+  postId: string
+): Promise<ApiResponse<null>> {
   const post = await prisma.post.findUnique({
     where: { id: postId },
   });
@@ -1116,7 +1130,9 @@ export async function incrementViewCount(postId: string): Promise<void> {
 export async function searchPostsForLink(
   searchQuery: string,
   limit: number = 10
-): Promise<Array<{ id: string; title: string; slug: string; url: string; type: string }>> {
+): Promise<
+  Array<{ id: string; title: string; slug: string; url: string; type: string }>
+> {
   // Build search condition
   const where: any = {
     status: PostStatus.PUBLISHED,
@@ -1147,7 +1163,7 @@ export async function searchPostsForLink(
   });
 
   // Transform to expected format
-  return posts.map(post => ({
+  return posts.map((post) => ({
     id: post.id,
     title: post.title,
     slug: post.slug,

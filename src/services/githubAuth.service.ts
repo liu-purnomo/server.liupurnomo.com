@@ -73,7 +73,7 @@ export async function handleGitHubOAuth(
     bio,
     location,
     accessToken,
-    refreshToken
+    refreshToken,
   } = githubData;
 
   // Check if user exists
@@ -118,7 +118,7 @@ export async function handleGitHubOAuth(
     sendEmail({
       to: email,
       subject: 'Your Account is Ready - Temporary Password',
-      html: githubOAuthPasswordTemplate(name || username, email, tempPassword),
+      html: githubOAuthPasswordTemplate(name || username, email),
     }).catch((error) => {
       console.error('Failed to send GitHub OAuth password email:', error);
     });
