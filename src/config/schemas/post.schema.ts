@@ -314,6 +314,16 @@ export const postSchemas = {
         nullable: true,
         example: 'https://server.liupurnomo.com/uploads/avatars/abc123-medium.webp',
       },
+      bio: {
+        type: 'string',
+        nullable: true,
+        example: 'Full-stack developer passionate about TypeScript and Node.js',
+      },
+      location: {
+        type: 'string',
+        nullable: true,
+        example: 'Jakarta, Indonesia',
+      },
     },
   },
 
@@ -331,6 +341,17 @@ export const postSchemas = {
       slug: {
         type: 'string',
         example: 'web-development',
+      },
+      description: {
+        type: 'string',
+        nullable: true,
+        example: 'Everything about modern web development, frameworks, and best practices',
+      },
+      iconUrl: {
+        type: 'string',
+        format: 'uri',
+        nullable: true,
+        example: 'https://server.liupurnomo.com/uploads/categories/web-dev-icon.svg',
       },
     },
   },
@@ -352,6 +373,11 @@ export const postSchemas = {
           slug: {
             type: 'string',
             example: 'typescript',
+          },
+          description: {
+            type: 'string',
+            nullable: true,
+            example: 'Typed superset of JavaScript that compiles to plain JavaScript',
           },
         },
       },

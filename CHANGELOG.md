@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.1] - 2025-11-15
+
+### Fixed
+- **Post API Response Consistency**
+  - Fixed getPostById to include author bio and location (consistent with getPostBySlug)
+  - Fixed getPostById to include category description and iconUrl
+  - Fixed all post endpoints to include tag description
+  - Updated PostAuthor schema to include bio and location fields
+  - Updated PostCategory schema to include description and iconUrl fields
+  - Updated PostTag schema to include description field
+  - Ensures consistent data structure across all post detail endpoints
+
 ## [0.22.0] - 2025-11-15
 
 ### Added
