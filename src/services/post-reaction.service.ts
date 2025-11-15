@@ -9,8 +9,8 @@ import {
   PostReactionResponse,
   PostReactionsSummary,
 } from '../types/post.types.js';
-import { ApiResponse } from '../types/response.types.js';
-import { AppError } from '../utils/errors.js';
+import { ApiResponse, PaginatedResult } from '../types/response.types.js';
+import { AppError, calculatePagination } from '../utils/index.js';
 import { logCreate, logDelete } from '../utils/activityLogger.js';
 
 /**
@@ -469,5 +469,88 @@ export async function removeReaction(
     success: true,
     message: 'Reaction removed successfully',
     data: null,
+  };
+}
+
+/**
+ * Get all reactions by user (for profile page)
+ * Retrieves paginated list of user's reactions across all posts
+ */
+export async function getUserReactions(
+  userId: string,
+  query: {
+    page?: number;
+    limit?: number;
+    reactionType?: ReactionType;
+    sortBy?: 'createdAt';
+    sortOrder?: 'asc' | 'desc';
+  } = {}
+): Promise<PaginatedResult<PostReactionResponse>> {
+  const {
+    page = 1,
+    limit = 20,
+    reactionType,
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+  } = query;
+
+  // Ensure numbers (query params are strings!)
+  const pageNum =
+    typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
+  const limitNum =
+    typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 20;
+  const skip = (pageNum - 1) * limitNum;
+
+  // Build where clause
+  const where: any = {
+    userId, // Only user's reactions
+  };
+
+  if (reactionType) {
+    where.reactionType = reactionType;
+  }
+
+  // Build orderBy
+  const orderBy: any = {
+    [sortBy]: sortOrder,
+  };
+
+  // Execute queries
+  const [reactions, total] = await Promise.all([
+    prisma.postReaction.findMany({
+      where,
+      skip,
+      take: limitNum,
+      orderBy,
+      include: {
+        post: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            featuredImageUrl: true,
+            status: true,
+            deletedAt: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            username: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    }),
+    prisma.postReaction.count({ where }),
+  ]);
+
+  const pagination = calculatePagination(total, pageNum, limitNum);
+
+  return {
+    data: reactions,
+    pagination,
   };
 }

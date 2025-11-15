@@ -6,8 +6,9 @@
 import { ReactionType } from '@prisma/client';
 import { Request, Response } from 'express';
 import { postReactionService } from '../services/index.js';
-import { sendSuccess } from '../utils/apiResponse.js';
+import { sendSuccess, sendPaginatedSuccess } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import type { GetUserReactionsQueryInput } from '../validators/post-reaction.validator.js';
 
 /**
  * @route   POST /api/posts/:postId/reactions
@@ -142,5 +143,26 @@ export const removeReaction = asyncHandler(
     );
 
     return sendSuccess(res, 200, result.message, result.data);
+  }
+);
+
+/**
+ * @route   GET /api/post-reactions
+ * @desc    Get all reactions by authenticated user (for profile page)
+ * @access  Private
+ */
+export const getUserReactions = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id; // From auth middleware
+    const query = req.query as unknown as GetUserReactionsQueryInput;
+
+    const result = await postReactionService.getUserReactions(userId, query);
+
+    return sendPaginatedSuccess(
+      res,
+      'User reactions retrieved successfully',
+      result.data,
+      result.pagination
+    );
   }
 );
