@@ -10,6 +10,7 @@ import { categoryPaths } from './category.docs.js';
 import { commentPaths } from './comment.docs.js';
 import { eventPaths } from './event.docs.js';
 import { mediaPaths } from './media.docs.js';
+import { notificationPaths } from './notification.docs.js';
 import { notificationPreferencePaths } from './notificationPreference.docs.js';
 import { postPaths } from './post.docs.js';
 import { statisticsPaths } from './statistics.docs.js';
@@ -24,6 +25,7 @@ export const paths = {
   ...commentPaths,
   ...eventPaths,
   ...mediaPaths,
+  ...notificationPaths,
   ...notificationPreferencePaths,
   ...postPaths,
   ...statisticsPaths,

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.0] - 2025-11-15
+
+### Added
+- **Notification Management Endpoints**
+  - Added GET `/api/notifications` endpoint to retrieve user's notifications with pagination
+  - Support filtering by read/unread status and notification type
+  - Sort by createdAt or updatedAt with ascending or descending order
+  - Added GET `/api/notifications/unread-count` endpoint for notification badges
+  - Added GET `/api/notifications/:id` endpoint to retrieve single notification
+  - Added PATCH `/api/notifications/:id/read` to mark single notification as read
+  - Added PATCH `/api/notifications/read-all` to mark all notifications as read (bulk operation)
+  - Added DELETE `/api/notifications/:id` to delete single notification
+  - Added DELETE `/api/notifications/read` to delete all read notifications (bulk operation)
+  - All endpoints require authentication with user ownership validation
+  - Defensive pagination with type coercion for robust query handling
+
+### Documentation
+- **Notification API Documentation**
+  - Created comprehensive OpenAPI schemas for all notification responses
+  - Documented all notification types with enum values
+  - Added detailed endpoint documentation for all 7 notification endpoints
+  - Includes request parameters, response schemas, and error handling
+  - Registered notification schemas and paths in OpenAPI configuration
+
 ## [0.20.0] - 2025-11-15
 
 ### Added

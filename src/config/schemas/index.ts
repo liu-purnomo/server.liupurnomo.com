@@ -11,6 +11,7 @@ import { commentSchemas } from './comment.schema.js';
 import { commonSchemas } from './common.schema.js';
 import { eventSchemas } from './event.schema.js';
 import { mediaSchemas } from './media.schema.js';
+import { notificationSchemas } from './notification.schema.js';
 import { notificationPreferenceSchemas } from './notificationPreference.schema.js';
 import { postSchemas } from './post.schema.js';
 import { statisticsSchemas } from './statistics.schema.js';
@@ -26,6 +27,7 @@ export const schemas = {
   ...commentSchemas,
   ...eventSchemas,
   ...mediaSchemas,
+  ...notificationSchemas,
   ...notificationPreferenceSchemas,
   ...postSchemas,
   ...statisticsSchemas,
