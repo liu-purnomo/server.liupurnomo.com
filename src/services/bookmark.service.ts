@@ -13,6 +13,7 @@ import {
   ConflictError,
   calculatePagination,
 } from '../utils/index.js';
+import { logCreate, logUpdate, logDelete } from '../utils/activityLogger.js';
 
 /**
  * Helper function to transform Bookmark to BookmarkResponse
@@ -130,6 +131,20 @@ export async function createBookmark(
       },
     },
   });
+
+  // Log activity
+  await logCreate(
+    userId,
+    'Bookmark',
+    bookmark.id,
+    `Bookmarked post: ${bookmark.post.title}`,
+    {
+      postId: bookmark.postId,
+      postTitle: bookmark.post.title,
+      isFavorite: bookmark.isFavorite,
+      tags: bookmark.tags,
+    }
+  );
 
   return {
     success: true,
@@ -396,6 +411,26 @@ export async function updateBookmark(
     },
   });
 
+  // Log activity
+  await logUpdate(
+    userId,
+    'Bookmark',
+    bookmarkId,
+    `Updated bookmark for post: ${bookmark.post.title}`,
+    {
+      note: existingBookmark.note,
+      tags: existingBookmark.tags,
+      isFavorite: existingBookmark.isFavorite,
+      isRead: existingBookmark.isRead,
+    },
+    {
+      note: bookmark.note,
+      tags: bookmark.tags,
+      isFavorite: bookmark.isFavorite,
+      isRead: bookmark.isRead,
+    }
+  );
+
   return {
     success: true,
     message: 'Bookmark updated successfully',
@@ -416,6 +451,13 @@ export async function deleteBookmark(
       id: bookmarkId,
       userId,
     },
+    include: {
+      post: {
+        select: {
+          title: true,
+        },
+      },
+    },
   });
 
   if (!bookmark) {
@@ -425,6 +467,20 @@ export async function deleteBookmark(
   await prisma.bookmark.delete({
     where: { id: bookmarkId },
   });
+
+  // Log activity
+  await logDelete(
+    userId,
+    'Bookmark',
+    bookmarkId,
+    `Deleted bookmark for post: ${bookmark.post.title}`,
+    {
+      postId: bookmark.postId,
+      postTitle: bookmark.post.title,
+      note: bookmark.note,
+      tags: bookmark.tags,
+    }
+  );
 
   return {
     success: true,
@@ -477,6 +533,16 @@ export async function toggleReadStatus(
     },
   });
 
+  // Log activity
+  await logUpdate(
+    userId,
+    'Bookmark',
+    bookmarkId,
+    `Marked bookmark as ${newIsRead ? 'read' : 'unread'}: ${bookmark.post.title}`,
+    { isRead: existingBookmark.isRead },
+    { isRead: newIsRead }
+  );
+
   return {
     success: true,
     message: `Bookmark marked as ${newIsRead ? 'read' : 'unread'}`,
@@ -526,6 +592,16 @@ export async function toggleFavorite(
       },
     },
   });
+
+  // Log activity
+  await logUpdate(
+    userId,
+    'Bookmark',
+    bookmarkId,
+    `${newIsFavorite ? 'Added to' : 'Removed from'} favorites: ${bookmark.post.title}`,
+    { isFavorite: existingBookmark.isFavorite },
+    { isFavorite: newIsFavorite }
+  );
 
   return {
     success: true,

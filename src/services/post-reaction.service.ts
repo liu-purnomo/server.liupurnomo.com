@@ -11,6 +11,7 @@ import {
 } from '../types/post.types.js';
 import { ApiResponse } from '../types/response.types.js';
 import { AppError } from '../utils/errors.js';
+import { logCreate, logDelete } from '../utils/activityLogger.js';
 
 /**
  * Add or toggle reaction to a post
@@ -104,6 +105,20 @@ export async function addOrToggleReaction(
       });
     });
 
+    // Log activity (only for authenticated users)
+    if (userId) {
+      await logDelete(
+        userId,
+        'PostReaction',
+        exactReaction.id,
+        `Removed ${reactionType} reaction from post`,
+        {
+          postId,
+          reactionType,
+        }
+      );
+    }
+
     return {
       success: true,
       message: 'Reaction removed successfully',
@@ -180,6 +195,21 @@ export async function addOrToggleReaction(
       return created;
     });
 
+    // Log activity (only for authenticated users)
+    if (userId) {
+      await logCreate(
+        userId,
+        'PostReaction',
+        newReaction.id,
+        `Changed reaction from ${otherReaction.reactionType} to ${reactionType}`,
+        {
+          postId,
+          reactionType,
+          previousReactionType: otherReaction.reactionType,
+        }
+      );
+    }
+
     return {
       success: true,
       message: 'Reaction updated successfully',
@@ -231,6 +261,20 @@ export async function addOrToggleReaction(
 
     return created;
   });
+
+  // Log activity (only for authenticated users)
+  if (userId) {
+    await logCreate(
+      userId,
+      'PostReaction',
+      newReaction.id,
+      `Added ${reactionType} reaction to post`,
+      {
+        postId,
+        reactionType,
+      }
+    );
+  }
 
   return {
     success: true,
@@ -406,6 +450,20 @@ export async function removeReaction(
       },
     });
   });
+
+  // Log activity (only for authenticated users)
+  if (userId) {
+    await logDelete(
+      userId,
+      'PostReaction',
+      reaction.id,
+      `Removed ${reactionType} reaction from post`,
+      {
+        postId,
+        reactionType,
+      }
+    );
+  }
 
   return {
     success: true,
