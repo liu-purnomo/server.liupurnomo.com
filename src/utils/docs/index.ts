@@ -13,9 +13,11 @@ import { mediaPaths } from './media.docs.js';
 import { notificationPaths } from './notification.docs.js';
 import { notificationPreferencePaths } from './notificationPreference.docs.js';
 import { postPaths } from './post.docs.js';
+import { sitemapPaths } from './sitemap.docs.js';
 import { statisticsPaths } from './statistics.docs.js';
 import { tagPaths } from './tag.docs.js';
 import { userPaths } from './user.docs.js';
+import { userStatisticsPaths } from './user-statistics.docs.js';
 
 export const paths = {
   ...activityLogPaths,
@@ -28,7 +30,9 @@ export const paths = {
   ...notificationPaths,
   ...notificationPreferencePaths,
   ...postPaths,
+  ...sitemapPaths,
   ...statisticsPaths,
   ...tagPaths,
   ...userPaths,
+  ...userStatisticsPaths,
 };

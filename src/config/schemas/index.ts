@@ -14,9 +14,11 @@ import { mediaSchemas } from './media.schema.js';
 import { notificationSchemas } from './notification.schema.js';
 import { notificationPreferenceSchemas } from './notificationPreference.schema.js';
 import { postSchemas } from './post.schema.js';
+import { sitemapSchemas } from './sitemap.schema.js';
 import { statisticsSchemas } from './statistics.schema.js';
 import { tagSchemas } from './tag.schema.js';
 import { userSchemas } from './user.schema.js';
+import { userStatisticsSchemas } from './user-statistics.schema.js';
 
 export const schemas = {
   ...commonSchemas,
@@ -30,7 +32,9 @@ export const schemas = {
   ...notificationSchemas,
   ...notificationPreferenceSchemas,
   ...postSchemas,
+  ...sitemapSchemas,
   ...statisticsSchemas,
   ...tagSchemas,
   ...userSchemas,
+  ...userStatisticsSchemas,
 };

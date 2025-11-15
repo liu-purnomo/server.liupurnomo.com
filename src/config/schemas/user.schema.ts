@@ -122,17 +122,13 @@ export const userSchemas = {
         nullable: true,
         example: 'San Francisco, CA',
       },
-      role: {
-        type: 'string',
-        enum: ['ADMIN', 'AUTHOR', 'USER'],
-        example: 'USER',
-      },
       createdAt: {
         type: 'string',
         format: 'date-time',
         example: '2025-01-15T10:30:00.000Z',
       },
     },
+    description: 'Public user profile (role is excluded for privacy)',
   },
 
   UserProfileResponse: {

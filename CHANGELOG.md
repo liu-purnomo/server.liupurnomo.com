@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2025-11-15
+
+### Added
+- **Sitemap Data Endpoint**
+  - Added GET `/api/sitemap` public endpoint for sitemap.xml generation
+  - Returns all published content: posts, categories, tags, media, and events
+  - Posts include slug, updatedAt, and publishedAt fields
+  - Events filtered by status (UPCOMING, ONGOING, COMPLETED only)
+  - Media files include fileUrl and updatedAt
+  - Categories and tags include slug and updatedAt
+  - Optimized with parallel queries using Promise.all
+  - No authentication required (public access)
+
+- **Public User Statistics Endpoint**
+  - Added GET `/api/users/@:username/statistics` public endpoint
+  - Returns comprehensive user profile statistics without authentication
+  - User profile data: id, username, name, avatarUrl, bio, location, createdAt
+  - Statistics metrics: totalPosts, totalPublishedPosts, totalViews, totalComments, totalReactions, joinedDaysAgo
+  - Top 5 posts by view count with title, slug, viewCount, publishedAt
+  - 5 most recent published posts with excerpt and featuredImageUrl
+  - Aggregates data from posts, comments, and reactions tables
+  - Efficient parallel queries for optimal performance
+
+### Security
+- **Privacy Enhancement: Role Field Removal**
+  - Removed `role` field from all public user endpoints for privacy protection
+  - Affects GET `/api/users/public/@:username` endpoint
+  - Affects GET `/api/users/public/:id` endpoint
+  - Affects GET `/api/users/@:username/statistics` endpoint
+  - Role information now only visible to authenticated users viewing their own profile
+  - Role information accessible to admins via admin-only endpoints
+
+### Changed
+- **API Documentation Schemas**
+  - Fixed Pagination schema field names to match actual API responses
+  - Changed `PaginationMeta` to `Pagination` across all documentation
+  - Updated field names: `itemsPerPage` → `perPage`, `page` → `currentPage`
+  - Added `PaginatedSuccessResponse` schema for consistent paginated responses
+  - Fixed PostAuthor schema: removed bio and location fields
+  - Fixed PostCategory schema: removed description and iconUrl fields
+  - Fixed PostTag schema: removed description field
+  - Replaced all hardcoded pagination objects with schema references
+  - Updated pagination references in 7 documentation files (activity-log, bookmark, category, event, media, tag, user)
+
+### Documentation
+- **Sitemap API Documentation**
+  - Created comprehensive OpenAPI schemas for sitemap data structures
+  - Added endpoint documentation with detailed response examples
+  - Documented all content types: posts, categories, tags, media, events
+  - Registered sitemap schemas and paths in OpenAPI configuration
+
+- **User Statistics API Documentation**
+  - Created detailed OpenAPI schemas for user statistics responses
+  - Documented user profile, metrics, top posts, and recent posts structures
+  - Added privacy notes indicating role field exclusion
+  - Registered user statistics schemas and paths in OpenAPI configuration
+
 ## [0.21.0] - 2025-11-15
 
 ### Added

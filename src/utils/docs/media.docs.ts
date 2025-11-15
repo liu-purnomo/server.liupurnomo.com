@@ -213,7 +213,7 @@ export const mediaPaths = {
                         type: 'array',
                         items: { $ref: '#/components/schemas/MediaListItemResponse' },
                       },
-                      pagination: { $ref: '#/components/schemas/PaginationMeta' },
+                      pagination: { $ref: '#/components/schemas/Pagination' },
                     },
                   },
                 },

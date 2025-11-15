@@ -109,7 +109,7 @@ export const eventPaths = {
                     type: 'array',
                     items: { $ref: '#/components/schemas/EventListItemResponse' },
                   },
-                  pagination: { $ref: '#/components/schemas/PaginationMeta' },
+                  pagination: { $ref: '#/components/schemas/Pagination' },
                   timestamp: { type: 'string', format: 'date-time' },
                   path: { type: 'string' },
                 },

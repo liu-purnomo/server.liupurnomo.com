@@ -51,6 +51,7 @@ export interface GetUsersQuery {
 /**
  * Public User Response
  * Limited user information visible to everyone
+ * Note: role is excluded for privacy
  */
 export interface PublicUserResponse {
   id: string;
@@ -59,7 +60,6 @@ export interface PublicUserResponse {
   avatarUrl: string | null;
   bio: string | null;
   location: string | null;
-  role: UserRole;
   createdAt: Date;
 }
 

@@ -83,13 +83,7 @@ export const postPaths = {
                     },
                   },
                   pagination: {
-                    type: 'object',
-                    properties: {
-                      page: { type: 'integer', example: 1 },
-                      limit: { type: 'integer', example: 10 },
-                      total: { type: 'integer', example: 50 },
-                      totalPages: { type: 'integer', example: 5 },
-                    },
+                    $ref: '#/components/schemas/Pagination',
                   },
                 },
               },
@@ -402,13 +396,7 @@ export const postPaths = {
                     },
                   },
                   pagination: {
-                    type: 'object',
-                    properties: {
-                      page: { type: 'integer', example: 1 },
-                      limit: { type: 'integer', example: 10 },
-                      total: { type: 'integer', example: 50 },
-                      totalPages: { type: 'integer', example: 5 },
-                    },
+                    $ref: '#/components/schemas/Pagination',
                   },
                 },
               },
@@ -626,13 +614,7 @@ export const postPaths = {
                     },
                   },
                   pagination: {
-                    type: 'object',
-                    properties: {
-                      page: { type: 'integer', example: 1 },
-                      limit: { type: 'integer', example: 20 },
-                      total: { type: 'integer', example: 145 },
-                      totalPages: { type: 'integer', example: 8 },
-                    },
+                    $ref: '#/components/schemas/Pagination',
                   },
                 },
               },

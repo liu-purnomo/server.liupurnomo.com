@@ -130,9 +130,6 @@ export const commonSchemas = {
         type: 'object',
         description: 'Response data (structure varies by endpoint)',
       },
-      pagination: {
-        $ref: '#/components/schemas/Pagination',
-      },
       timestamp: {
         type: 'string',
         format: 'date-time',
@@ -146,6 +143,44 @@ export const commonSchemas = {
       },
     },
     required: ['success', 'message'],
+  },
+
+  /**
+   * Paginated Success Response (generic)
+   */
+  PaginatedSuccessResponse: {
+    type: 'object',
+    properties: {
+      success: {
+        type: 'boolean',
+        example: true,
+        description: 'Indicates the request was successful',
+      },
+      message: {
+        type: 'string',
+        example: 'Items retrieved successfully',
+        description: 'Human-readable success message',
+      },
+      data: {
+        type: 'object',
+        description: 'Response data (structure varies by endpoint)',
+      },
+      pagination: {
+        $ref: '#/components/schemas/Pagination',
+      },
+      timestamp: {
+        type: 'string',
+        format: 'date-time',
+        example: '2025-01-15T10:30:00.000Z',
+        description: 'ISO 8601 timestamp of the response',
+      },
+      path: {
+        type: 'string',
+        example: '/api/posts',
+        description: 'Request path that generated this response',
+      },
+    },
+    required: ['success', 'message', 'data', 'pagination'],
   },
 
   /**

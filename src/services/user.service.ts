@@ -1,4 +1,6 @@
 import { User, UserRole } from '@prisma/client';
+import path from 'path';
+import { comparePassword, hashPassword } from '../lib/bcrypt.js';
 import { prisma } from '../lib/prisma.js';
 import {
   AdminUpdateUserRequest,
@@ -16,15 +18,13 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../utils/errors.js';
-import { calculatePagination } from '../utils/index.js';
 import {
-  processImage,
   deleteImageByFilename,
   extractFilenameFromUrl,
   generateImageUrls,
+  processImage,
 } from '../utils/imageProcessor.js';
-import { comparePassword, hashPassword } from '../lib/bcrypt.js';
-import path from 'path';
+import { calculatePagination } from '../utils/index.js';
 
 /**
  * User Service
@@ -36,6 +36,7 @@ import path from 'path';
 /**
  * Convert User to Public User Response
  * Limited information visible to everyone
+ * Note: role is excluded for privacy
  */
 function toPublicUserResponse(user: User): PublicUserResponse {
   return {
@@ -45,7 +46,6 @@ function toPublicUserResponse(user: User): PublicUserResponse {
     avatarUrl: user.avatarUrl,
     bio: user.bio,
     location: user.location,
-    role: user.role,
     createdAt: user.createdAt,
   };
 }
@@ -287,8 +287,10 @@ export async function getAllUsers(
   const { page = 1, limit = 10, role, isActive, search } = query;
 
   // Ensure page and limit are numbers (defensive programming)
-  const pageNum = typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
-  const limitNum = typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
+  const pageNum =
+    typeof page === 'number' ? page : parseInt(String(page), 10) || 1;
+  const limitNum =
+    typeof limit === 'number' ? limit : parseInt(String(limit), 10) || 10;
 
   // Build where clause
   const where: any = {};
@@ -477,7 +479,9 @@ export async function uploadUserAvatar(
  * Delete User Avatar
  * Remove avatar and all its sizes
  */
-export async function deleteUserAvatar(userId: string): Promise<UserProfileResponse> {
+export async function deleteUserAvatar(
+  userId: string
+): Promise<UserProfileResponse> {
   // Get user
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -518,7 +522,14 @@ export async function deleteUserAvatar(userId: string): Promise<UserProfileRespo
 export async function searchUsersForMention(
   searchQuery: string,
   limit: number = 10
-): Promise<Array<{ id: string; username: string; name: string | null; avatarUrl: string | null }>> {
+): Promise<
+  Array<{
+    id: string;
+    username: string;
+    name: string | null;
+    avatarUrl: string | null;
+  }>
+> {
   // Build search condition
   const where: any = {
     isActive: true,

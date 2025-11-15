@@ -283,7 +283,7 @@ export const categoryPaths = {
                       },
                     },
                   },
-                  pagination: { $ref: '#/components/schemas/PaginationMeta' },
+                  pagination: { $ref: '#/components/schemas/Pagination' },
                 },
               },
             },

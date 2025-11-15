@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { userController } from '../controllers/index.js';
 import * as notificationPreferenceController from '../controllers/notificationPreference.controller.js';
+import * as userStatisticsController from '../controllers/user-statistics.controller.js';
 import {
   authenticate,
   requireRole,
@@ -53,6 +54,16 @@ router.get(
   '/public/:id',
   validate(userIdParamSchema, 'params'),
   userController.getPublicUserById
+);
+
+/**
+ * Get Public User Statistics by Username
+ * GET /api/users/@:username/statistics
+ */
+router.get(
+  '/@:username/statistics',
+  validate(usernameParamSchema, 'params'),
+  userStatisticsController.getUserStatistics
 );
 
 // ==================== AUTHENTICATED USER ROUTES ====================

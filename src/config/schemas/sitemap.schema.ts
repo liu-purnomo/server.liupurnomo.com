@@ -1,0 +1,89 @@
+/**
+ * Sitemap Schemas
+ * OpenAPI schema definitions for sitemap
+ */
+
+export const sitemapSchemas = {
+  // ==================== DATA SCHEMAS ====================
+
+  SitemapPost: {
+    type: 'object',
+    properties: {
+      slug: { type: 'string', example: 'getting-started-with-typescript' },
+      updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
+      publishedAt: { type: 'string', format: 'date-time', nullable: true, example: '2025-11-14T08:00:00Z' },
+    },
+  },
+
+  SitemapCategory: {
+    type: 'object',
+    properties: {
+      slug: { type: 'string', example: 'web-development' },
+      updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
+    },
+  },
+
+  SitemapTag: {
+    type: 'object',
+    properties: {
+      slug: { type: 'string', example: 'typescript' },
+      updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
+    },
+  },
+
+  SitemapMedia: {
+    type: 'object',
+    properties: {
+      fileUrl: { type: 'string', format: 'uri', example: 'https://server.liupurnomo.com/uploads/image.jpg' },
+      updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
+    },
+  },
+
+  SitemapEvent: {
+    type: 'object',
+    properties: {
+      slug: { type: 'string', example: 'react-conference-2025' },
+      updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
+      eventDate: { type: 'string', format: 'date-time', example: '2025-12-01T09:00:00Z' },
+    },
+  },
+
+  // ==================== RESPONSE SCHEMAS ====================
+
+  SitemapData: {
+    type: 'object',
+    properties: {
+      posts: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/SitemapPost' },
+      },
+      categories: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/SitemapCategory' },
+      },
+      tags: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/SitemapTag' },
+      },
+      media: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/SitemapMedia' },
+      },
+      events: {
+        type: 'array',
+        items: { $ref: '#/components/schemas/SitemapEvent' },
+      },
+    },
+  },
+
+  SitemapResponse: {
+    type: 'object',
+    properties: {
+      success: { type: 'boolean', example: true },
+      message: { type: 'string', example: 'Sitemap data retrieved successfully' },
+      data: { $ref: '#/components/schemas/SitemapData' },
+      timestamp: { type: 'string', format: 'date-time' },
+      path: { type: 'string' },
+    },
+  },
+};

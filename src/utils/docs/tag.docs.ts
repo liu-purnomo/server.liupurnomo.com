@@ -243,7 +243,7 @@ export const tagPaths = {
                       },
                     },
                   },
-                  pagination: { $ref: '#/components/schemas/PaginationMeta' },
+                  pagination: { $ref: '#/components/schemas/Pagination' },
                 },
               },
             },

@@ -391,7 +391,7 @@ export const userPaths = {
                     type: 'array',
                     items: { $ref: '#/components/schemas/UserListItemResponse' },
                   },
-                  pagination: { $ref: '#/components/schemas/PaginationMeta' },
+                  pagination: { $ref: '#/components/schemas/Pagination' },
                 },
               },
             },

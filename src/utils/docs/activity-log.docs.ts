@@ -263,7 +263,7 @@ export const activityLogPaths = {
                       },
                     },
                   },
-                  pagination: { $ref: '#/components/schemas/PaginationMeta' },
+                  pagination: { $ref: '#/components/schemas/Pagination' },
                 },
               },
             },
