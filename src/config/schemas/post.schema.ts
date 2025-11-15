@@ -302,28 +302,17 @@ export const postSchemas = {
       name: {
         type: 'string',
         nullable: true,
-        example: 'John Doe',
+        example: 'Liu Purnomo',
       },
       username: {
         type: 'string',
-        nullable: true,
-        example: 'johndoe',
+        example: 'liupurnomo',
       },
       avatarUrl: {
         type: 'string',
         format: 'uri',
         nullable: true,
-        example: 'https://api.example.com/uploads/avatars/abc123.webp',
-      },
-      bio: {
-        type: 'string',
-        nullable: true,
-        example: 'Full-stack developer passionate about TypeScript and web development.',
-      },
-      location: {
-        type: 'string',
-        nullable: true,
-        example: 'San Francisco, CA',
+        example: 'https://server.liupurnomo.com/uploads/avatars/abc123-medium.webp',
       },
     },
   },
@@ -342,17 +331,6 @@ export const postSchemas = {
       slug: {
         type: 'string',
         example: 'web-development',
-      },
-      description: {
-        type: 'string',
-        nullable: true,
-        example: 'Articles about web development, frameworks, and best practices.',
-      },
-      iconUrl: {
-        type: 'string',
-        format: 'uri',
-        nullable: true,
-        example: 'https://api.example.com/uploads/icons/web-dev-icon.svg',
       },
     },
   },
@@ -374,11 +352,6 @@ export const postSchemas = {
           slug: {
             type: 'string',
             example: 'typescript',
-          },
-          description: {
-            type: 'string',
-            nullable: true,
-            example: 'TypeScript programming language and related topics',
           },
         },
       },

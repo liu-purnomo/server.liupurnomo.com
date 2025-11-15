@@ -73,7 +73,7 @@ export const commonSchemas = {
   /**
    * Pagination metadata
    */
-  PaginationMeta: {
+  Pagination: {
     type: 'object',
     properties: {
       currentPage: {
@@ -81,19 +81,19 @@ export const commonSchemas = {
         example: 1,
         description: 'Current page number',
       },
-      itemsPerPage: {
+      perPage: {
         type: 'integer',
         example: 10,
         description: 'Number of items per page',
       },
       totalItems: {
         type: 'integer',
-        example: 100,
+        example: 59,
         description: 'Total number of items',
       },
       totalPages: {
         type: 'integer',
-        example: 10,
+        example: 6,
         description: 'Total number of pages',
       },
       hasNextPage: {
@@ -107,7 +107,7 @@ export const commonSchemas = {
         description: 'Whether there is a previous page',
       },
     },
-    required: ['currentPage', 'itemsPerPage', 'totalItems', 'totalPages'],
+    required: ['currentPage', 'perPage', 'totalItems', 'totalPages', 'hasNextPage', 'hasPreviousPage'],
   },
 
   /**
@@ -131,7 +131,7 @@ export const commonSchemas = {
         description: 'Response data (structure varies by endpoint)',
       },
       pagination: {
-        $ref: '#/components/schemas/PaginationMeta',
+        $ref: '#/components/schemas/Pagination',
       },
       timestamp: {
         type: 'string',
