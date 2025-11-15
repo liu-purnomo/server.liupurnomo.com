@@ -18,6 +18,27 @@ const postTitleSchema = z
   .trim();
 
 /**
+ * Reserved slugs for static frontend pages
+ * These slugs cannot be used for BLOG type posts to avoid route conflicts
+ */
+const RESERVED_SLUGS = [
+  'about',
+  'contact',
+  'privacy',
+  'privacy-policy',
+  'blog',
+  'tutorials',
+  'terms',
+  'new-post',
+  'dashboard',
+  'profile',
+  'systems',
+  'list-of-content',
+  'gsd-calculator',
+  'changelog',
+];
+
+/**
  * Post Slug Schema
  */
 const postSlugSchema = z
@@ -186,6 +207,24 @@ export const createPostValidator = z
   })
   .refine(
     (data) => {
+      // Reserved slugs cannot be used for BLOG type posts (exact match only)
+      if (
+        data.postType === PostType.BLOG &&
+        RESERVED_SLUGS.includes(data.slug.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: `Slug is reserved for static pages. Reserved slugs: ${RESERVED_SLUGS.join(
+        ', '
+      )}`,
+      path: ['slug'],
+    }
+  )
+  .refine(
+    (data) => {
       // If postType is TUTORIAL, difficultyLevel is required
       if (data.postType === PostType.TUTORIAL && !data.difficultyLevel) {
         return false;
@@ -258,6 +297,25 @@ export const updatePostValidator = z
     scheduledAt: datetimeStringSchema,
     readingTime: readingTimeSchema,
   })
+  .refine(
+    (data) => {
+      // Reserved slugs cannot be used for BLOG type posts (exact match only)
+      if (
+        data.slug &&
+        data.postType === PostType.BLOG &&
+        RESERVED_SLUGS.includes(data.slug.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: `Slug is reserved for static pages. Reserved slugs: ${RESERVED_SLUGS.join(
+        ', '
+      )}`,
+      path: ['slug'],
+    }
+  )
   .refine(
     (data) => {
       // If postType is TUTORIAL, difficultyLevel must be provided

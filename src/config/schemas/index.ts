@@ -13,6 +13,7 @@ import { eventSchemas } from './event.schema.js';
 import { mediaSchemas } from './media.schema.js';
 import { notificationPreferenceSchemas } from './notificationPreference.schema.js';
 import { postSchemas } from './post.schema.js';
+import { statisticsSchemas } from './statistics.schema.js';
 import { tagSchemas } from './tag.schema.js';
 import { userSchemas } from './user.schema.js';
 
@@ -27,6 +28,7 @@ export const schemas = {
   ...mediaSchemas,
   ...notificationPreferenceSchemas,
   ...postSchemas,
+  ...statisticsSchemas,
   ...tagSchemas,
   ...userSchemas,
 };

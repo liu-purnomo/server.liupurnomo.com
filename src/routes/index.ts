@@ -9,6 +9,7 @@ import mediaRoutes from './media.routes.js';
 import postRoutes from './post.routes.js';
 import postReactionRoutes from './post-reaction.routes.js';
 import postSeriesRoutes from './postSeries.routes.js';
+import statisticsRoutes from './statistics.routes.js';
 import tagRoutes from './tag.routes.js';
 import userRoutes from './user.routes.js';
 
@@ -30,6 +31,7 @@ router.use('/media', mediaRoutes);
 router.use('/posts', postRoutes);
 router.use('/post-reactions', postReactionRoutes);
 router.use('/post-series', postSeriesRoutes);
+router.use('/statistics', statisticsRoutes);
 router.use('/tags', tagRoutes);
 router.use('/users', userRoutes);
 

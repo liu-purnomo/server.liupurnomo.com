@@ -169,6 +169,15 @@ export const commentSchemas = {
           avatarUrl: { type: 'string', nullable: true },
         },
       },
+      post: {
+        type: 'object',
+        description: 'Post information (included in list responses)',
+        properties: {
+          id: { type: 'string', example: 'clpost123abc456' },
+          title: { type: 'string', example: 'Getting Started with TypeScript' },
+          slug: { type: 'string', example: 'getting-started-with-typescript' },
+        },
+      },
       _count: {
         type: 'object',
         properties: {

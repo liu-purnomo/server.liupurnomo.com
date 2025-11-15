@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2025-11-15
+
+### Added
+- **Blog Statistics Endpoint**
+  - Added GET `/api/statistics` endpoint for comprehensive blog analytics (Admin only)
+  - Overview metrics: total posts, views, comments, reactions, bookmarks, users, categories, tags
+  - Top posts by views (top 5) and interactions (top 5) with detailed metrics
+  - Recent posts list (most recent 5 published posts)
+  - Recent activity tracking (last 7 days): comments, reactions, bookmarks, views
+  - Reaction breakdown by type for both posts and comments
+  - Includes engagement metrics: interaction count, comment count, reaction count per post
+  - Authentication required with ADMIN role for access
+
+- **Reserved Slugs Validation**
+  - Added validation to prevent BLOG type posts from using reserved slugs
+  - Reserved slugs: `about`, `contact`, `privacy`, `privacy-policy`, `blog`, `tutorial`, `terms`, `new-post`, `dashboard`, `profile`
+  - Prevents route conflicts with static frontend pages
+  - Exact match validation (e.g., `about-my-dream` is allowed, but `about` is not)
+  - TUTORIAL type posts are not affected by this restriction
+  - Clear error messages showing list of reserved slugs when validation fails
+
+### Documentation
+- **Statistics API Documentation**
+  - Created comprehensive OpenAPI schemas for statistics response
+  - Documented TopPost, StatisticsOverview, TopPosts, RecentActivity, ReactionBreakdown schemas
+  - Added detailed endpoint documentation with descriptions and examples
+  - Registered statistics schemas and paths in OpenAPI configuration
+
+## [0.19.0] - 2025-11-15
+
+### Added
+- **User Reactions Profile Endpoint**
+  - Added GET `/api/post-reactions` endpoint to retrieve authenticated user's reactions across all posts
+  - Support pagination with configurable page and limit parameters (max 100 items per page)
+  - Filter reactions by specific reaction type (LIKE, HELPFUL, LOVE, INSIGHTFUL, AMAZING)
+  - Sort by creation date with ascending or descending order
+  - Includes post details (id, title, slug, excerpt, featuredImageUrl, status, deletedAt) in response
+  - Returns paginated result with user and post information for profile page context
+  - Authentication required via Bearer token
+
+- **Post Details in Comments List**
+  - Enhanced GET `/api/comments` endpoint to include post information in response
+  - Added post field with id, title, and slug to CommentListItem type
+  - Enables profile page to display post context for each comment
+  - Useful for showing which post a comment belongs to without additional API calls
+
+### Changed
+- **Comment Service Enhancement**
+  - Updated `getComments()` service function to include post relation in Prisma query
+  - Modified CommentListItem interface to support optional post field
+  - Improved response structure for better frontend integration
+
+### Documentation
+- **API Schema Updates**
+  - Updated Comment schema in OpenAPI documentation to include post field
+  - Added post-reaction validator with comprehensive query parameter validation
+  - Created dedicated route documentation for user reactions endpoint
+  - Enhanced type definitions for comment responses with post details
+
 ## [0.18.0] - 2025-11-15
 
 ### Added

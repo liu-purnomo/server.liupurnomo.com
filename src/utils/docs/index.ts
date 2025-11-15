@@ -12,6 +12,7 @@ import { eventPaths } from './event.docs.js';
 import { mediaPaths } from './media.docs.js';
 import { notificationPreferencePaths } from './notificationPreference.docs.js';
 import { postPaths } from './post.docs.js';
+import { statisticsPaths } from './statistics.docs.js';
 import { tagPaths } from './tag.docs.js';
 import { userPaths } from './user.docs.js';
 
@@ -25,6 +26,7 @@ export const paths = {
   ...mediaPaths,
   ...notificationPreferencePaths,
   ...postPaths,
+  ...statisticsPaths,
   ...tagPaths,
   ...userPaths,
 };
