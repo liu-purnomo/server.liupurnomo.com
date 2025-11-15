@@ -5,11 +5,9 @@ import { authenticate } from '../middlewares/auth.js';
 import {
   createBookmarkSchema,
   updateBookmarkSchema,
-  getBookmarkByIdSchema,
-  getAllBookmarksSchema,
-  deleteBookmarkSchema,
-  toggleReadStatusSchema,
-  toggleFavoriteSchema,
+  bookmarkIdParamsSchema,
+  postIdParamsSchema,
+  bookmarkQuerySchema,
 } from '../validators/bookmark.validator.js';
 
 const router = Router();
@@ -27,7 +25,7 @@ const router = Router();
 router.get(
   '/',
   authenticate,
-  validate(getAllBookmarksSchema),
+  validate(bookmarkQuerySchema, 'query'),
   bookmarkController.getAllBookmarks
 );
 
@@ -44,6 +42,18 @@ router.post(
 );
 
 /**
+ * @route   GET /api/bookmarks/post/:postId
+ * @desc    Get bookmark by post ID (check if user bookmarked a post)
+ * @access  Private
+ */
+router.get(
+  '/post/:postId',
+  authenticate,
+  validate(postIdParamsSchema, 'params'),
+  bookmarkController.getBookmarkByPostId
+);
+
+/**
  * @route   GET /api/bookmarks/:id
  * @desc    Get bookmark by ID
  * @access  Private
@@ -51,7 +61,7 @@ router.post(
 router.get(
   '/:id',
   authenticate,
-  validate(getBookmarkByIdSchema),
+  validate(bookmarkIdParamsSchema, 'params'),
   bookmarkController.getBookmarkById
 );
 
@@ -63,6 +73,7 @@ router.get(
 router.patch(
   '/:id',
   authenticate,
+  validate(bookmarkIdParamsSchema, 'params'),
   validate(updateBookmarkSchema),
   bookmarkController.updateBookmark
 );
@@ -75,7 +86,7 @@ router.patch(
 router.delete(
   '/:id',
   authenticate,
-  validate(deleteBookmarkSchema),
+  validate(bookmarkIdParamsSchema, 'params'),
   bookmarkController.deleteBookmark
 );
 
@@ -87,7 +98,7 @@ router.delete(
 router.post(
   '/:id/toggle-read',
   authenticate,
-  validate(toggleReadStatusSchema),
+  validate(bookmarkIdParamsSchema, 'params'),
   bookmarkController.toggleReadStatus
 );
 
@@ -99,7 +110,7 @@ router.post(
 router.post(
   '/:id/toggle-favorite',
   authenticate,
-  validate(toggleFavoriteSchema),
+  validate(bookmarkIdParamsSchema, 'params'),
   bookmarkController.toggleFavorite
 );
 

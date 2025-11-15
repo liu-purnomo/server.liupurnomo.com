@@ -79,8 +79,9 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
  */
 export const getPostBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
+  const userId = req.user?.id; // Optional auth
 
-  const result = await postService.getPostBySlug(slug!, false);
+  const result = await postService.getPostBySlug(slug!, false, userId);
 
   // Increment view count asynchronously (result.data is PostDetailResponse)
   postService.incrementViewCount(result.data!.post.id).catch((err) => {

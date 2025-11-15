@@ -106,6 +106,7 @@ export const errorHandler = (
       message: err.message,
       stack: err.stack,
       ...(err instanceof AppError && { statusCode: err.statusCode }),
+      ...(errors && { errors }),
     });
   }
 

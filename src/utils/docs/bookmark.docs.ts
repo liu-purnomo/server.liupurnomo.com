@@ -136,6 +136,52 @@ export const bookmarkPaths = {
     },
   },
 
+  '/api/bookmarks/post/{postId}': {
+    get: {
+      tags: ['Bookmarks'],
+      summary: 'Get bookmark by post ID',
+      description: 'Check if user has bookmarked a specific post',
+      security: [{ BearerAuth: [] }],
+      parameters: [
+        {
+          name: 'postId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Post ID',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Bookmark status retrieved',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: true },
+                  message: {
+                    type: 'string',
+                    example: 'Bookmark retrieved successfully',
+                  },
+                  data: {
+                    oneOf: [
+                      { $ref: '#/components/schemas/BookmarkResponse' },
+                      { type: 'null' },
+                    ],
+                  },
+                  timestamp: { type: 'string', format: 'date-time' },
+                  path: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+      },
+    },
+  },
+
   '/api/bookmarks/{id}': {
     get: {
       tags: ['Bookmarks'],

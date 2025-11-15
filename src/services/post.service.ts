@@ -568,7 +568,8 @@ export async function getPostById(
  */
 export async function getPostBySlug(
   slug: string,
-  includeUnpublished = false
+  includeUnpublished = false,
+  userId?: string
 ): Promise<ApiResponse<PostDetailResponse>> {
   const where: Prisma.PostWhereInput = {
     slug,
@@ -894,6 +895,34 @@ export async function getPostBySlug(
     take: 5,
   });
 
+  // Fetch user bookmark if userId provided
+  let userBookmark = null;
+  if (userId) {
+    const bookmark = await prisma.bookmark.findUnique({
+      where: {
+        userId_postId: {
+          userId,
+          postId: post.id,
+        },
+      },
+      select: {
+        id: true,
+        isFavorite: true,
+        isRead: true,
+        note: true,
+        tags: true,
+        createdAt: true,
+      },
+    });
+
+    if (bookmark) {
+      userBookmark = {
+        ...bookmark,
+        createdAt: bookmark.createdAt.toISOString(),
+      };
+    }
+  }
+
   return {
     success: true,
     message: 'Post retrieved successfully',
@@ -901,6 +930,7 @@ export async function getPostBySlug(
       post: toPostResponse(post),
       relatedPosts: relatedPosts.map(toPostListItem),
       latestPosts: latestPosts,
+      ...(userId && { userBookmark }),
     },
   };
 }

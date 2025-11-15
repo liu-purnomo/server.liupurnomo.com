@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.0] - 2025-11-15
+
+### Added
+- **Bookmark Integration with Posts**
+  - Added GET `/api/bookmarks/post/:postId` endpoint to check if user has bookmarked a specific post
+  - Added `userBookmark` field in post detail response (GET `/api/posts/slug/:slug`) for authenticated users
+  - Returns bookmark status (id, isFavorite, isRead, note, tags, createdAt) when user is logged in
+  - Returns null when user is not authenticated or has not bookmarked the post
+  - Optional authentication support for post detail endpoint using `optionalAuth` middleware
+  - Enhanced user experience by providing immediate bookmark status without additional API calls
+
+### Changed
+- **Post Detail Endpoint Enhancement**
+  - Updated GET `/api/posts/slug/:slug` to support optional authentication
+  - Post detail now includes `userBookmark` field conditionally based on authentication
+  - Improved API documentation to reflect optional authentication behavior
+  - Added detailed OpenAPI schema for `userBookmark` with oneOf (object or null) pattern
+
+### Fixed
+- **Zod Validator TypeScript Compatibility**
+  - Fixed TypeScript compilation errors in query validators (bookmark, comment, event)
+  - Removed problematic `.default({})` pattern that conflicted with Zod v4 type inference
+  - Resolved "Type '{}' is missing properties" errors in bookmark, comment, and event validators
+  - Maintained individual field defaults while fixing object-level type issues
+  - Build now compiles successfully without TypeScript errors
+
+### Documentation
+- **API Documentation Updates**
+  - Added OpenAPI documentation for GET `/api/bookmarks/post/:postId` endpoint
+  - Updated POST detail documentation with optional authentication details
+  - Added comprehensive schema definition for `userBookmark` response field
+  - Enhanced error handling documentation with field-level validation error details
+
 ## [0.17.0] - 2025-11-14
 
 ### Added

@@ -275,8 +275,8 @@ export const postPaths = {
     get: {
       tags: ['Posts'],
       summary: 'Get published post by slug with related posts',
-      description: 'Get published post details by slug (URL-friendly identifier) with related posts from the same category and latest posts for sidebar. Includes post reactions (up to 50 recent reactions) and reaction counts. No authentication required. View count is incremented automatically. Returns up to 5 related posts and 5 latest posts.',
-      security: [],
+      description: 'Get published post details by slug (URL-friendly identifier) with related posts from the same category and latest posts for sidebar. Includes post reactions (up to 50 recent reactions) and reaction counts. **Optional authentication**: If user is authenticated, response includes `userBookmark` field with bookmark status. View count is incremented automatically. Returns up to 5 related posts and 5 latest posts.',
+      security: [{ BearerAuth: [] }],
       parameters: [
         {
           name: 'slug',
@@ -286,10 +286,18 @@ export const postPaths = {
           description: 'Post slug (URL-friendly identifier)',
           example: 'getting-started-with-typescript',
         },
+        {
+          name: 'Authorization',
+          in: 'header',
+          required: false,
+          schema: { type: 'string' },
+          description: 'Optional Bearer token for authenticated users to include bookmark status',
+          example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
       ],
       responses: {
         200: {
-          description: 'Post retrieved successfully with related and latest posts',
+          description: 'Post retrieved successfully with related and latest posts. If authenticated, includes userBookmark field.',
           content: {
             'application/json': {
               schema: {

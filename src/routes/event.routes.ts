@@ -5,10 +5,9 @@ import { authenticate, requireRole } from '../middlewares/auth.js';
 import {
   createEventSchema,
   updateEventSchema,
-  getEventByIdSchema,
-  getEventBySlugSchema,
-  getAllEventsSchema,
-  deleteEventSchema,
+  eventIdParamsSchema,
+  eventSlugParamsSchema,
+  eventQuerySchema,
 } from '../validators/event.validator.js';
 
 const router = Router();
@@ -29,7 +28,7 @@ const router = Router();
  */
 router.get(
   '/',
-  validate(getAllEventsSchema),
+  validate(eventQuerySchema, 'query'),
   eventController.getAllEvents
 );
 
@@ -40,7 +39,7 @@ router.get(
  */
 router.get(
   '/slug/:slug',
-  validate(getEventBySlugSchema),
+  validate(eventSlugParamsSchema, 'params'),
   eventController.getEventBySlug
 );
 
@@ -68,7 +67,7 @@ router.get(
   '/:id',
   authenticate,
   requireRole('ADMIN', 'AUTHOR'),
-  validate(getEventByIdSchema),
+  validate(eventIdParamsSchema, 'params'),
   eventController.getEventById
 );
 
@@ -81,6 +80,7 @@ router.patch(
   '/:id',
   authenticate,
   requireRole('ADMIN', 'AUTHOR'),
+  validate(eventIdParamsSchema, 'params'),
   validate(updateEventSchema),
   eventController.updateEvent
 );
@@ -94,7 +94,7 @@ router.delete(
   '/:id',
   authenticate,
   requireRole('ADMIN', 'AUTHOR'),
-  validate(deleteEventSchema),
+  validate(eventIdParamsSchema, 'params'),
   eventController.deleteEvent
 );
 

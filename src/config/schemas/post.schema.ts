@@ -1106,6 +1106,53 @@ export const postSchemas = {
           },
         ],
       },
+      userBookmark: {
+        oneOf: [
+          {
+            type: 'object',
+            description: 'User bookmark details (only included if user is authenticated and has bookmarked this post)',
+            properties: {
+              id: {
+                type: 'string',
+                example: 'clbookmark123',
+                description: 'Bookmark ID',
+              },
+              isFavorite: {
+                type: 'boolean',
+                example: true,
+                description: 'Whether post is marked as favorite',
+              },
+              isRead: {
+                type: 'boolean',
+                example: false,
+                description: 'Whether post has been read',
+              },
+              note: {
+                type: 'string',
+                nullable: true,
+                example: 'Great article about TypeScript!',
+                description: 'Personal note on bookmark (max 5000 chars)',
+              },
+              tags: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['typescript', 'tutorial'],
+                description: 'Custom tags for bookmark organization',
+              },
+              createdAt: {
+                type: 'string',
+                format: 'date-time',
+                example: '2025-01-15T14:30:00.000Z',
+                description: 'When bookmark was created',
+              },
+            },
+          },
+          {
+            type: 'null',
+            description: 'Null if user is not authenticated or has not bookmarked this post',
+          },
+        ],
+      },
     },
   },
 

@@ -56,6 +56,26 @@ export async function getBookmarkById(
 }
 
 /**
+ * Get Bookmark by Post ID
+ * GET /api/bookmarks/post/:postId
+ */
+export async function getBookmarkByPostId(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const userId = req.user!.id;
+    const { postId } = req.params;
+    const result = await bookmarkService.getBookmarkByPostId(userId, postId!);
+
+    sendSuccess(res, 200, result.message, result.data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * Get All Bookmarks for User
  * GET /api/bookmarks
  */

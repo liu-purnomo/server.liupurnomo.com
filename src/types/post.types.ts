@@ -222,6 +222,14 @@ export interface PostDetailResponse {
       comments: number;
     };
   }>;
+  userBookmark?: {
+    id: string;
+    isFavorite: boolean;
+    isRead: boolean;
+    note: string | null;
+    tags: string[];
+    createdAt: string;
+  } | null;
 }
 
 /**

@@ -39,9 +39,11 @@ router.get('/search', postController.searchPosts);
  * Get Post by Slug
  * GET /api/posts/slug/:slug
  * Returns only published posts
+ * Optional auth: includes userBookmark if authenticated
  */
 router.get(
   '/slug/:slug',
+  optionalAuth,
   validate(getPostBySlugValidator, 'params'),
   postController.getPostBySlug
 );

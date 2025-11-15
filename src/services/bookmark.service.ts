@@ -178,6 +178,52 @@ export async function getBookmarkById(
 }
 
 /**
+ * Get Bookmark by Post ID
+ * Check if user has bookmarked a specific post
+ */
+export async function getBookmarkByPostId(
+  userId: string,
+  postId: string
+): Promise<ApiResponse<BookmarkResponse | null>> {
+  const bookmark = await prisma.bookmark.findUnique({
+    where: {
+      userId_postId: {
+        userId,
+        postId,
+      },
+    },
+    include: {
+      post: {
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!bookmark) {
+    return {
+      success: true,
+      message: 'Post not bookmarked',
+      data: null,
+    };
+  }
+
+  return {
+    success: true,
+    message: 'Bookmark retrieved successfully',
+    data: toBookmarkResponse(bookmark),
+  };
+}
+
+/**
  * Get All Bookmarks for User (with pagination and filters)
  */
 export async function getAllBookmarks(
