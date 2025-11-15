@@ -94,6 +94,11 @@ export interface CommentListItem {
     name: string | null;
     avatarUrl: string | null;
   } | null;
+  post?: {
+    id: string;
+    title: string;
+    slug: string;
+  };
   _count?: {
     replies: number;
     commentReactions: number;

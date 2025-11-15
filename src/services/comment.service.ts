@@ -379,6 +379,13 @@ export async function getComments(
             avatarUrl: true,
           },
         },
+        post: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
         _count: {
           select: {
             replies: true,
