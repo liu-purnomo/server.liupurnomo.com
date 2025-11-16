@@ -5,6 +5,7 @@
 
 export * as activityLogController from './activity-log.controller.js';
 export * as authController from './auth.controller.js';
+export * as cacheController from './cache.controller.js';
 export * as categoryController from './category.controller.js';
 export * as githubAuthController from './githubAuth.controller.js';
 export * as googleAuthController from './googleAuth.controller.js';

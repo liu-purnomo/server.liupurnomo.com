@@ -6,6 +6,7 @@
 import { activityLogSchemas } from './activity-log.schema.js';
 import { authSchemas } from './auth.schema.js';
 import { bookmarkSchemas } from './bookmark.schema.js';
+import { cacheSchemas } from './cache.schema.js';
 import { categorySchemas } from './category.schema.js';
 import { commentSchemas } from './comment.schema.js';
 import { commonSchemas } from './common.schema.js';
@@ -25,6 +26,7 @@ export const schemas = {
   ...activityLogSchemas,
   ...authSchemas,
   ...bookmarkSchemas,
+  ...cacheSchemas,
   ...categorySchemas,
   ...commentSchemas,
   ...eventSchemas,

@@ -1,14 +1,17 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import * as bookmarkService from '../services/bookmark.service.js';
+import { CachePrefix, CacheService } from '../services/cache.service.js';
+
+import { prisma } from '../lib/prisma.js';
 import type {
+  BookmarkQueryParams,
   CreateBookmarkRequest,
   UpdateBookmarkRequest,
-  BookmarkQueryParams,
 } from '../types/index.js';
 import {
   sendCreated,
-  sendSuccess,
   sendPaginatedSuccess,
+  sendSuccess,
 } from '../utils/index.js';
 
 /**
@@ -28,6 +31,12 @@ export async function createBookmark(
     const userId = req.user!.id;
     const data: CreateBookmarkRequest = req.body;
     const result = await bookmarkService.createBookmark(userId, data);
+
+    // Invalidate post cache to reflect bookmark status
+    await Promise.all([
+      CacheService.invalidateEntity(CachePrefix.POST, data.postId),
+      CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    ]);
 
     sendCreated(res, result.message, result.data);
   } catch (error) {
@@ -133,7 +142,22 @@ export async function deleteBookmark(
   try {
     const userId = req.user!.id;
     const { id } = req.params;
+
+    // Get postId before deleting
+    const bookmark = await prisma.bookmark.findUnique({
+      where: { id },
+      select: { postId: true },
+    });
+
     const result = await bookmarkService.deleteBookmark(userId, id!);
+
+    // Invalidate post cache to reflect bookmark status
+    if (bookmark?.postId) {
+      await Promise.all([
+        CacheService.invalidateEntity(CachePrefix.POST, bookmark.postId),
+        CacheService.invalidateEntity(CachePrefix.POST_LIST),
+      ]);
+    }
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {

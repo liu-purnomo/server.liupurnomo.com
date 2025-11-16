@@ -6,6 +6,7 @@
 import { activityLogPaths } from './activity-log.docs.js';
 import { authPaths } from './auth.docs.js';
 import { bookmarkPaths } from './bookmark.docs.js';
+import { cachePaths } from './cache.docs.js';
 import { categoryPaths } from './category.docs.js';
 import { commentPaths } from './comment.docs.js';
 import { eventPaths } from './event.docs.js';
@@ -23,6 +24,7 @@ export const paths = {
   ...activityLogPaths,
   ...authPaths,
   ...bookmarkPaths,
+  ...cachePaths,
   ...categoryPaths,
   ...commentPaths,
   ...eventPaths,

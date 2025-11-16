@@ -4,19 +4,17 @@
  */
 
 import { Request, Response } from 'express';
+import { prisma } from '../lib/prisma.js';
+import { CachePrefix, CacheService } from '../services/cache.service.js';
 import { commentService } from '../services/index.js';
-import {
-  asyncHandler,
-  logActivity,
-  sendSuccess,
-} from '../utils/index.js';
 import type {
+  CommentQueryParams,
   CreateCommentInput,
   CreateGuestCommentInput,
-  UpdateCommentInput,
   ModerateCommentInput,
-  CommentQueryParams,
+  UpdateCommentInput,
 } from '../types/index.js';
+import { asyncHandler, logActivity, sendSuccess } from '../utils/index.js';
 
 /**
  * Create comment (authenticated user)
@@ -35,6 +33,12 @@ export const createComment = asyncHandler(
       ipAddress,
       userAgent
     );
+
+    // Invalidate post cache to reflect new comment count
+    await Promise.all([
+      CacheService.invalidateEntity(CachePrefix.POST, data.postId),
+      CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    ]);
 
     // Log activity
     await logActivity({
@@ -69,6 +73,12 @@ export const createGuestComment = asyncHandler(
       referrer
     );
 
+    // Invalidate post cache to reflect new comment count
+    await Promise.all([
+      CacheService.invalidateEntity(CachePrefix.POST, data.postId),
+      CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    ]);
+
     // Log activity (no userId for guest)
     await logActivity({
       action: 'CREATE',
@@ -88,16 +98,20 @@ export const createGuestComment = asyncHandler(
  * GET /api/comments
  * Public endpoint but can use authentication to show user's own pending comments
  */
-export const getComments = asyncHandler(
-  async (req: Request, res: Response) => {
-    const query = req.query as unknown as CommentQueryParams;
-    const requestingUserId = req.user?.id; // Optional - may be undefined for guests
+export const getComments = asyncHandler(async (req: Request, res: Response) => {
+  const query = req.query as unknown as CommentQueryParams;
+  const requestingUserId = req.user?.id; // Optional - may be undefined for guests
 
-    const result = await commentService.getComments(query, requestingUserId);
+  const result = await commentService.getComments(query, requestingUserId);
 
-    sendSuccess(res, 200, result.message, result.data?.data, result.data?.pagination);
-  }
-);
+  sendSuccess(
+    res,
+    200,
+    result.message,
+    result.data?.data,
+    result.data?.pagination
+  );
+});
 
 /**
  * Get comment by ID
@@ -126,6 +140,17 @@ export const updateComment = asyncHandler(
     const userAgent = req.get('user-agent');
 
     const result = await commentService.updateComment(id!, data, userId);
+
+    // Invalidate post cache (comment might affect post data)
+    if (result.data?.comment.postId) {
+      await Promise.all([
+        CacheService.invalidateEntity(
+          CachePrefix.POST,
+          result.data.comment.postId
+        ),
+        CacheService.invalidateEntity(CachePrefix.POST_LIST),
+      ]);
+    }
 
     // Log activity
     await logActivity({
@@ -156,6 +181,17 @@ export const moderateComment = asyncHandler(
 
     const result = await commentService.moderateComment(id!, data, userId);
 
+    // Invalidate post cache (moderation might affect post data)
+    if (result.data?.comment.postId) {
+      await Promise.all([
+        CacheService.invalidateEntity(
+          CachePrefix.POST,
+          result.data.comment.postId
+        ),
+        CacheService.invalidateEntity(CachePrefix.POST_LIST),
+      ]);
+    }
+
     // Log activity
     await logActivity({
       userId,
@@ -183,7 +219,21 @@ export const deleteComment = asyncHandler(
     const ipAddress = req.ip;
     const userAgent = req.get('user-agent');
 
+    // Get postId before deleting
+    const comment = await prisma.comment.findUnique({
+      where: { id },
+      select: { postId: true },
+    });
+
     const result = await commentService.deleteComment(id!, userId);
+
+    // Invalidate post cache to reflect updated comment count
+    if (comment?.postId) {
+      await Promise.all([
+        CacheService.invalidateEntity(CachePrefix.POST, comment.postId),
+        CacheService.invalidateEntity(CachePrefix.POST_LIST),
+      ]);
+    }
 
     // Log activity
     await logActivity({

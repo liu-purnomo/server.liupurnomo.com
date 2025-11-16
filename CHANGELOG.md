@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.1] - 2025-11-16
+
+### Added
+- **Cache Management System**
+  - Added cache statistics endpoint GET `/api/cache/stats` for monitoring cache usage
+  - Cache stats include Redis connection status, memory usage, total keys, and keys by prefix
+  - Added cache clear endpoint DELETE `/api/cache/clear` for manual cache invalidation
+  - Support for clearing all cache or specific prefix-based cache groups
+  - Admin-only access for cache management endpoints
+  - OpenAPI documentation for cache management endpoints
+
+### Changed
+- **Cache Invalidation Strategy**
+  - Implemented automatic cache invalidation on bookmark create/delete operations
+  - Added cache invalidation on comment create/update/moderate/delete operations
+  - Added cache invalidation on post reaction add/remove operations
+  - Ensures post detail and post list caches stay synchronized with user interactions
+  - Enhanced cache service with `getStats()` method for monitoring
+
+### Fixed
+- **Cache Consistency**
+  - Fixed stale cache issue where bookmark status wasn't reflected in post responses
+  - Fixed comment count discrepancy in cached post data
+  - Fixed reaction count mismatch between cache and database
+  - Ensured cache invalidation happens before response is sent to user
+
 ## [0.23.0] - 2025-11-16
 
 ### Added

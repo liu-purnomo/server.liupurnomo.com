@@ -5,6 +5,7 @@
 
 import { ReactionType } from '@prisma/client';
 import { Request, Response } from 'express';
+import { CachePrefix, CacheService } from '../services/cache.service.js';
 import { postReactionService } from '../services/index.js';
 import { sendSuccess, sendPaginatedSuccess } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -46,6 +47,12 @@ export const addOrToggleReaction = asyncHandler(
       ipAddress,
       userAgent
     );
+
+    // Invalidate post cache to reflect updated reaction counts
+    await Promise.all([
+      CacheService.invalidateEntity(CachePrefix.POST, postId),
+      CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    ]);
 
     return sendSuccess(res, 200, result.message, result.data);
   }
@@ -141,6 +148,12 @@ export const removeReaction = asyncHandler(
       userId,
       ipAddress
     );
+
+    // Invalidate post cache to reflect updated reaction counts
+    await Promise.all([
+      CacheService.invalidateEntity(CachePrefix.POST, postId),
+      CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    ]);
 
     return sendSuccess(res, 200, result.message, result.data);
   }

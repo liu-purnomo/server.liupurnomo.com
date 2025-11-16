@@ -6,7 +6,9 @@ Currently supported versions with security updates:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 0.23.x  | :white_check_mark: |
+| 0.22.x  | :white_check_mark: |
+| < 0.22  | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -112,4 +114,4 @@ If you have questions about this security policy, please contact [liu@drone.co.i
 
 ---
 
-Last updated: 2025-01-23
+Last updated: 2025-11-16

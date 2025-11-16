@@ -225,4 +225,47 @@ export class CacheService {
       console.error(`❌ Cache invalidation error for ${prefix}:`, error);
     }
   }
+
+  /**
+   * Get cache statistics
+   * Returns detailed cache stats including memory usage, key counts by prefix
+   */
+  static async getStats(): Promise<{
+    connected: boolean;
+    memory?: string;
+    totalKeys?: number;
+    keysByPrefix?: Record<string, number>;
+  }> {
+    if (!isRedisReady()) {
+      return { connected: false };
+    }
+
+    try {
+      const info = await redis.info('memory');
+      const dbSize = await redis.dbsize();
+      const memoryMatch = info.match(/used_memory_human:(.+)/);
+      const memory = memoryMatch?.[1]?.trim() || 'unknown';
+
+      // Count keys by prefix
+      const keysByPrefix: Record<string, number> = {};
+
+      // Get all cache prefixes
+      const prefixes = Object.values(CachePrefix);
+
+      for (const prefix of prefixes) {
+        const keys = await redis.keys(`${prefix}*`);
+        keysByPrefix[prefix] = keys.length;
+      }
+
+      return {
+        connected: true,
+        memory,
+        totalKeys: dbSize,
+        keysByPrefix,
+      };
+    } catch (error) {
+      console.error('❌ Cache stats error:', error);
+      return { connected: false };
+    }
+  }
 }
