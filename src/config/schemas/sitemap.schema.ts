@@ -10,6 +10,7 @@ export const sitemapSchemas = {
     type: 'object',
     properties: {
       slug: { type: 'string', example: 'getting-started-with-typescript' },
+      title: { type: 'string', example: 'Getting Started with TypeScript' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
       publishedAt: { type: 'string', format: 'date-time', nullable: true, example: '2025-11-14T08:00:00Z' },
     },
@@ -19,6 +20,7 @@ export const sitemapSchemas = {
     type: 'object',
     properties: {
       slug: { type: 'string', example: 'web-development' },
+      name: { type: 'string', example: 'Web Development' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
     },
   },
@@ -27,6 +29,7 @@ export const sitemapSchemas = {
     type: 'object',
     properties: {
       slug: { type: 'string', example: 'typescript' },
+      name: { type: 'string', example: 'TypeScript' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
     },
   },
@@ -35,6 +38,7 @@ export const sitemapSchemas = {
     type: 'object',
     properties: {
       fileUrl: { type: 'string', format: 'uri', example: 'https://server.liupurnomo.com/uploads/image.jpg' },
+      fileName: { type: 'string', example: 'header-image.jpg' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
     },
   },
@@ -43,6 +47,7 @@ export const sitemapSchemas = {
     type: 'object',
     properties: {
       slug: { type: 'string', example: 'react-conference-2025' },
+      title: { type: 'string', example: 'React Conference 2025' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
       eventDate: { type: 'string', format: 'date-time', example: '2025-12-01T09:00:00Z' },
     },

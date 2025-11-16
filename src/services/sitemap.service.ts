@@ -7,27 +7,32 @@ import { prisma } from '../lib/prisma.js';
 
 export interface SitemapPost {
   slug: string;
+  title: string;
   updatedAt: Date;
   publishedAt: Date | null;
 }
 
 export interface SitemapCategory {
   slug: string;
+  name: string;
   updatedAt: Date;
 }
 
 export interface SitemapTag {
   slug: string;
+  name: string;
   updatedAt: Date;
 }
 
 export interface SitemapMedia {
   fileUrl: string;
+  fileName: string;
   updatedAt: Date;
 }
 
 export interface SitemapEvent {
   slug: string;
+  title: string;
   updatedAt: Date;
   eventDate: Date;
 }
@@ -53,6 +58,8 @@ export async function getSitemapData(): Promise<SitemapData> {
       },
       select: {
         slug: true,
+        title: true,
+
         updatedAt: true,
         publishedAt: true,
       },
@@ -65,6 +72,7 @@ export async function getSitemapData(): Promise<SitemapData> {
     prisma.category.findMany({
       select: {
         slug: true,
+        name: true,
         updatedAt: true,
       },
       orderBy: {
@@ -76,6 +84,7 @@ export async function getSitemapData(): Promise<SitemapData> {
     prisma.tag.findMany({
       select: {
         slug: true,
+        name: true,
         updatedAt: true,
       },
       orderBy: {
@@ -87,6 +96,7 @@ export async function getSitemapData(): Promise<SitemapData> {
     prisma.media.findMany({
       select: {
         fileUrl: true,
+        fileName: true,
         updatedAt: true,
       },
       orderBy: {
@@ -103,6 +113,7 @@ export async function getSitemapData(): Promise<SitemapData> {
       },
       select: {
         slug: true,
+        title: true,
         updatedAt: true,
         eventDate: true,
       },

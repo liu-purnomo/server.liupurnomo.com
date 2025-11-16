@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.2] - 2025-11-16
+
+### Fixed
+- **Sitemap API Response Enhancement**
+  - Added `title` field to sitemap posts for better SEO context
+  - Added `name` field to sitemap categories for display purposes
+  - Added `name` field to sitemap tags for better identification
+  - Added `fileName` field to sitemap media for file tracking
+  - Added `title` field to sitemap events for better event context
+  - Updated TypeScript interfaces to match actual service queries
+  - Updated OpenAPI schemas to reflect complete sitemap data structure
+
 ## [0.22.1] - 2025-11-15
 
 ### Fixed
