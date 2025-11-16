@@ -202,7 +202,7 @@ export class CacheService {
 
   /**
    * Invalidate cache for specific entity type
-   * Example: invalidateEntity('post', '123') deletes post:123 and all post:list:*
+   * Example: invalidateEntity('post', '123') deletes post:123, post:slug:*, and all post:list:*
    */
   static async invalidateEntity(prefix: string, id?: string | number): Promise<void> {
     if (!isRedisReady()) {
@@ -213,6 +213,9 @@ export class CacheService {
       // Delete specific item cache
       if (id) {
         await this.delete(`${prefix}:${id}`);
+        // Also delete all related caches (e.g., post:slug:*:userId variations)
+        await this.deletePattern(`${prefix}:*:${id}:*`);
+        await this.deletePattern(`${prefix}:slug:*`);
       }
 
       // Delete list caches (with pagination)
