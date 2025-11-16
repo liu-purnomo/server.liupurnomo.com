@@ -8,11 +8,11 @@ import { RateLimitError } from '../utils/errors.js';
 
 /**
  * General API Rate Limiter
- * 100 requests per 15 minutes per IP
+ * 1000 requests per 15 minutes per IP
  */
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Limit each IP to 1000 requests per windowMs
   message: 'Too many requests from this IP, please try again later',
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -23,12 +23,12 @@ export const apiLimiter = rateLimit({
 
 /**
  * Authentication Rate Limiter
- * 5 login attempts per 15 minutes per IP
+ * 50 login attempts per 15 minutes per IP
  * Prevents brute force attacks
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 login attempts per windowMs
+  max: 50, // Limit each IP to 50 login attempts per windowMs
   message: 'Too many login attempts, please try again after 15 minutes',
   skipSuccessfulRequests: true, // Don't count successful requests
   standardHeaders: true,
@@ -40,12 +40,12 @@ export const authLimiter = rateLimit({
 
 /**
  * Registration Rate Limiter
- * 3 registrations per hour per IP
+ * 30 registrations per hour per IP
  * Prevents spam account creation
  */
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // Limit each IP to 3 registrations per hour
+  max: 30, // Limit each IP to 30 registrations per hour
   message: 'Too many accounts created from this IP, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
@@ -56,12 +56,12 @@ export const registerLimiter = rateLimit({
 
 /**
  * Password Reset Rate Limiter
- * 3 password reset requests per hour per IP
+ * 30 password reset requests per hour per IP
  * Prevents spam and abuse
  */
 export const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // Limit each IP to 3 password resets per hour
+  max: 30, // Limit each IP to 30 password resets per hour
   message: 'Too many password reset requests, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
@@ -72,12 +72,12 @@ export const passwordResetLimiter = rateLimit({
 
 /**
  * Email Verification Rate Limiter
- * 5 verification emails per hour per IP
+ * 50 verification emails per hour per IP
  * Prevents email spam
  */
 export const emailVerificationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 verification emails per hour
+  max: 50, // Limit each IP to 50 verification emails per hour
   message: 'Too many verification emails sent, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
@@ -88,12 +88,12 @@ export const emailVerificationLimiter = rateLimit({
 
 /**
  * File Upload Rate Limiter
- * 10 uploads per 15 minutes per IP
+ * 100 uploads per 15 minutes per IP
  * Prevents upload abuse
  */
 export const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 uploads per windowMs
+  max: 100, // Limit each IP to 100 uploads per windowMs
   message: 'Too many file uploads, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
@@ -104,12 +104,12 @@ export const uploadLimiter = rateLimit({
 
 /**
  * Comment Rate Limiter
- * 20 comments per 15 minutes per IP
+ * 200 comments per 15 minutes per IP
  * Prevents comment spam
  */
 export const commentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // Limit each IP to 20 comments per windowMs
+  max: 200, // Limit each IP to 200 comments per windowMs
   message: 'Too many comments posted, please slow down',
   standardHeaders: true,
   legacyHeaders: false,
@@ -120,12 +120,12 @@ export const commentLimiter = rateLimit({
 
 /**
  * Search Rate Limiter
- * 30 searches per minute per IP
+ * 300 searches per minute per IP
  * Prevents search abuse
  */
 export const searchLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // Limit each IP to 30 searches per minute
+  max: 300, // Limit each IP to 300 searches per minute
   message: 'Too many search requests, please slow down',
   standardHeaders: true,
   legacyHeaders: false,
@@ -136,12 +136,12 @@ export const searchLimiter = rateLimit({
 
 /**
  * Strict Rate Limiter
- * 10 requests per minute per IP
+ * 100 requests per minute per IP
  * For sensitive operations
  */
 export const strictLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10, // Limit each IP to 10 requests per minute
+  max: 100, // Limit each IP to 100 requests per minute
   message: 'Too many requests, please try again later',
   standardHeaders: true,
   legacyHeaders: false,

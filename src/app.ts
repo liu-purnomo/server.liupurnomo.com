@@ -19,8 +19,33 @@ const port = process.env.PORT || 4000;
 // Trust proxy - for rate limiting behind reverse proxy
 app.set('trust proxy', 1);
 
-// Middlewares
-app.use(cors());
+// CORS Configuration - Only allow requests from liupurnomo.com
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'https://liupurnomo.com',
+        'https://www.liupurnomo.com',
+        // 'http://localhost:3000', // For local development
+        // 'http://localhost:5173', // For local development (Vite)
+      ];
+
+      // Allow requests with no origin (like mobile apps, Postman, curl)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // Allow cookies and authentication headers
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -100,6 +125,8 @@ httpServer.listen(port, async () => {
   try {
     await connectRedis();
   } catch (error) {
-    console.warn('⚠️  Redis connection failed - server will run without caching');
+    console.warn(
+      '⚠️  Redis connection failed - server will run without caching'
+    );
   }
 });

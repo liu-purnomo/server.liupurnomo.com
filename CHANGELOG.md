@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.2] - 2025-11-16
+
+### Changed
+- **Rate Limiter Configuration**
+  - Increased API rate limit from 100 to 1000 requests per 15 minutes (10x improvement)
+  - Increased authentication rate limit from 5 to 50 attempts per 15 minutes
+  - Increased registration rate limit from 3 to 30 accounts per hour
+  - Increased password reset rate limit from 3 to 30 requests per hour
+  - Increased email verification rate limit from 5 to 50 emails per hour
+  - Increased file upload rate limit from 10 to 100 uploads per 15 minutes
+  - Increased comment rate limit from 20 to 200 comments per 15 minutes
+  - Increased search rate limit from 30 to 300 searches per minute
+  - Increased strict rate limit from 10 to 100 requests per minute
+
+### Security
+- **CORS Policy Enhancement**
+  - Implemented strict CORS policy to only allow requests from liupurnomo.com domain
+  - Added support for both www and non-www variants
+  - Configured credentials support for secure cookie and authentication handling
+  - Defined explicit allowed methods and headers for better security control
+
 ## [0.23.1] - 2025-11-16
 
 ### Added
