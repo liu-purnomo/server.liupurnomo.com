@@ -62,6 +62,8 @@ function toPostResponse(post: any): PostResponse {
           name: post.author.name,
           username: post.author.username,
           avatarUrl: post.author.avatarUrl,
+          bio: post.author.bio,
+          location: post.author.location,
         }
       : undefined,
     category: post.category
@@ -69,6 +71,8 @@ function toPostResponse(post: any): PostResponse {
           id: post.category.id,
           name: post.category.name,
           slug: post.category.slug,
+          description: post.category.description,
+          iconUrl: post.category.iconUrl,
         }
       : undefined,
     postTags: post.postTags
@@ -77,6 +81,7 @@ function toPostResponse(post: any): PostResponse {
             id: pt.tag.id,
             name: pt.tag.name,
             slug: pt.tag.slug,
+            description: pt.tag.description,
           },
         }))
       : undefined,

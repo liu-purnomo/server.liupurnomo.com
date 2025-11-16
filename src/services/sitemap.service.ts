@@ -8,6 +8,8 @@ import { prisma } from '../lib/prisma.js';
 export interface SitemapPost {
   slug: string;
   title: string;
+  featuredImageUrl: string | null;
+  excerpt: string | null;
   updatedAt: Date;
   publishedAt: Date | null;
 }
@@ -15,24 +17,29 @@ export interface SitemapPost {
 export interface SitemapCategory {
   slug: string;
   name: string;
+  description: string | null;
   updatedAt: Date;
 }
 
 export interface SitemapTag {
   slug: string;
   name: string;
+  description: string | null;
   updatedAt: Date;
 }
 
 export interface SitemapMedia {
   fileUrl: string;
   fileName: string;
+  caption: string | null;
   updatedAt: Date;
 }
 
 export interface SitemapEvent {
   slug: string;
   title: string;
+  featuredImageUrl: string | null;
+  description: string | null;
   updatedAt: Date;
   eventDate: Date;
 }
@@ -59,7 +66,8 @@ export async function getSitemapData(): Promise<SitemapData> {
       select: {
         slug: true,
         title: true,
-
+        featuredImageUrl: true,
+        excerpt: true,
         updatedAt: true,
         publishedAt: true,
       },
@@ -72,6 +80,7 @@ export async function getSitemapData(): Promise<SitemapData> {
     prisma.category.findMany({
       select: {
         slug: true,
+        description: true,
         name: true,
         updatedAt: true,
       },
@@ -84,6 +93,7 @@ export async function getSitemapData(): Promise<SitemapData> {
     prisma.tag.findMany({
       select: {
         slug: true,
+        description: true,
         name: true,
         updatedAt: true,
       },
@@ -96,6 +106,7 @@ export async function getSitemapData(): Promise<SitemapData> {
     prisma.media.findMany({
       select: {
         fileUrl: true,
+        caption: true,
         fileName: true,
         updatedAt: true,
       },
@@ -114,6 +125,8 @@ export async function getSitemapData(): Promise<SitemapData> {
       select: {
         slug: true,
         title: true,
+        featuredImageUrl: true,
+        description: true,
         updatedAt: true,
         eventDate: true,
       },

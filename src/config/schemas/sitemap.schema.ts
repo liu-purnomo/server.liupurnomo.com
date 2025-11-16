@@ -11,6 +11,8 @@ export const sitemapSchemas = {
     properties: {
       slug: { type: 'string', example: 'getting-started-with-typescript' },
       title: { type: 'string', example: 'Getting Started with TypeScript' },
+      featuredImageUrl: { type: 'string', format: 'uri', nullable: true, example: 'https://server.liupurnomo.com/uploads/post-featured.jpg' },
+      excerpt: { type: 'string', nullable: true, example: 'Learn the fundamentals of TypeScript and how to get started' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
       publishedAt: { type: 'string', format: 'date-time', nullable: true, example: '2025-11-14T08:00:00Z' },
     },
@@ -21,6 +23,7 @@ export const sitemapSchemas = {
     properties: {
       slug: { type: 'string', example: 'web-development' },
       name: { type: 'string', example: 'Web Development' },
+      description: { type: 'string', nullable: true, example: 'Everything about modern web development' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
     },
   },
@@ -30,6 +33,7 @@ export const sitemapSchemas = {
     properties: {
       slug: { type: 'string', example: 'typescript' },
       name: { type: 'string', example: 'TypeScript' },
+      description: { type: 'string', nullable: true, example: 'Typed superset of JavaScript' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
     },
   },
@@ -39,6 +43,7 @@ export const sitemapSchemas = {
     properties: {
       fileUrl: { type: 'string', format: 'uri', example: 'https://server.liupurnomo.com/uploads/image.jpg' },
       fileName: { type: 'string', example: 'header-image.jpg' },
+      caption: { type: 'string', nullable: true, example: 'Beautiful header image for blog post' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
     },
   },
@@ -48,6 +53,8 @@ export const sitemapSchemas = {
     properties: {
       slug: { type: 'string', example: 'react-conference-2025' },
       title: { type: 'string', example: 'React Conference 2025' },
+      featuredImageUrl: { type: 'string', format: 'uri', nullable: true, example: 'https://server.liupurnomo.com/uploads/event-banner.jpg' },
+      description: { type: 'string', nullable: true, example: 'Join us for the biggest React conference of 2025' },
       updatedAt: { type: 'string', format: 'date-time', example: '2025-11-15T10:30:00Z' },
       eventDate: { type: 'string', format: 'date-time', example: '2025-12-01T09:00:00Z' },
     },

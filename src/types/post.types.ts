@@ -121,17 +121,22 @@ export interface PostResponse {
     name: string | null;
     username: string | null;
     avatarUrl: string | null;
+    bio: string | null;
+    location: string | null;
   };
   category?: {
     id: string;
     name: string;
     slug: string;
+    description: string | null;
+    iconUrl: string | null;
   };
   postTags?: Array<{
     tag: {
       id: string;
       name: string;
       slug: string;
+      description: string | null;
     };
   }>;
   postReactions?: Array<{

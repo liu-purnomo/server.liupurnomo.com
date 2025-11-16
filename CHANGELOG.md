@@ -12,10 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Sitemap API Response Enhancement**
   - Added `title` field to sitemap posts for better SEO context
-  - Added `name` field to sitemap categories for display purposes
-  - Added `name` field to sitemap tags for better identification
-  - Added `fileName` field to sitemap media for file tracking
-  - Added `title` field to sitemap events for better event context
+  - Added `featuredImageUrl` and `excerpt` fields to sitemap posts
+  - Added `name` and `description` fields to sitemap categories for display purposes
+  - Added `name` and `description` fields to sitemap tags for better identification
+  - Added `fileName` and `caption` fields to sitemap media for file tracking
+  - Added `title`, `featuredImageUrl`, and `description` fields to sitemap events
   - Updated TypeScript interfaces to match actual service queries
   - Updated OpenAPI schemas to reflect complete sitemap data structure
 
