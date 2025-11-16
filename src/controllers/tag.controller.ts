@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { CachePrefix, CacheService, CacheTTL } from '../services/cache.service.js';
 import * as tagService from '../services/tag.service.js';
 import type {
   CreateTagInput,
@@ -47,13 +48,23 @@ export async function getAllTags(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { tags, pagination } = await tagService.getAllTags(req.query);
+    // Build cache key from query parameters
+    const cacheKey = CacheService.buildKey(
+      CachePrefix.TAG_LIST,
+      JSON.stringify(req.query)
+    );
+
+    const result = await CacheService.getOrSet(
+      cacheKey,
+      () => tagService.getAllTags(req.query),
+      CacheTTL.ONE_HOUR // Tags rarely change
+    );
 
     res.status(200).json({
       success: true,
       message: 'Tags retrieved successfully',
-      data: { tags },
-      pagination,
+      data: { tags: result.tags },
+      pagination: result.pagination,
     });
   } catch (error) {
     next(error);

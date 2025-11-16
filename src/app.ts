@@ -5,6 +5,7 @@ import express, { Request, Response } from 'express';
 import { createServer } from 'http';
 import { openapiConfig } from './config/openapi.config.js';
 import passport from './config/passport.config.js';
+import { connectRedis, getRedisInfo } from './lib/redis.js';
 import {
   apiLimiter,
   errorHandler,
@@ -65,7 +66,9 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 // Health check endpoint
-app.get('/health', (_req: Request, res: Response) => {
+app.get('/health', async (_req: Request, res: Response) => {
+  const redisInfo = await getRedisInfo();
+
   res.status(200).json({
     success: true,
     message: 'Server is healthy',
@@ -73,6 +76,7 @@ app.get('/health', (_req: Request, res: Response) => {
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
       memory: process.memoryUsage(),
+      redis: redisInfo,
     },
   });
 });
@@ -87,8 +91,15 @@ app.use(notFoundHandler);
 // Global Error Handler - Must be last
 app.use(errorHandler);
 
-httpServer.listen(port, () => {
+httpServer.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`API Documentation: http://localhost:${port}/docs`);
+
+  // Initialize Redis connection
+  try {
+    await connectRedis();
+  } catch (error) {
+    console.warn('⚠️  Redis connection failed - server will run without caching');
+  }
 });

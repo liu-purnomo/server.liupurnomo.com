@@ -4,6 +4,7 @@
  */
 
 import { Request, Response } from 'express';
+import { CachePrefix, CacheService, CacheTTL } from '../services/cache.service.js';
 import * as userStatisticsService from '../services/user-statistics.service.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -17,8 +18,16 @@ export const getUserStatistics = asyncHandler(
   async (req: Request, res: Response) => {
     const { username } = req.params;
 
-    const data = await userStatisticsService.getUserStatisticsByUsername(
+    // Build cache key with username
+    const cacheKey = CacheService.buildKey(
+      CachePrefix.USER_STATS,
       username as string
+    );
+
+    const data = await CacheService.getOrSet(
+      cacheKey,
+      () => userStatisticsService.getUserStatisticsByUsername(username as string),
+      CacheTTL.THIRTY_MINUTES // Heavy query, cache for 30 minutes
     );
 
     return sendSuccess(

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { CachePrefix, CacheService, CacheTTL } from '../services/cache.service.js';
 import { postService } from '../services/index.js';
 import {
   asyncHandler,
@@ -42,7 +43,17 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
     sortOrder: (req.query.sortOrder as any) || 'desc',
   };
 
-  const result = await postService.getAllPosts(query, false);
+  // Build cache key from query parameters
+  const cacheKey = CacheService.buildKey(
+    CachePrefix.POST_LIST,
+    JSON.stringify(query)
+  );
+
+  const result = await CacheService.getOrSet(
+    cacheKey,
+    () => postService.getAllPosts(query, false),
+    CacheTTL.FIVE_MINUTES // Cache for 5 minutes
+  );
 
   return sendSuccess(
     res,
@@ -81,7 +92,19 @@ export const getPostBySlug = asyncHandler(async (req: Request, res: Response) =>
   const { slug } = req.params;
   const userId = req.user?.id; // Optional auth
 
-  const result = await postService.getPostBySlug(slug!, false, userId);
+  // Build cache key (include userId for personalized data like isBookmarked)
+  const cacheKey = CacheService.buildKey(
+    CachePrefix.POST,
+    'slug',
+    slug!,
+    userId || 'guest'
+  );
+
+  const result = await CacheService.getOrSet(
+    cacheKey,
+    () => postService.getPostBySlug(slug!, false, userId),
+    CacheTTL.FIFTEEN_MINUTES // Cache for 15 minutes
+  );
 
   // Increment view count asynchronously (result.data is PostDetailResponse)
   postService.incrementViewCount(result.data!.post.id).catch((err) => {
@@ -104,6 +127,14 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
   const postData: CreatePostRequest = req.body;
 
   const result = await postService.createPost(userId, postData);
+
+  // Invalidate post caches
+  await Promise.all([
+    CacheService.invalidateEntity(CachePrefix.POST),
+    CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    CacheService.delete(CachePrefix.SITEMAP), // Sitemap includes posts
+    CacheService.invalidateEntity(CachePrefix.USER_STATS, result.data!.authorId),
+  ]);
 
   // Log activity
   await logActivity({
@@ -208,6 +239,14 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
 
   const result = await postService.updatePost(id!, postData);
 
+  // Invalidate post caches
+  await Promise.all([
+    CacheService.invalidateEntity(CachePrefix.POST, id),
+    CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    CacheService.delete(CachePrefix.SITEMAP),
+    CacheService.invalidateEntity(CachePrefix.USER_STATS, result.data!.authorId),
+  ]);
+
   // Log activity
   await logActivity({
     userId,
@@ -244,6 +283,14 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
   }
 
   await postService.deletePost(id!);
+
+  // Invalidate post caches
+  await Promise.all([
+    CacheService.invalidateEntity(CachePrefix.POST, id),
+    CacheService.invalidateEntity(CachePrefix.POST_LIST),
+    CacheService.delete(CachePrefix.SITEMAP),
+    CacheService.invalidateEntity(CachePrefix.USER_STATS, existingPost.data!.authorId),
+  ]);
 
   // Log activity
   await logActivity({

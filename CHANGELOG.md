@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.0] - 2025-11-16
+
+### Added
+- **Redis Caching System**
+  - Integrated Redis (ioredis v5.8.2) for high-performance caching
+  - Created Redis client singleton with automatic reconnection
+  - Implemented comprehensive cache service layer with TTL support
+  - Added cache for GET `/api/sitemap` (1 hour TTL)
+  - Added cache for GET `/api/posts/slug/:slug` (15 minutes TTL)
+  - Added cache for GET `/api/posts` with pagination (5 minutes TTL)
+  - Added cache for GET `/api/categories` (1 hour TTL)
+  - Added cache for GET `/api/categories/tree` (1 hour TTL)
+  - Added cache for GET `/api/tags` (1 hour TTL)
+  - Added cache for GET `/api/users/@:username/statistics` (30 minutes TTL)
+  - Automatic cache invalidation on post create/update/delete operations
+  - Health check endpoint now includes Redis connection status
+  - Development-only debug logs for cache operations
+  - Expected performance improvement: 20-500x faster for cached endpoints
+
+### Infrastructure
+- Added Redis environment variables to .env.example
+- Redis configuration: host, port, password, database selection
+- Graceful fallback when Redis is unavailable (server continues without cache)
+
 ## [0.22.2] - 2025-11-16
 
 ### Fixed

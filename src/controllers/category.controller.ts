@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { CachePrefix, CacheService, CacheTTL } from '../services/cache.service.js';
 import { categoryService } from '../services/index.js';
 import {
   asyncHandler,
@@ -23,13 +24,29 @@ import {
 export const getAllCategories = asyncHandler(async (req: Request, res: Response) => {
   const { page, limit, search, parentId, sortBy, sortOrder } = req.query;
 
-  const result = await categoryService.getAllCategories(
-    page ? Number(page) : 1,
-    limit ? Number(limit) : 10,
-    search as string,
-    parentId as string,
-    sortBy as 'name' | 'orderPosition' | 'createdAt',
-    sortOrder as 'asc' | 'desc'
+  // Build cache key from query parameters
+  const cacheKey = CacheService.buildKey(
+    CachePrefix.CATEGORY_LIST,
+    String(page || '1'),
+    String(limit || '10'),
+    String(search || ''),
+    String(parentId || ''),
+    String(sortBy || 'name'),
+    String(sortOrder || 'asc')
+  );
+
+  const result = await CacheService.getOrSet(
+    cacheKey,
+    () =>
+      categoryService.getAllCategories(
+        page ? Number(page) : 1,
+        limit ? Number(limit) : 10,
+        search as string,
+        parentId as string,
+        sortBy as 'name' | 'orderPosition' | 'createdAt',
+        sortOrder as 'asc' | 'desc'
+      ),
+    CacheTTL.ONE_HOUR // Categories rarely change
   );
 
   return sendSuccess(
@@ -47,7 +64,11 @@ export const getAllCategories = asyncHandler(async (req: Request, res: Response)
  * Public access - returns hierarchical category structure
  */
 export const getCategoryTree = asyncHandler(async (_req: Request, res: Response) => {
-  const tree = await categoryService.getCategoryTree();
+  const tree = await CacheService.getOrSet(
+    `${CachePrefix.CATEGORY}:tree`,
+    () => categoryService.getCategoryTree(),
+    CacheTTL.ONE_HOUR // Tree structure rarely changes
+  );
 
   return sendSuccess(res, 200, 'Category tree retrieved successfully', { categories: tree });
 });
