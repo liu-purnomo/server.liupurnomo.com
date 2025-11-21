@@ -76,15 +76,16 @@ export const uploadMediaBulk = asyncHandler(async (req: Request, res: Response) 
 
   // Log activity for successful uploads
   if (result.data && result.data.length > 0) {
+    const uploadedMedia = result.data;
     await logActivity({
       userId,
       action: 'CREATE',
       entity: 'Media',
-      entityId: result.data[0].id,
-      description: `Bulk uploaded ${result.data.length} media file(s)`,
+      entityId: uploadedMedia[0]!.id,
+      description: `Bulk uploaded ${uploadedMedia.length} media file(s)`,
       newData: {
-        fileCount: result.data.length,
-        fileNames: result.data.map((m) => m.fileName),
+        fileCount: uploadedMedia.length,
+        fileNames: uploadedMedia.map((m) => m.fileName),
       },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
