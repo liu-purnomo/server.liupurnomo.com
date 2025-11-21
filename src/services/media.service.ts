@@ -515,6 +515,109 @@ export async function updateMedia(
 }
 
 /**
+ * Rotate Media
+ * Rotates image by specified degrees (90, 180, 270) and re-processes all sizes
+ */
+export async function rotateMedia(
+  mediaId: string,
+  userId: string,
+  userRole: string,
+  degrees: number,
+  baseUrl: string
+): Promise<ApiResponse<MediaResponse>> {
+  // Validate degrees
+  if (![90, 180, 270].includes(degrees)) {
+    throw new BadRequestError('Rotation degrees must be 90, 180, or 270');
+  }
+
+  // Find existing media
+  const media = await prisma.media.findUnique({
+    where: { id: mediaId },
+  });
+
+  if (!media) {
+    throw new NotFoundError(`Media with ID '${mediaId}' not found`);
+  }
+
+  // Check if it's an image
+  if (!media.mimeType.startsWith('image/')) {
+    throw new BadRequestError('Only images can be rotated');
+  }
+
+  // Check ownership (non-admin users can only rotate their own media)
+  if (userRole !== 'ADMIN' && media.userId !== userId) {
+    throw new BadRequestError('You do not have permission to rotate this media');
+  }
+
+  // Get the original image path
+  const filename = extractFilenameFromUrl(media.fileUrl);
+  if (!filename) {
+    throw new BadRequestError('Could not extract filename from media URL');
+  }
+
+  const originalPath = path.join('storages/media', `${filename}-original.webp`);
+
+  // Read the original image
+  let buffer: Buffer;
+  try {
+    buffer = await fs.readFile(originalPath);
+  } catch (error) {
+    throw new BadRequestError('Could not read original image file');
+  }
+
+  // Rotate and re-process image
+  const rotatedBuffer = await sharp(buffer)
+    .rotate(degrees)
+    .toBuffer();
+
+  // Delete old image files
+  await deleteImageByFilename('storages/media', filename);
+
+  // Re-process with the same filename
+  const processedImage = await processImage(rotatedBuffer, {
+    baseDir: 'storages/media',
+    filename: filename,
+  });
+
+  // Generate new URLs
+  const imageUrls = generateImageUrls(processedImage, baseUrl);
+
+  // Get new dimensions after rotation
+  const metadata = await sharp(rotatedBuffer).metadata();
+  const newWidth = metadata.width || null;
+  const newHeight = metadata.height || null;
+
+  // Update database record with new dimensions
+  const updatedMedia = await prisma.media.update({
+    where: { id: mediaId },
+    data: {
+      width: newWidth,
+      height: newHeight,
+      fileUrl: imageUrls.large,
+      filePath: processedImage.original,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+        },
+      },
+    },
+  });
+
+  const response = toMediaResponse(updatedMedia);
+  response.sizes = imageUrls;
+
+  return {
+    success: true,
+    message: `Image rotated ${degrees}° successfully`,
+    data: response,
+  };
+}
+
+/**
  * Delete Media
  * Deletes file and database record
  */

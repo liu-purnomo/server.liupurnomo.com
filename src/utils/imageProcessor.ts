@@ -39,8 +39,9 @@ export async function processImage(
   // Ensure directory exists
   await fs.mkdir(baseDir, { recursive: true });
 
-  // Initialize sharp instance
-  const image = sharp(buffer);
+  // Initialize sharp instance with auto-rotation based on EXIF orientation
+  // This fixes portrait images from phones that store orientation in metadata
+  const image = sharp(buffer).rotate();
 
   // Generate paths for different sizes
   const paths = {
@@ -62,6 +63,7 @@ export async function processImage(
 
   // Process and save large size (1200px) - WebP
   await sharp(buffer)
+    .rotate() // Auto-rotate based on EXIF
     .resize(1200, 1200, {
       fit: 'inside',
       withoutEnlargement: true,
@@ -71,6 +73,7 @@ export async function processImage(
 
   // Process and save medium size (600px) - WebP
   await sharp(buffer)
+    .rotate() // Auto-rotate based on EXIF
     .resize(600, 600, {
       fit: 'inside',
       withoutEnlargement: true,
@@ -80,6 +83,7 @@ export async function processImage(
 
   // Process and save small size (300px) - WebP
   await sharp(buffer)
+    .rotate() // Auto-rotate based on EXIF
     .resize(300, 300, {
       fit: 'inside',
       withoutEnlargement: true,
@@ -89,6 +93,7 @@ export async function processImage(
 
   // Process and save thumbnail (100px) - WebP with very high compression
   await sharp(buffer)
+    .rotate() // Auto-rotate based on EXIF
     .resize(100, 100, {
       fit: 'cover', // Cover for perfect square thumbnail
       position: 'center',

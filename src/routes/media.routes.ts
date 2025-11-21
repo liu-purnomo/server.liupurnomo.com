@@ -83,6 +83,19 @@ router.post(
 );
 
 /**
+ * POST /api/media/:id/rotate
+ * Rotate image by specified degrees (90, 180, 270)
+ * Auth Required: Owner or ADMIN
+ */
+router.post(
+  '/:id/rotate',
+  authenticate,
+  requireRole('ADMIN', 'AUTHOR'),
+  validate(getMediaByIdValidator, 'params'),
+  mediaController.rotateMedia
+);
+
+/**
  * PATCH /api/media/:id
  * Update media metadata (altText, caption)
  * Auth Required: Owner or ADMIN

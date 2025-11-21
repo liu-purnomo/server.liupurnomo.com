@@ -156,6 +156,44 @@ export const updateMedia = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
+ * Rotate Media
+ * POST /api/media/:id/rotate
+ * Auth Required (Owner or ADMIN)
+ */
+export const rotateMedia = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const userRole = req.user!.role;
+  const { id } = req.params as GetMediaByIdInput;
+  const { degrees } = req.body;
+
+  if (!degrees || ![90, 180, 270].includes(degrees)) {
+    throw new BadRequestError('Rotation degrees must be 90, 180, or 270');
+  }
+
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+  const result = await mediaService.rotateMedia(id, userId, userRole, degrees, baseUrl);
+
+  // Log activity
+  await logActivity({
+    userId,
+    action: 'UPDATE',
+    entity: 'Media',
+    entityId: id,
+    description: `Rotated media ${degrees}°: ${result.data!.fileName}`,
+    newData: {
+      degrees,
+      newWidth: result.data!.width,
+      newHeight: result.data!.height,
+    },
+    ipAddress: req.ip,
+    userAgent: req.headers['user-agent'],
+  });
+
+  return sendSuccess(res, 200, result.message, { media: result.data });
+});
+
+/**
  * Delete Media
  * DELETE /api/media/:id
  * Auth Required (Owner or ADMIN)

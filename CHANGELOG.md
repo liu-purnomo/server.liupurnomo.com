@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2025-11-22
+
+### Added
+- **Image Rotation Feature**
+  - Added POST `/api/media/:id/rotate` endpoint for rotating images by 90°, 180°, or 270°
+  - Re-processes all image sizes (original, large, medium, small, thumbnail) after rotation
+  - Automatically updates image dimensions in database after rotation
+  - Permission check ensures only media owner or ADMIN can rotate images
+  - Activity logging for rotation actions
+
+### Fixed
+- **Portrait Image Orientation**
+  - Fixed issue where portrait images from phones were rotated incorrectly after upload
+  - Added EXIF orientation auto-rotation during image processing
+  - All image sizes now preserve correct orientation from device metadata
+
 ## [0.24.0] - 2025-11-22
 
 ### Added
