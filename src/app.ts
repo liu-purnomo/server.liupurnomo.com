@@ -26,7 +26,7 @@ app.use(
       const allowedOrigins = [
         'https://liupurnomo.com',
         'https://www.liupurnomo.com',
-        // 'http://localhost:3000', // For local development
+        'http://localhost:3000', // For local development
         // 'http://localhost:5173', // For local development (Vite)
       ];
 
