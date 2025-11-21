@@ -225,6 +225,126 @@ export async function uploadMedia(
 }
 
 /**
+ * Bulk Upload Media
+ * Handles multiple files at once (images, videos, and documents)
+ */
+export async function uploadMediaBulk(
+  userId: string,
+  files: Express.Multer.File[],
+  baseUrl: string
+): Promise<ApiResponse<MediaResponse[]>> {
+  const results: MediaResponse[] = [];
+  const errors: { filename: string; error: string }[] = [];
+
+  for (const file of files) {
+    try {
+      const { originalname, buffer, mimetype, size } = file;
+
+      // Validate file size based on type
+      validateFileSize(size, mimetype);
+
+      let fileUrl: string;
+      let filePath: string;
+      let width: number | null = null;
+      let height: number | null = null;
+      let sizes: MediaImageSizes | undefined;
+
+      // Handle images differently (process with sharp)
+      if (mimetype.startsWith('image/')) {
+        // Process image with sharp
+        const processedImage = await processImage(buffer, {
+          baseDir: 'storages/media',
+        });
+
+        filePath = processedImage.original;
+
+        // Generate URLs
+        const imageUrls = generateImageUrls(processedImage, baseUrl);
+        fileUrl = imageUrls.large; // Use large as main URL
+        sizes = imageUrls;
+
+        // Get image dimensions
+        const metadata = await sharp(buffer).metadata();
+        width = metadata.width || null;
+        height = metadata.height || null;
+      } else {
+        // Handle videos and documents (save directly)
+        const filename = `${randomUUID()}-${originalname}`;
+        const baseDir = mimetype.startsWith('video/')
+          ? 'storages/media/videos'
+          : 'storages/media/documents';
+
+        // Ensure directory exists
+        await fs.mkdir(baseDir, { recursive: true });
+
+        filePath = path.join(baseDir, filename);
+
+        // Save file
+        await fs.writeFile(filePath, buffer);
+
+        // Generate URL
+        const relativePath = filePath.replace(/\\/g, '/').replace('storages/', '/uploads/');
+        fileUrl = `${baseUrl}${relativePath}`;
+      }
+
+      // Create media record
+      const media = await prisma.media.create({
+        data: {
+          userId,
+          fileName: originalname,
+          filePath,
+          fileUrl,
+          mimeType: mimetype,
+          fileSize: size,
+          altText: null,
+          caption: null,
+          width,
+          height,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
+        },
+      });
+
+      const response = toMediaResponse(media);
+      if (sizes) {
+        response.sizes = sizes;
+      }
+      results.push(response);
+    } catch (error) {
+      // Collect errors but continue processing other files
+      errors.push({
+        filename: file.originalname,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  // Determine message based on results
+  let message: string;
+  if (errors.length === 0) {
+    message = `${results.length} file(s) uploaded successfully`;
+  } else if (results.length === 0) {
+    message = `All ${errors.length} file(s) failed to upload`;
+  } else {
+    message = `${results.length} file(s) uploaded successfully, ${errors.length} failed`;
+  }
+
+  return {
+    success: results.length > 0,
+    message,
+    data: results,
+    errors: errors.length > 0 ? errors : undefined,
+  } as ApiResponse<MediaResponse[]>;
+}
+
+/**
  * Get Media by ID
  */
 export async function getMediaById(mediaId: string): Promise<ApiResponse<MediaResponse>> {

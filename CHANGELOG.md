@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2025-11-22
+
+### Added
+- **Bulk Media Upload Feature**
+  - Added POST `/api/media/bulk` endpoint for uploading multiple media files at once
+  - Supports up to 20 files per request for efficient batch uploads
+  - Per-file error handling allows partial success (successful uploads proceed even if some files fail)
+  - Returns array of uploaded media with detailed error list for any failed files
+  - Uses same file validation and processing as single upload (image optimization, thumbnails, etc.)
+  - Authentication required with AUTHOR or ADMIN role
+
+### Changed
+- **Upload Middleware Enhancement**
+  - Added `uploadMediaBulk` multer configuration for multi-file uploads
+  - Configured with 20 file limit and same size restrictions as single upload
+
 ## [0.23.2] - 2025-11-16
 
 ### Changed

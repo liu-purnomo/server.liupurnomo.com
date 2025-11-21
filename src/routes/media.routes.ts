@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as mediaController from '../controllers/media.controller.js';
 import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
-import { uploadMedia } from '../middlewares/upload.js';
+import { uploadMedia, uploadMediaBulk } from '../middlewares/upload.js';
 import {
   uploadMediaValidator,
   updateMediaValidator,
@@ -60,6 +60,26 @@ router.post(
   },
   validate(uploadMediaValidator),
   mediaController.uploadMedia
+);
+
+/**
+ * POST /api/media/bulk
+ * Bulk upload multiple media files (up to 20 at once)
+ * Auth Required: AUTHOR, ADMIN
+ */
+router.post(
+  '/bulk',
+  authenticate,
+  requireRole('ADMIN', 'AUTHOR'),
+  (req, res, next) => {
+    uploadMediaBulk(req, res, (err) => {
+      if (err) {
+        return next(err);
+      }
+      next();
+    });
+  },
+  mediaController.uploadMediaBulk
 );
 
 /**

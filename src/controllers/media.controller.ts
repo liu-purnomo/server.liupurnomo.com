@@ -58,6 +58,46 @@ export const uploadMedia = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
+ * Bulk Upload Media
+ * POST /api/media/bulk
+ * Auth Required (AUTHOR, ADMIN)
+ */
+export const uploadMediaBulk = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const files = req.files as Express.Multer.File[];
+
+  if (!files || files.length === 0) {
+    throw new BadRequestError('At least one file is required');
+  }
+
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+  const result = await mediaService.uploadMediaBulk(userId, files, baseUrl);
+
+  // Log activity for successful uploads
+  if (result.data && result.data.length > 0) {
+    await logActivity({
+      userId,
+      action: 'CREATE',
+      entity: 'Media',
+      entityId: result.data[0].id,
+      description: `Bulk uploaded ${result.data.length} media file(s)`,
+      newData: {
+        fileCount: result.data.length,
+        fileNames: result.data.map((m) => m.fileName),
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+  }
+
+  return sendCreated(res, result.message, {
+    media: result.data,
+    errors: (result as any).errors,
+  });
+});
+
+/**
  * Get All Media
  * GET /api/media
  * Public (with pagination and filtering)

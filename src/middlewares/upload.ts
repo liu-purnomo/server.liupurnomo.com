@@ -157,6 +157,19 @@ export const uploadMedia = multer({
 }).single('file');
 
 /**
+ * Multer upload instance for multiple media files
+ * Supports up to 20 files at once for bulk upload
+ */
+export const uploadMediaBulk = multer({
+  storage,
+  fileFilter: mediaFileFilter,
+  limits: {
+    fileSize: MAX_VIDEO_SIZE, // Use largest limit, will validate per type in service
+    files: 20, // Maximum 20 files per request
+  },
+}).array('files', 20);
+
+/**
  * Error handler for multer errors
  */
 export const handleMulterError = (error: any, _req: Request): void => {
