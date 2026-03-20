@@ -21,7 +21,7 @@ import {
  */
 export const getPublicUserByUsername = asyncHandler(
   async (req: Request, res: Response) => {
-    const { username } = req.params;
+    const username = req.params.username as string;
 
     if (!username) {
       throw new Error('Username parameter is required');
@@ -42,7 +42,7 @@ export const getPublicUserByUsername = asyncHandler(
  */
 export const getPublicUserById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (!id) {
       throw new Error('User ID parameter is required');
@@ -186,7 +186,7 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
  * Requires admin role
  */
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
 
   if (!id) {
     throw new Error('User ID parameter is required');
@@ -204,7 +204,7 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
  */
 export const updateUserById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const updateData = req.body;
     const adminId = req.user!.userId;
 
@@ -236,7 +236,7 @@ export const updateUserById = asyncHandler(
  */
 export const deleteUserById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const adminId = req.user!.userId;
 
     if (!id) {

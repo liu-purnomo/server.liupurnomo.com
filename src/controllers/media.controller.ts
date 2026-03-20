@@ -10,8 +10,6 @@ import {
 import {
   UploadMediaInput,
   UpdateMediaInput,
-  GetMediaByIdInput,
-  DeleteMediaInput,
   GetMediaQueryInput,
 } from '../validators/media.validator.js';
 
@@ -117,7 +115,7 @@ export const getAllMedia = asyncHandler(async (req: Request, res: Response) => {
  * Public
  */
 export const getMediaById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params as GetMediaByIdInput;
+  const id = req.params.id as string;
 
   const result = await mediaService.getMediaById(id);
 
@@ -132,7 +130,7 @@ export const getMediaById = asyncHandler(async (req: Request, res: Response) => 
 export const updateMedia = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const userRole = req.user!.role;
-  const { id } = req.params as GetMediaByIdInput;
+  const id = req.params.id as string;
   const data: UpdateMediaInput = req.body;
 
   const result = await mediaService.updateMedia(id, userId, userRole, data);
@@ -163,7 +161,7 @@ export const updateMedia = asyncHandler(async (req: Request, res: Response) => {
 export const rotateMedia = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const userRole = req.user!.role;
-  const { id } = req.params as GetMediaByIdInput;
+  const id = req.params.id as string;
   const { degrees } = req.body;
 
   if (!degrees || ![90, 180, 270].includes(degrees)) {
@@ -201,7 +199,7 @@ export const rotateMedia = asyncHandler(async (req: Request, res: Response) => {
 export const deleteMedia = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
   const userRole = req.user!.role;
-  const { id } = req.params as DeleteMediaInput;
+  const id = req.params.id as string;
 
   // Get media info before deleting for logging
   const mediaInfo = await mediaService.getMediaById(id);

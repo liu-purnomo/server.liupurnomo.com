@@ -40,8 +40,8 @@ export async function getEventById(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
-    const result = await eventService.getEventById(id!);
+    const id = req.params.id as string;
+    const result = await eventService.getEventById(id);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -59,8 +59,8 @@ export async function getEventBySlug(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { slug } = req.params;
-    const result = await eventService.getEventBySlug(slug!);
+    const slug = req.params.slug as string;
+    const result = await eventService.getEventBySlug(slug);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -102,9 +102,9 @@ export async function updateEvent(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const data: UpdateEventRequest = req.body;
-    const result = await eventService.updateEvent(id!, data);
+    const result = await eventService.updateEvent(id, data);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -122,8 +122,8 @@ export async function deleteEvent(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
-    const result = await eventService.deleteEvent(id!);
+    const id = req.params.id as string;
+    const result = await eventService.deleteEvent(id);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {

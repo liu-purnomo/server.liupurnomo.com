@@ -43,9 +43,9 @@ export const getAllActivityLogs = asyncHandler(
  */
 export const getActivityLogById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
-    const activityLog = await activityLogService.getActivityLogById(id!);
+    const activityLog = await activityLogService.getActivityLogById(id);
 
     return sendSuccess(res, 200, 'Activity log retrieved successfully', {
       activityLog,
@@ -86,11 +86,11 @@ export const getActivityLogStats = asyncHandler(
 export const updateActivityLog = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.userId;
-    const { id } = req.params;
+    const id = req.params.id as string;
     const updateData = req.body;
 
     const activityLog = await activityLogService.updateActivityLog(
-      id!,
+      id,
       updateData
     );
 
@@ -121,9 +121,9 @@ export const updateActivityLog = asyncHandler(
 export const deleteActivityLog = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.userId;
-    const { id } = req.params;
+    const id = req.params.id as string;
 
-    await activityLogService.deleteActivityLog(id!);
+    await activityLogService.deleteActivityLog(id);
 
     // Log this activity
     await logActivity({

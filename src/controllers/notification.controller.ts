@@ -7,12 +7,7 @@ import { Request, Response } from 'express';
 import * as notificationService from '../services/notification.service.js';
 import { sendSuccess, sendPaginatedSuccess } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import {
-  GetNotificationsQueryInput,
-  GetNotificationByIdInput,
-  MarkAsReadInput,
-  DeleteNotificationInput,
-} from '../validators/notification.validator.js';
+import { GetNotificationsQueryInput } from '../validators/notification.validator.js';
 
 /**
  * @route   GET /api/notifications
@@ -63,7 +58,7 @@ export const getUnreadCount = asyncHandler(
 export const getNotificationById = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const { id } = req.params as GetNotificationByIdInput;
+    const id = req.params.id as string;
 
     const notification = await notificationService.getNotificationById(
       id,
@@ -87,7 +82,7 @@ export const getNotificationById = asyncHandler(
 export const markAsRead = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const { id } = req.params as MarkAsReadInput;
+    const id = req.params.id as string;
 
     const notification = await notificationService.markNotificationAsRead(
       id,
@@ -126,7 +121,7 @@ export const markAllAsRead = asyncHandler(
 export const deleteNotification = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const { id } = req.params as DeleteNotificationInput;
+    const id = req.params.id as string;
 
     await notificationService.deleteNotification(id, userId);
 

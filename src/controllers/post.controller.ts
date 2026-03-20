@@ -70,12 +70,12 @@ export const getAllPosts = asyncHandler(async (req: Request, res: Response) => {
  * Public access - returns only published posts
  */
 export const getPostById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
 
-  const result = await postService.getPostById(id!, false);
+  const result = await postService.getPostById(id, false);
 
   // Increment view count asynchronously
-  postService.incrementViewCount(id!).catch((err) => {
+  postService.incrementViewCount(id).catch((err) => {
     console.error('Failed to increment view count:', err);
   });
 
@@ -89,20 +89,20 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
  * Returns post with related posts and latest posts
  */
 export const getPostBySlug = asyncHandler(async (req: Request, res: Response) => {
-  const { slug } = req.params;
+  const slug = req.params.slug as string;
   const userId = req.user?.id; // Optional auth
 
   // Build cache key (include userId for personalized data like isBookmarked)
   const cacheKey = CacheService.buildKey(
     CachePrefix.POST,
     'slug',
-    slug!,
+    slug,
     userId || 'guest'
   );
 
   const result = await CacheService.getOrSet(
     cacheKey,
-    () => postService.getPostBySlug(slug!, false, userId),
+    () => postService.getPostBySlug(slug, false, userId),
     CacheTTL.FIFTEEN_MINUTES // Cache for 15 minutes
   );
 
@@ -198,11 +198,11 @@ export const getAllPostsAdmin = asyncHandler(async (req: Request, res: Response)
  * Requires authentication and AUTHOR or ADMIN role
  */
 export const getPostByIdAdmin = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const userId = req.user!.userId;
   const userRole = req.user!.role;
 
-  const result = await postService.getPostById(id!, true);
+  const result = await postService.getPostById(id, true);
 
   // If user is AUTHOR (not ADMIN), verify they own the post
   if (userRole === 'AUTHOR' && result.data!.authorId !== userId) {
@@ -221,13 +221,13 @@ export const getPostByIdAdmin = asyncHandler(async (req: Request, res: Response)
  * Requires authentication and AUTHOR or ADMIN role
  */
 export const updatePost = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const userId = req.user!.userId;
   const userRole = req.user!.role;
   const postData: UpdatePostRequest = req.body;
 
   // First, get the post to check ownership
-  const existingPost = await postService.getPostById(id!, true);
+  const existingPost = await postService.getPostById(id, true);
 
   // If user is AUTHOR (not ADMIN), verify they own the post
   if (userRole === 'AUTHOR' && existingPost.data!.authorId !== userId) {
@@ -237,7 +237,7 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  const result = await postService.updatePost(id!, postData);
+  const result = await postService.updatePost(id, postData);
 
   // Invalidate post caches
   await Promise.all([
@@ -252,7 +252,7 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
     userId,
     action: 'UPDATE',
     entity: 'Post',
-    entityId: id!,
+    entityId: id,
     description: `Updated post: ${result.data!.title}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
@@ -267,12 +267,12 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
  * Requires authentication and AUTHOR or ADMIN role
  */
 export const deletePost = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const userId = req.user!.userId;
   const userRole = req.user!.role;
 
   // First, get the post to check ownership
-  const existingPost = await postService.getPostById(id!, true);
+  const existingPost = await postService.getPostById(id, true);
 
   // If user is AUTHOR (not ADMIN), verify they own the post
   if (userRole === 'AUTHOR' && existingPost.data!.authorId !== userId) {
@@ -282,7 +282,7 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  await postService.deletePost(id!);
+  await postService.deletePost(id);
 
   // Invalidate post caches
   await Promise.all([
@@ -297,7 +297,7 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
     userId,
     action: 'DELETE',
     entity: 'Post',
-    entityId: id!,
+    entityId: id,
     description: `Deleted post: ${existingPost.data!.title}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
@@ -312,19 +312,19 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
  * Requires authentication and ADMIN role only
  */
 export const permanentlyDeletePost = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const userId = req.user!.userId;
 
-  const existingPost = await postService.getPostById(id!, true);
+  const existingPost = await postService.getPostById(id, true);
 
-  await postService.permanentlyDeletePost(id!);
+  await postService.permanentlyDeletePost(id);
 
   // Log activity
   await logActivity({
     userId,
     action: 'DELETE',
     entity: 'Post',
-    entityId: id!,
+    entityId: id,
     description: `Permanently deleted post: ${existingPost.data!.title}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],

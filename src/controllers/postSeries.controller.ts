@@ -38,8 +38,8 @@ export const getAllPostSeries = asyncHandler(async (req: Request, res: Response)
  * GET /api/post-series/:id
  */
 export const getPostSeriesById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const series = await postSeriesService.getPostSeriesById(id!);
+  const id = req.params.id as string;
+  const series = await postSeriesService.getPostSeriesById(id);
   return sendSuccess(res, 200, 'Post series retrieved successfully', { series });
 });
 
@@ -48,8 +48,8 @@ export const getPostSeriesById = asyncHandler(async (req: Request, res: Response
  * GET /api/post-series/slug/:slug
  */
 export const getPostSeriesBySlug = asyncHandler(async (req: Request, res: Response) => {
-  const { slug } = req.params;
-  const series = await postSeriesService.getPostSeriesBySlug(slug!);
+  const slug = req.params.slug as string;
+  const series = await postSeriesService.getPostSeriesBySlug(slug);
   return sendSuccess(res, 200, 'Post series retrieved successfully', { series });
 });
 
@@ -85,17 +85,17 @@ export const createPostSeries = asyncHandler(async (req: Request, res: Response)
  * Requires AUTHOR or ADMIN role
  */
 export const updatePostSeries = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const userId = req.user!.id;
 
-  const series = await postSeriesService.updatePostSeries(id!, req.body);
+  const series = await postSeriesService.updatePostSeries(id, req.body);
 
   // Log activity
   await logActivity({
     userId,
     action: 'UPDATE',
     entity: 'POST_SERIES',
-    entityId: id!,
+    entityId: id,
     description: `Updated post series: ${series.title}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
@@ -110,17 +110,17 @@ export const updatePostSeries = asyncHandler(async (req: Request, res: Response)
  * Requires ADMIN role
  */
 export const deletePostSeries = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const userId = req.user!.id;
 
-  await postSeriesService.deletePostSeries(id!);
+  await postSeriesService.deletePostSeries(id);
 
   // Log activity
   await logActivity({
     userId,
     action: 'DELETE',
     entity: 'POST_SERIES',
-    entityId: id!,
+    entityId: id,
     description: `Deleted post series`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],

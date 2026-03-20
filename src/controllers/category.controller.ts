@@ -79,9 +79,9 @@ export const getCategoryTree = asyncHandler(async (_req: Request, res: Response)
  * Public access - no authentication required
  */
 export const getCategoryById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
 
-  const category = await categoryService.getCategoryById(id!);
+  const category = await categoryService.getCategoryById(id);
 
   return sendSuccess(res, 200, 'Category retrieved successfully', { category });
 });
@@ -92,9 +92,9 @@ export const getCategoryById = asyncHandler(async (req: Request, res: Response) 
  * Public access - no authentication required
  */
 export const getCategoryBySlug = asyncHandler(async (req: Request, res: Response) => {
-  const { slug } = req.params;
+  const slug = req.params.slug as string;
 
-  const category = await categoryService.getCategoryBySlug(slug!);
+  const category = await categoryService.getCategoryBySlug(slug);
 
   return sendSuccess(res, 200, 'Category retrieved successfully', { category });
 });
@@ -152,7 +152,7 @@ export const createCategory = asyncHandler(async (req: Request, res: Response) =
  */
 export const updateCategory = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
-  const { id } = req.params;
+  const id = req.params.id as string;
   const updateData = req.body;
   const file = req.file;
 
@@ -161,7 +161,7 @@ export const updateCategory = asyncHandler(async (req: Request, res: Response) =
 
   // Update category with optional new icon
   const category = await categoryService.updateCategory(
-    id!,
+    id,
     updateData,
     file?.buffer,
     baseUrl
@@ -172,7 +172,7 @@ export const updateCategory = asyncHandler(async (req: Request, res: Response) =
     userId,
     action: 'UPDATE',
     entity: 'Category',
-    entityId: id!,
+    entityId: id,
     description: `Updated category: ${category.name}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
@@ -188,19 +188,19 @@ export const updateCategory = asyncHandler(async (req: Request, res: Response) =
  */
 export const deleteCategory = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
-  const { id } = req.params;
+  const id = req.params.id as string;
 
   // Get category name before deletion for logging
-  const category = await categoryService.getCategoryById(id!);
+  const category = await categoryService.getCategoryById(id);
 
-  await categoryService.deleteCategory(id!);
+  await categoryService.deleteCategory(id);
 
   // Log activity
   await logActivity({
     userId,
     action: 'DELETE',
     entity: 'Category',
-    entityId: id!,
+    entityId: id,
     description: `Deleted category: ${category.name}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],
@@ -216,16 +216,16 @@ export const deleteCategory = asyncHandler(async (req: Request, res: Response) =
  */
 export const deleteCategoryIcon = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
-  const { id } = req.params;
+  const id = req.params.id as string;
 
-  const category = await categoryService.deleteCategoryIcon(id!);
+  const category = await categoryService.deleteCategoryIcon(id);
 
   // Log activity
   await logActivity({
     userId,
     action: 'UPDATE',
     entity: 'Category',
-    entityId: id!,
+    entityId: id,
     description: `Deleted icon for category: ${category.name}`,
     ipAddress: req.ip,
     userAgent: req.headers['user-agent'],

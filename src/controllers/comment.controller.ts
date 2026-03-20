@@ -119,9 +119,9 @@ export const getComments = asyncHandler(async (req: Request, res: Response) => {
  */
 export const getCommentById = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
-    const result = await commentService.getCommentById(id!);
+    const result = await commentService.getCommentById(id);
 
     sendSuccess(res, 200, result.message, result.data);
   }
@@ -133,13 +133,13 @@ export const getCommentById = asyncHandler(
  */
 export const updateComment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const data = req.body as UpdateCommentInput;
     const userId = req.user!.id;
     const ipAddress = req.ip;
     const userAgent = req.get('user-agent');
 
-    const result = await commentService.updateComment(id!, data, userId);
+    const result = await commentService.updateComment(id, data, userId);
 
     // Invalidate post cache (comment might affect post data)
     if (result.data?.comment.postId) {
@@ -173,13 +173,13 @@ export const updateComment = asyncHandler(
  */
 export const moderateComment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const data = req.body as ModerateCommentInput;
     const userId = req.user!.id;
     const ipAddress = req.ip;
     const userAgent = req.get('user-agent');
 
-    const result = await commentService.moderateComment(id!, data, userId);
+    const result = await commentService.moderateComment(id, data, userId);
 
     // Invalidate post cache (moderation might affect post data)
     if (result.data?.comment.postId) {
@@ -214,7 +214,7 @@ export const moderateComment = asyncHandler(
  */
 export const deleteComment = asyncHandler(
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userId = req.user!.id;
     const ipAddress = req.ip;
     const userAgent = req.get('user-agent');
@@ -225,7 +225,7 @@ export const deleteComment = asyncHandler(
       select: { postId: true },
     });
 
-    const result = await commentService.deleteComment(id!, userId);
+    const result = await commentService.deleteComment(id, userId);
 
     // Invalidate post cache to reflect updated comment count
     if (comment?.postId) {

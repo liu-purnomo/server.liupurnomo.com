@@ -55,8 +55,8 @@ export async function getBookmarkById(
 ): Promise<void> {
   try {
     const userId = req.user!.id;
-    const { id } = req.params;
-    const result = await bookmarkService.getBookmarkById(userId, id!);
+    const id = req.params.id as string;
+    const result = await bookmarkService.getBookmarkById(userId, id);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -75,8 +75,8 @@ export async function getBookmarkByPostId(
 ): Promise<void> {
   try {
     const userId = req.user!.id;
-    const { postId } = req.params;
-    const result = await bookmarkService.getBookmarkByPostId(userId, postId!);
+    const postId = req.params.postId as string;
+    const result = await bookmarkService.getBookmarkByPostId(userId, postId);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -120,9 +120,9 @@ export async function updateBookmark(
 ): Promise<void> {
   try {
     const userId = req.user!.id;
-    const { id } = req.params;
+    const id = req.params.id as string;
     const data: UpdateBookmarkRequest = req.body;
-    const result = await bookmarkService.updateBookmark(userId, id!, data);
+    const result = await bookmarkService.updateBookmark(userId, id, data);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -141,7 +141,7 @@ export async function deleteBookmark(
 ): Promise<void> {
   try {
     const userId = req.user!.id;
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     // Get postId before deleting
     const bookmark = await prisma.bookmark.findUnique({
@@ -149,7 +149,7 @@ export async function deleteBookmark(
       select: { postId: true },
     });
 
-    const result = await bookmarkService.deleteBookmark(userId, id!);
+    const result = await bookmarkService.deleteBookmark(userId, id);
 
     // Invalidate post cache to reflect bookmark status
     if (bookmark?.postId) {
@@ -176,8 +176,8 @@ export async function toggleReadStatus(
 ): Promise<void> {
   try {
     const userId = req.user!.id;
-    const { id } = req.params;
-    const result = await bookmarkService.toggleReadStatus(userId, id!);
+    const id = req.params.id as string;
+    const result = await bookmarkService.toggleReadStatus(userId, id);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
@@ -196,8 +196,8 @@ export async function toggleFavorite(
 ): Promise<void> {
   try {
     const userId = req.user!.id;
-    const { id } = req.params;
-    const result = await bookmarkService.toggleFavorite(userId, id!);
+    const id = req.params.id as string;
+    const result = await bookmarkService.toggleFavorite(userId, id);
 
     sendSuccess(res, 200, result.message, result.data);
   } catch (error) {
