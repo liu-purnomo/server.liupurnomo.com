@@ -16,7 +16,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
  */
 export const getUserStatistics = asyncHandler(
   async (req: Request, res: Response) => {
-    const { username } = req.params;
+    const username = req.params.username as string;
 
     // Build cache key with username
     const cacheKey = CacheService.buildKey(

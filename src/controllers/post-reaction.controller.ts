@@ -18,7 +18,7 @@ import type { GetUserReactionsQueryInput } from '../validators/post-reaction.val
  */
 export const addOrToggleReaction = asyncHandler(
   async (req: Request, res: Response) => {
-    const { postId } = req.params;
+    const postId = req.params.postId as string;
     const { reactionType } = req.body;
 
     if (!postId) {
@@ -65,7 +65,7 @@ export const addOrToggleReaction = asyncHandler(
  */
 export const getReactionsSummary = asyncHandler(
   async (req: Request, res: Response) => {
-    const { postId } = req.params;
+    const postId = req.params.postId as string;
 
     if (!postId) {
       return res.status(400).json({
@@ -94,7 +94,7 @@ export const getReactionsSummary = asyncHandler(
  */
 export const getPostReactions = asyncHandler(
   async (req: Request, res: Response) => {
-    const { postId } = req.params;
+    const postId = req.params.postId as string;
     const { reactionType, page, limit } = req.query;
 
     if (!postId) {
@@ -122,7 +122,8 @@ export const getPostReactions = asyncHandler(
  */
 export const removeReaction = asyncHandler(
   async (req: Request, res: Response) => {
-    const { postId, reactionType } = req.params;
+    const postId = req.params.postId as string;
+    const reactionType = req.params.reactionType as string;
 
     if (!postId) {
       return res.status(400).json({
