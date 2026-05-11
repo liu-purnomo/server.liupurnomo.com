@@ -206,7 +206,7 @@ export interface EventListItemResponse {
   eventType: EventType;
   status: EventStatus;
   locationType: EventLocationType;
-  organizationName: string | null;
+  organizerName: string | null;
 
   // Key details
   eventDate: string;

@@ -78,7 +78,7 @@ function toEventListItemResponse(event: any): EventListItemResponse {
     eventType: event.eventType,
     status: event.status,
     locationType: event.locationType,
-    organizationName: event.organizationName,
+    organizerName: event.organizerName,
 
     eventDate: event.eventDate.toISOString(),
     city: event.city,
