@@ -6,6 +6,7 @@
     "ECONNECTION",
     "fulltext",
     "HACKATHON",
+    "tsvector",
     "upvote"
   ]
 }

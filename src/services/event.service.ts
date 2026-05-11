@@ -2,15 +2,15 @@ import { EventStatus, Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import type {
   CreateEventRequest,
-  UpdateEventRequest,
-  EventResponse,
   EventListItemResponse,
   EventQueryParams,
+  EventResponse,
+  UpdateEventRequest,
 } from '../types/index.js';
 import type { ApiResponse, PaginatedResult } from '../types/response.types.js';
 import {
-  NotFoundError,
   ConflictError,
+  NotFoundError,
   calculatePagination,
 } from '../utils/index.js';
 
@@ -78,6 +78,7 @@ function toEventListItemResponse(event: any): EventListItemResponse {
     eventType: event.eventType,
     status: event.status,
     locationType: event.locationType,
+    organizationName: event.organizationName,
 
     eventDate: event.eventDate.toISOString(),
     city: event.city,
@@ -102,7 +103,7 @@ function toEventListItemResponse(event: any): EventListItemResponse {
  * Create Event
  */
 export async function createEvent(
-  data: CreateEventRequest
+  data: CreateEventRequest,
 ): Promise<ApiResponse<EventResponse>> {
   // Check if slug already exists
   const existingEvent = await prisma.event.findUnique({
@@ -179,7 +180,7 @@ export async function createEvent(
  * Get Event by ID
  */
 export async function getEventById(
-  eventId: string
+  eventId: string,
 ): Promise<ApiResponse<EventResponse>> {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -200,7 +201,7 @@ export async function getEventById(
  * Get Event by Slug (Public)
  */
 export async function getEventBySlug(
-  slug: string
+  slug: string,
 ): Promise<ApiResponse<EventResponse>> {
   const event = await prisma.event.findUnique({
     where: { slug },
@@ -239,7 +240,7 @@ export async function getEventBySlug(
  * Get All Events (with pagination and filters)
  */
 export async function getAllEvents(
-  query: EventQueryParams
+  query: EventQueryParams,
 ): Promise<PaginatedResult<EventListItemResponse>> {
   const {
     page = 1,
@@ -352,7 +353,7 @@ export async function getAllEvents(
  */
 export async function updateEvent(
   eventId: string,
-  data: UpdateEventRequest
+  data: UpdateEventRequest,
 ): Promise<ApiResponse<EventResponse>> {
   // Check if event exists
   const existingEvent = await prisma.event.findUnique({
@@ -394,7 +395,8 @@ export async function updateEvent(
     data: {
       title: data.title,
       slug: data.slug,
-      description: data.description !== undefined ? data.description : undefined,
+      description:
+        data.description !== undefined ? data.description : undefined,
       content: data.content !== undefined ? data.content : undefined,
       eventType: data.eventType,
       status: data.status,
@@ -452,9 +454,7 @@ export async function updateEvent(
 /**
  * Delete Event
  */
-export async function deleteEvent(
-  eventId: string
-): Promise<ApiResponse<null>> {
+export async function deleteEvent(eventId: string): Promise<ApiResponse<null>> {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
   });

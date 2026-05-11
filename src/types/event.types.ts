@@ -1,8 +1,4 @@
-import type {
-  EventType,
-  EventStatus,
-  EventLocationType,
-} from '@prisma/client';
+import type { EventLocationType, EventStatus, EventType } from '@prisma/client';
 
 /**
  * Event Types and Interfaces
@@ -210,6 +206,7 @@ export interface EventListItemResponse {
   eventType: EventType;
   status: EventStatus;
   locationType: EventLocationType;
+  organizationName: string | null;
 
   // Key details
   eventDate: string;
